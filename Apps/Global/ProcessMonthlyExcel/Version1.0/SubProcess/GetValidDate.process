@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="bsr/common/apps/appdataenv/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="www.tibco.com/plugin/java/JavaMethodActivityOutput" xmlns:ns="www.tibco.com/plugin/java/JavaMethodActivityInput" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0">
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/apps/blendingrecipes/1.0" schemaLocation="/SharedResource/Schema/Apps/OPE_02_03/BlendingRecipes.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/GetValidDate.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx:AppDataEnvelope"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>133</pd:startX>
+    <pd:startY>90</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>587</pd:endX>
+    <pd:endY>95</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1478937941553</pd:targetNamespace>
+    <pd:activity name="Create Object">
+        <pd:type>com.tibco.plugin.java.JavaMethodActivity</pd:type>
+        <pd:resourceType>ae.activities.JavaMethodActivity</pd:resourceType>
+        <pd:x>260</pd:x>
+        <pd:y>91</pd:y>
+        <config>
+            <ConstructDeclaredClass>true</ConstructDeclaredClass>
+            <CacheConstructedClass>false</CacheConstructedClass>
+            <InvokeCleanupMethod>false</InvokeCleanupMethod>
+            <MethodInfo>
+                <classLocation>c:/svn/sharedresource/library/javacustom/readexcel.jar</classLocation>
+                <classPath>/SharedResource/Library/JavaCustom.aliaslib</classPath>
+                <className>bsr.ExcelUtils</className>
+                <isConstructor>true</isConstructor>
+            </MethodInfo>
+        </config>
+        <pd:inputBindings>
+            <ns:JavaMethodActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetValidDate">
+        <pd:type>com.tibco.plugin.java.JavaMethodActivity</pd:type>
+        <pd:resourceType>ae.activities.JavaMethodActivity</pd:resourceType>
+        <pd:x>383</pd:x>
+        <pd:y>94</pd:y>
+        <config>
+            <ConstructDeclaredClass>false</ConstructDeclaredClass>
+            <CacheConstructedClass>false</CacheConstructedClass>
+            <InvokeCleanupMethod>false</InvokeCleanupMethod>
+            <MethodInfo>
+                <classLocation>c:/svn/sharedresource/library/javacustom/readexcel.jar</classLocation>
+                <classPath>/SharedResource/Library/JavaCustom.aliaslib</classPath>
+                <className>bsr.ExcelUtils</className>
+                <methodName>getValidDateOfMonth</methodName>
+                <methodReturn>java.lang.String</methodReturn>
+                <methodParameter>java.lang.String</methodParameter>
+                <methodParameter>java.lang.String</methodParameter>
+                <methodParameter>java.lang.String</methodParameter>
+                <methodParameter>java.lang.String</methodParameter>
+            </MethodInfo>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx:AppDataEnvelope/pfx:AppData/*" element="ns1:InputExcel" cardinality=""/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <ns:JavaMethodActivityInput>
+                <bsr.ExcelUtils>
+                    <xsl:value-of select="$Create-Object/pfx2:JavaMethodActivityOutput/MethodReturnValue"/>
+                </bsr.ExcelUtils>
+                <MethodParameters>
+                    <Parameter1>
+                        <xsl:value-of select="$Start/root/pfx:AppDataEnvelope/pfx:AppData/ns1:InputExcel/ns1:FileName"/>
+                    </Parameter1>
+                    <Parameter2>
+                        <xsl:value-of select="$_globalVariables/ns2:GlobalVariables/APPsInfo/Polling/OPMonthly/Sheetname"/>
+                    </Parameter2>
+                    <Parameter3>
+                        <xsl:value-of select="&quot;H1&quot;"/>
+                    </Parameter3>
+                    <Parameter4>
+                        <xsl:value-of select="&quot;H1&quot;"/>
+                    </Parameter4>
+                </MethodParameters>
+            </ns:JavaMethodActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SetVariable">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>483</pd:x>
+        <pd:y>96</pd:y>
+        <config>
+            <variableConfig>/SharedResource/SharedVariables/ExcelFiles/ValidDate.sharedvariable</variableConfig>
+            <showResult>false</showResult>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <ValidDate>
+                    <xsl:value-of select="$GetValidDate/pfx2:JavaMethodActivityOutput/MethodReturnValue"/>
+                </ValidDate>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Create Object</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Create Object</pd:from>
+        <pd:to>GetValidDate</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetValidDate</pd:from>
+        <pd:to>SetVariable</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SetVariable</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

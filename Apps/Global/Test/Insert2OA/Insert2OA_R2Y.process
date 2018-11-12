@@ -1,0 +1,1173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <pd:name>Apps/Global/Test/Insert2OA/Insert2OA_R2Y.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Month" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="Year" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="UnitID" type="xsd:string"/>
+                    <xsd:element name="UnitName" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>53</pd:startX>
+    <pd:startY>180</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1497</pd:endX>
+    <pd:endY>181</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <OA>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="OAUnit" type="xsd:double" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </OA>
+        <NTAD>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="NTADD" type="xsd:double" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </NTAD>
+        <TAD>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="TADD" type="xsd:double" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </TAD>
+        <RPD>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="RPDD" type="xsd:double" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </RPD>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1466566825090</pd:targetNamespace>
+    <pd:group name="NTADIteration">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>759</pd:x>
+        <pd:y>27</pd:y>
+        <pd:width>142</pd:width>
+        <pd:height>137</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$SelectNTADDbyMonthYearAndUnit/resultSet/Record</pd:over>
+            <pd:iterationElementSlot>k</pd:iterationElementSlot>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>AssignNTAD</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>AssignNTAD</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="AssignNTAD">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:x>828</pd:x>
+            <pd:y>100</pd:y>
+            <config>
+                <variableName>NTAD</variableName>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <NTADD>
+                        <xsl:value-of select="$NTAD/root/NTADD + $k/Record/NTADT"/>
+                    </NTADD>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:group name="RPDIteration">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>761</pd:x>
+        <pd:y>174</pd:y>
+        <pd:width>139</pd:width>
+        <pd:height>144</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$SelectRPDDbyMonthYearAndUnit/resultSet/Record</pd:over>
+            <pd:iterationElementSlot>m</pd:iterationElementSlot>
+            <pd:indexSlot>j</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>AssignRPD</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>AssignRPD</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="AssignRPD">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:x>818</pd:x>
+            <pd:y>255</pd:y>
+            <config>
+                <variableName>RPD</variableName>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <RPDD>
+                        <xsl:value-of select="$RPD/root/RPDD + $m/Record/NTADT"/>
+                    </RPDD>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:group name="SelectRawDataGroup">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>370</pd:x>
+        <pd:y>43</pd:y>
+        <pd:width>361</pd:width>
+        <pd:height>235</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>simpleGroup</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>SelectTADDByUnit</pd:to>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>queryEDCbyUnit</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>SelectTADDByUnit</pd:from>
+            <pd:to>SelectNTADDbyMonthYearAndUnit</pd:to>
+            <pd:lineType>Straight</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>SelectNTADDbyMonthYearAndUnit</pd:from>
+            <pd:to>SelectRPDDbyMonthYearAndUnit</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>SelectRPDDbyMonthYearAndUnit</pd:from>
+            <pd:to>queryEDCbyUnit</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="SelectNTADDbyMonthYearAndUnit">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>472</pd:x>
+            <pd:y>96</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>select WEBINPUT.UNIT_NTA.UNIT_ID, WEBINPUT.UNIT_NTA.UNIT_NTA_ID, WEBINPUT.UNIT_NTA.NTA_DTCODE_ID, WEBINPUT.UNIT_NTA_DETAILS.NTADT, WEBINPUT.UNIT_NTA_DETAILS.VALID_DATE 
+from WEBINPUT.UNIT_NTA inner join WEBINPUT.UNIT_NTA_DETAILS on WEBINPUT.UNIT_NTA.UNIT_NTA_ID = WEBINPUT.UNIT_NTA_DETAILS.UNIT_NTA_ID 
+where WEBINPUT.UNIT_NTA.UNIT_ID = ?
+and  to_date(?,'DD-MM-YY') &lt;= WEBINPUT.UNIT_NTA.NTA_DTSTART
+and  LAST_DAY(to_date(?,'DD-MM-YY')) &gt;= WEBINPUT.UNIT_NTA.NTA_DTEND
+and WEBINPUT.UNIT_NTA.NTA_DTCODE_ID = 1</statement>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UNIT_NTA_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>NTA_DTCODE_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>NTADT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>VALID_DATE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitID</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>fromDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>toDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <UnitID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </UnitID>
+                    <xsl:choose>
+                        <xsl:when test="$Start/root/Year mod 2 !=0">
+                            <fromDate>
+                                <xsl:value-of select="concat('1-', '1','-',$Start/root/Year)"/>
+                            </fromDate>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <fromDate>
+                                <xsl:value-of select="concat('1-',1,'-',number($Start/root/Year)-1)"/>
+                            </fromDate>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <toDate>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </toDate>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="SelectTADDByUnit">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>473</pd:x>
+            <pd:y>197</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <statement>select * from WEBINPUT.UNIT_TA where UNIT_ID = ? and UNIT_TA_TIMES_ID = ?</statement>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+                <wizardData>#Wed Jun 22 10:44:56 ICT 2016&#xD;
+useSchemaInFQN=true&#xD;
+joincount=0&#xD;
+table.0.schema=BSR&#xD;
+tablecount=1&#xD;
+table.0.h=164&#xD;
+manualSQLText=select * from UNITTA where UNIT \= 'CDU'&#xD;
+table.0.type=0&#xD;
+table.0.y=0&#xD;
+table.0.x=0&#xD;
+table.0.w=109&#xD;
+table.0.name=UNITTA&#xD;
+table.0.alias=&#xD;
+columncount=0&#xD;
+</wizardData>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitID</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>TA_TIMES</parameterName>
+                        <dataType>INTEGER</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>UNIT_TA_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>TA_COST</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>TA_INTERVAL</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>TA_DTSTART</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>TA_DTEND</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>TADD</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>TADT_D</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>TADT_H</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>CREATE_USER_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>CREATE_TIME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UPDATE_USER_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UPDATE_TIME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UNIT_TA_TIMES_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <xsl:choose>
+                        <xsl:when test="$Start/root/UnitID !=10">
+                            <UnitID>
+                                <xsl:value-of select="$Start/root/UnitID"/>
+                            </UnitID>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <UnitID>
+                                <xsl:value-of select="9"/>
+                            </UnitID>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:choose>
+                        <xsl:when test="tib:compare-date(tib:create-date($Start/root/Year, $Start/root/Month, 1), tib:create-date(14, 5,31)) &lt;= 0">
+                            <TA_TIMES>
+                                <xsl:value-of select="1"/>
+                            </TA_TIMES>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <TA_TIMES>
+                                <xsl:value-of select="2"/>
+                            </TA_TIMES>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="SelectRPDDbyMonthYearAndUnit">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>619</pd:x>
+            <pd:y>96</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>select WEBINPUT.UNIT_NTA.UNIT_ID, WEBINPUT.UNIT_NTA.UNIT_NTA_ID, WEBINPUT.UNIT_NTA.NTA_DTCODE_ID, WEBINPUT.UNIT_NTA_DETAILS.NTADT, WEBINPUT.UNIT_NTA_DETAILS.VALID_DATE 
+from WEBINPUT.UNIT_NTA inner join WEBINPUT.UNIT_NTA_DETAILS on WEBINPUT.UNIT_NTA.UNIT_NTA_ID = WEBINPUT.UNIT_NTA_DETAILS.UNIT_NTA_ID 
+where WEBINPUT.UNIT_NTA.UNIT_ID = ?
+and  to_date(?,'DD-MM-YY') &lt;= WEBINPUT.UNIT_NTA.NTA_DTSTART
+and  LAST_DAY(to_date(?,'DD-MM-YY')) &gt;= WEBINPUT.UNIT_NTA.NTA_DTEND
+and WEBINPUT.UNIT_NTA.NTA_DTCODE_ID in (2,3)</statement>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UNIT_NTA_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>NTA_DTCODE_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>NTADT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>VALID_DATE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitID</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>fromDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>toDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <UnitID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </UnitID>
+                    <xsl:choose>
+                        <xsl:when test="$Start/root/Year mod 2 !=0">
+                            <fromDate>
+                                <xsl:value-of select="concat('1-', '1','-',$Start/root/Year)"/>
+                            </fromDate>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <fromDate>
+                                <xsl:value-of select="concat('1-',1,'-',number($Start/root/Year)-1)"/>
+                            </fromDate>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <toDate>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </toDate>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="queryEDCbyUnit">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>623</pd:x>
+            <pd:y>195</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <statement>select * from WEBINPUT.UNIT_EDC
+where UNIT_ID = ? 
+and VALID_DATE between  to_date(?,'DD-MM-YY') and LAST_DAY(to_date(?,'DD-MM-YY')) 
+order by UNIT_ID ASC</statement>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>UNIT_EDC_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>EDC</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>VALID_DATE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>PLANNED_MI</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>PLANNED_MA</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>CREATE_USER_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>CREATE_TIME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UPDATE_USER_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UPDATE_TIME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>Unit_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>fromDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>toDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <Unit_ID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </Unit_ID>
+                    <fromDate>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </fromDate>
+                    <toDate>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </toDate>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="Join">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>309</pd:x>
+        <pd:y>179</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="NTAD=0">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>230</pd:x>
+        <pd:y>102</pd:y>
+        <config>
+            <variableName>NTAD</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <NTADD>
+                    <xsl:value-of select="0"/>
+                </NTADD>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="RPD=0">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>231</pd:x>
+        <pd:y>247</pd:y>
+        <config>
+            <variableName>RPD</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <RPDD>
+                    <xsl:value-of select="0"/>
+                </RPDD>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Split">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>145</pd:x>
+        <pd:y>179</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:group name="Insert2DB">
+        <pd:type>com.tibco.pe.core.TransactionGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>930</pd:x>
+        <pd:y>36</pd:y>
+        <pd:width>492</pd:width>
+        <pd:height>275</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>transactionGroup</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:transactionType>JDBCTransaction</pd:transactionType>
+            <pd:includeCheckpoint>false</pd:includeCheckpoint>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>Insert2OAR2Y</pd:to>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>InsertRPD2OADetails</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Insert2OAR2Y</pd:from>
+            <pd:to>InsertOA2OADetails</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>InsertOA2OADetails</pd:from>
+            <pd:to>InsertTAD2OADetails</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>InsertTAD2OADetails</pd:from>
+            <pd:to>InsertNTAD2OADetails</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>InsertNTAD2OADetails</pd:from>
+            <pd:to>InsertRPD2OADetails</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="Insert2OAR2Y">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:description>insert ban ghi cua cac UNIT vao table 01_01</pd:description>
+            <pd:x>1033</pd:x>
+            <pd:y>224</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>insert into OPE_KPI_01_01 (UNIT,TADD,NTADD,RPDD,VALID_DATE,DATE_TYPE,UNIT_ID,EDC_VALUE)
+values (?,?,?,?,TO_DATE(?,'DD-MM-YY'),?,?,?)</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitName</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>TADD</parameterName>
+                        <dataType>DECIMAL</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>NTADD</parameterName>
+                        <dataType>DECIMAL</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>RPDD</parameterName>
+                        <dataType>DECIMAL</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DATE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UNIT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>EDC_VALUE</parameterName>
+                        <dataType>FLOAT</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <UnitName>
+                        <xsl:value-of select="$Start/root/UnitName"/>
+                    </UnitName>
+                    <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                        <xsl:when test="$Start/root/UnitID = '11'&#xA;or &#xA;not(exists($SelectTADDByUnit/resultSet/Record/TADD))">
+                            <TADD>
+                                <xsl:value-of select="0"/>
+                            </TADD>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <TADD>
+                                <xsl:value-of select="$SelectTADDByUnit/resultSet/Record[1]/TADD"/>
+                            </TADD>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                        <xsl:when test="$Start/root/UnitID = '11'&#xA;or &#xA;not(exists($SelectNTADDbyMonthYearAndUnit/resultSet/Record/NTADT))">
+                            <NTADD>
+                                <xsl:value-of select="0"/>
+                            </NTADD>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <NTADD>
+                                <xsl:value-of select="$NTAD/root/NTADD"/>
+                            </NTADD>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                        <xsl:when test="$Start/root/UnitID = '11'&#xA;or &#xA;not(exists($SelectRPDDbyMonthYearAndUnit/resultSet/Record/NTADT))">
+                            <RPDD>
+                                <xsl:value-of select="0"/>
+                            </RPDD>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <RPDD>
+                                <xsl:value-of select="$RPD/root/RPDD"/>
+                            </RPDD>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <VALID_DATE>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </VALID_DATE>
+                    <DATE_TYPE>
+                        <xsl:value-of select="'Rolling2Years'"/>
+                    </DATE_TYPE>
+                    <UNIT_ID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </UNIT_ID>
+                    <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                        <xsl:when test="exists($queryEDCbyUnit/resultSet/Record[1]/EDC)">
+                            <EDC_VALUE>
+                                <xsl:value-of select="$queryEDCbyUnit/resultSet/Record[1]/EDC"/>
+                            </EDC_VALUE>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <EDC_VALUE>
+                                <xsl:value-of select="0"/>
+                            </EDC_VALUE>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="InsertOA2OADetails">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:description>insert ban ghi cua cac UNIT vao table 01_01</pd:description>
+            <pd:x>1031</pd:x>
+            <pd:y>108</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>insert into OPE_KPI_01_01_DETAILS values (?,to_date(?,'DD-MM-YY'),?,?,?,?,?)</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitName</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DATE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE</parameterName>
+                        <dataType>DECIMAL</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DT_REASON</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UnitID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <UnitName>
+                        <xsl:value-of select="$Start/root/UnitName"/>
+                    </UnitName>
+                    <VALID_DATE>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </VALID_DATE>
+                    <DATE_TYPE>
+                        <xsl:value-of select="'Rolling2Years'"/>
+                    </DATE_TYPE>
+                    <VALUE_TYPE>
+                        <xsl:value-of select="'OA'"/>
+                    </VALUE_TYPE>
+                    <VALUE xsi:nil="true"/>
+                    <DT_REASON xsi:nil="true"/>
+                    <UnitID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </UnitID>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="InsertTAD2OADetails">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:description>insert ban ghi cua cac UNIT vao table 01_01</pd:description>
+            <pd:x>1162</pd:x>
+            <pd:y>106</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>insert into OPE_KPI_01_01_DETAILS values (?,to_date(?,'DD-MM-YY'),?,?,?,?,?)</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitName</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DATE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE</parameterName>
+                        <dataType>DECIMAL</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DT_REASON</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UnitID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <UnitName>
+                        <xsl:value-of select="$Start/root/UnitName"/>
+                    </UnitName>
+                    <VALID_DATE>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </VALID_DATE>
+                    <DATE_TYPE>
+                        <xsl:value-of select="'Rolling2Years'"/>
+                    </DATE_TYPE>
+                    <VALUE_TYPE>
+                        <xsl:value-of select="'TAD'"/>
+                    </VALUE_TYPE>
+                    <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                        <xsl:when test="$Start/root/UnitID = '11'&#xA;or &#xA;not(exists($SelectTADDByUnit/resultSet/Record/TADD))">
+                            <VALUE>
+                                <xsl:value-of select="0"/>
+                            </VALUE>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <VALUE>
+                                <xsl:value-of select="$SelectTADDByUnit/resultSet/Record[1]/TADD"/>
+                            </VALUE>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <DT_REASON xsi:nil="true"/>
+                    <UnitID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </UnitID>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="InsertNTAD2OADetails">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:description>insert ban ghi cua cac UNIT vao table 01_01</pd:description>
+            <pd:x>1296</pd:x>
+            <pd:y>108</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>insert into OPE_KPI_01_01_DETAILS values (?,to_date(?,'DD-MM-YY'),?,?,?,?,?)</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitName</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DATE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE</parameterName>
+                        <dataType>DECIMAL</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DT_REASON</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UnitID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <UnitName>
+                        <xsl:value-of select="$Start/root/UnitName"/>
+                    </UnitName>
+                    <VALID_DATE>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </VALID_DATE>
+                    <DATE_TYPE>
+                        <xsl:value-of select="'Rolling2Years'"/>
+                    </DATE_TYPE>
+                    <VALUE_TYPE>
+                        <xsl:value-of select="'NTAD'"/>
+                    </VALUE_TYPE>
+                    <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                        <xsl:when test="$Start/root/UnitID = '11'&#xA;or &#xA;not(exists($SelectNTADDbyMonthYearAndUnit/resultSet/Record/NTADT))">
+                            <VALUE>
+                                <xsl:value-of select="0"/>
+                            </VALUE>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <VALUE>
+                                <xsl:value-of select="$NTAD/root/NTADD"/>
+                            </VALUE>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <DT_REASON xsi:nil="true"/>
+                    <UnitID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </UnitID>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="InsertRPD2OADetails">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:description>insert ban ghi cua cac UNIT vao table 01_01</pd:description>
+            <pd:x>1299</pd:x>
+            <pd:y>218</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>insert into OPE_KPI_01_01_DETAILS values (?,to_date(?,'DD-MM-YY'),?,?,?,?,?)</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UnitName</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DATE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE_TYPE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALUE</parameterName>
+                        <dataType>DECIMAL</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DT_REASON</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UnitID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <UnitName>
+                        <xsl:value-of select="$Start/root/UnitName"/>
+                    </UnitName>
+                    <VALID_DATE>
+                        <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                    </VALID_DATE>
+                    <DATE_TYPE>
+                        <xsl:value-of select="'Rolling2Years'"/>
+                    </DATE_TYPE>
+                    <VALUE_TYPE>
+                        <xsl:value-of select="'RPD'"/>
+                    </VALUE_TYPE>
+                    <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                        <xsl:when test="$Start/root/UnitID = '11'&#xA;or &#xA;not(exists($SelectRPDDbyMonthYearAndUnit/resultSet/Record/NTADT))">
+                            <VALUE>
+                                <xsl:value-of select="0"/>
+                            </VALUE>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <VALUE>
+                                <xsl:value-of select="$RPD/root/RPDD"/>
+                            </VALUE>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <DT_REASON xsi:nil="true"/>
+                    <UnitID>
+                        <xsl:value-of select="$Start/root/UnitID"/>
+                    </UnitID>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>NTAD=0</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>RPD=0</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>NTAD=0</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>RPD=0</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Join</pd:from>
+        <pd:to>SelectRawDataGroup</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>NTADIteration</pd:from>
+        <pd:to>RPDIteration</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SelectRawDataGroup</pd:from>
+        <pd:to>NTADIteration</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>RPDIteration</pd:from>
+        <pd:to>Insert2DB</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Insert2DB</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Split</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

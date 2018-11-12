@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="bsr/common/apps/appdataenv/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/apps/blendingrecipes/1.0" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="www.tibco.com/plugin/Timer">
+    <xsd:import namespace="bsr/apps/blendingrecipes/1.0" schemaLocation="/SharedResource/Schema/Apps/OPE_02_03/BlendingRecipes.xsd"/>
+    <pd:name>Apps/Global/OPE_04_01_Daily/Implement/OPE_04_01.process</pd:name>
+    <pd:startName>Timer</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="Timer">
+        <pd:type>com.tibco.plugin.timer.TimerEventSource</pd:type>
+        <pd:resourceType>ae.activities.timer</pd:resourceType>
+        <pd:x>118</pd:x>
+        <pd:y>106</pd:y>
+        <config>
+            <StartTime>1475146246000</StartTime>
+            <Frequency>true</Frequency>
+            <TimeInterval>1</TimeInterval>
+            <FrequencyIndex>Day</FrequencyIndex>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>501</pd:endX>
+    <pd:endY>105</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1470641816992</pd:targetNamespace>
+    <pd:activity name="MainProcess">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>296</pd:x>
+        <pd:y>104</pd:y>
+        <config>
+            <processName>/Apps/TemplateProcess/MainProcessOperation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <ns:AppDataEnvelope>
+                    <ns:Metadata>
+                        <ns:AppCode>
+                            <xsl:value-of select="&quot;OPE_04_01_Daily&quot;"/>
+                        </ns:AppCode>
+                        <ns:Version>
+                            <xsl:value-of select="&quot;1.0&quot;"/>
+                        </ns:Version>
+                        <ns:ID>
+                            <xsl:value-of select="concat(generate-id($_processContext/ns1:ProcessContext), tib:timestamp())"/>
+                        </ns:ID>
+                        <ns:CreateTime>
+                            <xsl:value-of select="current-dateTime()"/>
+                        </ns:CreateTime>
+                    </ns:Metadata>
+                    <ns:AppData>
+                        <ns2:BlendingRecipe>
+                            <ns2:Products>
+                                <xsl:value-of select="&quot;Start&quot;"/>
+                            </ns2:Products>
+                            <ns2:Component>
+                                <xsl:value-of select="&quot;Start&quot;"/>
+                            </ns2:Component>
+                            <ns2:Ratio>
+                                <xsl:value-of select="1"/>
+                            </ns2:Ratio>
+                            <ns2:Volume>
+                                <xsl:value-of select="1"/>
+                            </ns2:Volume>
+                            <ns2:Date>
+                                <xsl:value-of select="$Timer/ns3:TimerOutputSchema/Date"/>
+                            </ns2:Date>
+                        </ns2:BlendingRecipe>
+                    </ns:AppData>
+                </ns:AppDataEnvelope>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>113</pd:x>
+        <pd:y>203</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>295</pd:x>
+        <pd:y>202</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx:Exception>
+                <ns:Metadata>
+                    <ns:AppCode>
+                        <xsl:value-of select="&quot;OPE_04_01_Daily&quot;"/>
+                    </ns:AppCode>
+                    <ns:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </ns:Version>
+                    <ns:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns1:ProcessContext), tib:timestamp())"/>
+                    </ns:ID>
+                    <ns:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </ns:CreateTime>
+                </ns:Metadata>
+                <pfx:ExceptionBody>
+                    <pfx:ErrorReport>
+                        <StackTrace>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/StackTrace"/>
+                        </StackTrace>
+                        <Msg>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                        </Msg>
+                        <FullClass>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/FullClass"/>
+                        </FullClass>
+                        <ObjectClass>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/Class"/>
+                        </ObjectClass>
+                        <ProcessStack>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/ProcessStack"/>
+                        </ProcessStack>
+                        <xsl:if test="$_error/ns1:ErrorReport/MsgCode">
+                            <MsgCode>
+                                <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                            </MsgCode>
+                        </xsl:if>
+                        <xsl:copy-of select="$_error/ns1:ErrorReport/Data"/>
+                    </pfx:ErrorReport>
+                </pfx:ExceptionBody>
+            </pfx:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>MainProcess</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Timer</pd:from>
+        <pd:to>MainProcess</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:ns2="bsr/common/apps/kpischedulesenv/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns3="www.tibco.com/plugin/Timer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:pfx="bsr/common/apps/appdataenv/1.0">
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/common/apps/kpischedulesenv/1.0" schemaLocation="/SharedResource/Schema/Common/KPIsSchedulesEvelop.xsd"/>
+    <pd:name>Apps/Global/TargetvsActualInventories/Implement/SourcesSynchronization.process</pd:name>
+    <pd:startName>Timer</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="Timer">
+        <pd:type>com.tibco.plugin.timer.TimerEventSource</pd:type>
+        <pd:resourceType>ae.activities.timer</pd:resourceType>
+        <pd:x>99</pd:x>
+        <pd:y>141</pd:y>
+        <config>
+            <StartTime>1465622214000</StartTime>
+            <Frequency>true</Frequency>
+            <TimeInterval>1</TimeInterval>
+            <FrequencyIndex>Second</FrequencyIndex>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>479</pd:endX>
+    <pd:endY>141</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1457944554017</pd:targetNamespace>
+    <pd:activity name="MainProcessOperation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>281</pd:x>
+        <pd:y>140</pd:y>
+        <config>
+            <processName>/Apps/TemplateProcess/MainProcessOperation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <pfx:AppDataEnvelope>
+                    <pfx:Metadata>
+                        <pfx:AppCode>
+                            <xsl:value-of select="&quot;TargetvsActualInventories&quot;"/>
+                        </pfx:AppCode>
+                        <pfx:Version>
+                            <xsl:value-of select="&quot;1.0&quot;"/>
+                        </pfx:Version>
+                        <pfx:ID>
+                            <xsl:value-of select="concat(generate-id($_processContext/ns1:ProcessContext), tib:timestamp())"/>
+                        </pfx:ID>
+                        <pfx:CreateTime>
+                            <xsl:value-of select="current-dateTime()"/>
+                        </pfx:CreateTime>
+                    </pfx:Metadata>
+                    <pfx:AppData>
+                        <ns2:KPIsSchedule>
+                            <ns2:KPIsName>
+                                <xsl:value-of select="&quot;OPE_02_04&quot;"/>
+                            </ns2:KPIsName>
+                            <ns2:ScheduleDate>
+                                <xsl:value-of select="$Timer/ns3:TimerOutputSchema/Date"/>
+                            </ns2:ScheduleDate>
+                        </ns2:KPIsSchedule>
+                    </pfx:AppData>
+                </pfx:AppDataEnvelope>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>MainProcessOperation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Timer</pd:from>
+        <pd:to>MainProcessOperation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

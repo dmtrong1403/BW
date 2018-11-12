@@ -1,0 +1,37 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>Backup_Monthly</name>
+			<value>C:\Users\OS\Desktop\Excel_Templates\Backup_Excel\Monthly_Plan</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1537777511464</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>FileName</name>
+			<value>C:\Users\OS\Desktop\Excel_Templates\Monthly_Plan\OPE_KPI_Monthly_Plan*</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1537777511543</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>Interval</name>
+			<value>0</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Integer</type>
+			<modTime>1470122263691</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>Sheetname</name>
+			<value>KPI Template_A</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1475208545863</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

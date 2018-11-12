@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="bsr/apps/excelfile/excelsheet/1.0"
+	 targetNamespace="bsr/apps/excelfile/excelsheet/1.0"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="AppExcel">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="FileName" type="xs:string"/>
+				<xs:element name="SheetName" type="xs:string"/>
+				<xs:element name="rowCount" type="xs:string"/>
+				<xs:element name="colCount" type="xs:string"/>
+				<xs:element name="rowOffset" type="xs:string"/>
+				<xs:element name="colOffset" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

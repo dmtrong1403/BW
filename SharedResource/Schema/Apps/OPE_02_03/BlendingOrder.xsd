@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/SVN/SharedResource/Schema/Apps/OPE_02_03/Schema.xsd"
+	 targetNamespace="http://www.tibco.com/schemas/SVN/SharedResource/Schema/Apps/OPE_02_03/Schema.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="ROOT">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="RECORD" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ORDER_ID" type="xs:string"/>
+	<xs:element name="PDATE" type="xs:string"/>
+	<xs:element name="RECORD">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ORDER_ID"/>
+				<xs:element ref="PDATE"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

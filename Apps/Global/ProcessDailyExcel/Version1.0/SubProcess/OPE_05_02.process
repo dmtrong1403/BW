@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns6="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <pd:name>Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_05_02.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx4:AppDataEnvelope"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>51</pd:startX>
+    <pd:startY>167</pd:startY>
+    <pd:returnBindings>
+        <pfx3:cell/>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1398</pd:endX>
+    <pd:endY>171</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="ReadExcelCommon">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>194</pd:x>
+        <pd:y>168</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/ReadExcelCommon.process</processName>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/*" element="ns1:InputExcel" cardinality=""/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <root>
+                <ns1:AppExcel>
+                    <ns1:FileName>
+                        <xsl:value-of select="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/ns1:InputExcel/ns1:FileName"/>
+                    </ns1:FileName>
+                    <ns1:SheetName>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/SheetName"/>
+                    </ns1:SheetName>
+                    <ns1:rowCount>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/OPE_05_02/rowCount"/>
+                    </ns1:rowCount>
+                    <ns1:colCount>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/OPE_05_02/colCount"/>
+                    </ns1:colCount>
+                    <ns1:rowOffset>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/OPE_05_02/rowOffset"/>
+                    </ns1:rowOffset>
+                    <ns1:colOffset>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/OPE_05_02/colOffset"/>
+                    </ns1:colOffset>
+                </ns1:AppExcel>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="updateProductValue">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>321</pd:x>
+        <pd:y>61</pd:y>
+        <pd:width>171</pd:width>
+        <pd:height>199</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$ReadExcelCommon/pfx5:sheet/pfx5:row</pd:over>
+            <pd:iterationElementSlot>xrecords</pd:iterationElementSlot>
+            <pd:indexSlot>n</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>upd0502ProdDetails</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>upd0502ProdDetails</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="upd0502ProdDetails">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:x>401</pd:x>
+            <pd:y>168</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>true</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>UPDATE OPE_KPI_05_02_DETAILS
+SET PROD_WEIGHT  = ?, PROD_WEIGHT_UNIT = ?, PRODUCT_BBL = ?, PROD_AMOUNT = PROD_PRICE * ?
+WHERE PRODUCT_ID = ? AND GET_DATE = TO_DATE(?,'MM/DD/YYYY') AND TYPE_ID = 'Product'</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>ProdWeight</parameterName>
+                        <dataType>FLOAT</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>ProdWeightUnit</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>ProdBBL</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>ProdAmount</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>ProdID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>GetDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <xsl:choose>
+                        <xsl:when test="string(number($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value)) !='NaN'">
+                            <ProdWeight>
+                                <xsl:choose>
+                                    <xsl:when test="exists($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value)">
+                                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[3]/pfx5:value"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </ProdWeight>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <ProdWeight xsi:nil="true"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <ProdWeightUnit>
+                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[4]/pfx5:value"/>
+                    </ProdWeightUnit>
+                    <xsl:choose>
+                        <xsl:when test="$xrecords/pfx5:row/pfx5:cell[4]/pfx5:value = &quot;m3&quot;&#xA;and&#xA;string(number($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value)) !='NaN'">
+                            <ProdBBL>
+                                <xsl:value-of select="number($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value) * 6.289"/>
+                            </ProdBBL>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <ProdBBL xsi:nil="true"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:choose>
+                        <xsl:when test="$xrecords/pfx5:row/pfx5:cell[4]/pfx5:value = &quot;m3&quot;&#xA;and&#xA;string(number($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value)) !='NaN'">
+                            <ProdAmount>
+                                <xsl:value-of select="number($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value) * 6.289"/>
+                            </ProdAmount>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:choose>
+                                <xsl:when test="string(number($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value)) !='NaN'">
+                                    <ProdAmount>
+                                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[3]/pfx5:value"/>
+                                    </ProdAmount>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <ProdAmount xsi:nil="true"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <ProdID>
+                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
+                    </ProdID>
+                    <GetDate>
+                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[5]/pfx5:value"/>
+                    </GetDate>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1151</pd:x>
+        <pd:y>328</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1323</pd:x>
+        <pd:y>327</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns5:Exception>
+                <pfx4:Metadata>
+                    <pfx4:AppCode>
+                        <xsl:value-of select="&quot;DEV_ProcessDailyExcel 02_01&quot;"/>
+                    </pfx4:AppCode>
+                    <pfx4:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </pfx4:Version>
+                    <pfx4:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext), tib:timestamp())"/>
+                    </pfx4:ID>
+                    <pfx4:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx4:CreateTime>
+                </pfx4:Metadata>
+                <ns5:ExceptionBody>
+                    <xsl:for-each select="$_error">
+                        <ns5:ErrorReport>
+                            <StackTrace>
+                                <xsl:value-of select="ns4:ErrorReport/StackTrace"/>
+                            </StackTrace>
+                            <Msg>
+                                <xsl:value-of select="ns4:ErrorReport/Msg"/>
+                            </Msg>
+                            <FullClass>
+                                <xsl:value-of select="ns4:ErrorReport/FullClass"/>
+                            </FullClass>
+                            <ObjectClass>
+                                <xsl:value-of select="ns4:ErrorReport/Class"/>
+                            </ObjectClass>
+                            <ProcessStack>
+                                <xsl:value-of select="ns4:ErrorReport/ProcessStack"/>
+                            </ProcessStack>
+                            <xsl:if test="ns4:ErrorReport/MsgCode">
+                                <MsgCode>
+                                    <xsl:value-of select="ns4:ErrorReport/MsgCode"/>
+                                </MsgCode>
+                            </xsl:if>
+                            <xsl:copy-of select="ns4:ErrorReport/Data"/>
+                        </ns5:ErrorReport>
+                    </xsl:for-each>
+                </ns5:ExceptionBody>
+            </ns5:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="updateCrudeValue">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>579</pd:x>
+        <pd:y>57</pd:y>
+        <pd:width>360</pd:width>
+        <pd:height>211</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>simpleGroup</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>getCrudeData</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>forEachRecord</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getCrudeData</pd:from>
+            <pd:to>forEachRecord</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="getCrudeData">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>643</pd:x>
+            <pd:y>170</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <statement>SELECT B.CRUDE_ID, B.ACTUAL_QTY_CRUDE
+FROM OPE_KPI_05_02_DETAILS A, OPE_KPI_02_01_DETAILS B
+WHERE A.TYPE_ID = 'Crude' 
+AND A.GET_DATE = TO_DATE(?,'MM/DD/YYYY') AND B.VALID_DATE = TO_DATE(?,'MM/DD/YYYY')
+AND A.PRODUCT_ID = B.CRUDE_ID</statement>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>dateA</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>dateB</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <wizardData/>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>CRUDE_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>ACTUAL_QTY_CRUDE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <dateA>
+                        <xsl:choose>
+                            <xsl:when test="exists($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value)">
+                                <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </dateA>
+                    <dateB>
+                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
+                    </dateB>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:group name="forEachRecord">
+            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+            <pd:resourceType>ae.process.group</pd:resourceType>
+            <pd:x>724</pd:x>
+            <pd:y>90</pd:y>
+            <pd:width>160</pd:width>
+            <pd:height>140</pd:height>
+            <pd:collapsedWidth>57</pd:collapsedWidth>
+            <pd:collapsedHeight>70</pd:collapsedHeight>
+            <pd:groupVariables/>
+            <pd:joinToggle>inherit</pd:joinToggle>
+            <config>
+                <pd:groupType>inputLoop</pd:groupType>
+                <pd:serializable>false</pd:serializable>
+                <pd:over>$getCrudeData/resultSet/Record</pd:over>
+                <pd:iterationElementSlot>crudeRecord</pd:iterationElementSlot>
+                <pd:indexSlot>k</pd:indexSlot>
+                <pd:activityOutputName/>
+                <pd:accumulateOutput>false</pd:accumulateOutput>
+            </config>
+            <pd:inputBindings/>
+            <pd:expanded>true</pd:expanded>
+            <pd:transition>
+                <pd:from>start</pd:from>
+                <pd:to>upd0502CrudeDetails</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>upd0502CrudeDetails</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:activity name="upd0502CrudeDetails">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:x>805</pd:x>
+                <pd:y>170</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <statement>UPDATE OPE_KPI_05_02_DETAILS
+SET PROD_WEIGHT  = ?, PROD_WEIGHT_UNIT = ?, PRODUCT_BBL = ?, PROD_AMOUNT = PROD_PRICE * ?
+WHERE PRODUCT_ID = ? AND GET_DATE = TO_DATE(?,'MM/DD/YYYY') AND TYPE_ID = 'Crude'</statement>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>ProductWeight</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>ProductWeightUnit</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>ProdBBL</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>ProdAmount</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>ProductID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>GetDate</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput>
+                        <xsl:choose>
+                            <xsl:when test="$getCrudeData/resultSet/Record/ACTUAL_QTY_CRUDE !='NaN'">
+                                <ProductWeight>
+                                    <xsl:choose>
+                                        <xsl:when test="exists($crudeRecord/Record/ACTUAL_QTY_CRUDE * 24)">
+                                            <xsl:value-of select="$crudeRecord/Record/ACTUAL_QTY_CRUDE * 24"/>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </ProductWeight>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <ProductWeight>
+                                    <xsl:value-of select="0"/>
+                                </ProductWeight>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <ProductWeightUnit>
+                            <xsl:value-of select="&quot;m3&quot;"/>
+                        </ProductWeightUnit>
+                        <xsl:choose>
+                            <xsl:when test="$getCrudeData/resultSet/Record/ACTUAL_QTY_CRUDE !='NaN'">
+                                <ProdBBL>
+                                    <xsl:value-of select="$crudeRecord/Record/ACTUAL_QTY_CRUDE * 24 * 6.289"/>
+                                </ProdBBL>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <ProdBBL xsi:nil="true"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:choose>
+                            <xsl:when test="$getCrudeData/resultSet/Record/ACTUAL_QTY_CRUDE !='NaN'">
+                                <ProdAmount>
+                                    <xsl:value-of select="$crudeRecord/Record/ACTUAL_QTY_CRUDE * 24 * 6.289"/>
+                                </ProdAmount>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <ProdAmount xsi:nil="true"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <ProductID>
+                            <xsl:choose>
+                                <xsl:when test="exists($crudeRecord/Record/CRUDE_ID)">
+                                    <xsl:value-of select="$crudeRecord/Record/CRUDE_ID"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </ProductID>
+                        <GetDate>
+                            <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
+                        </GetDate>
+                    </jdbcUpdateActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+        </pd:group>
+    </pd:group>
+    <pd:activity name="calculate_0502">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>1223</pd:x>
+        <pd:y>86</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select PCK_OPE_KPI.calculate_OPE_KPI_05_02(?) from dual</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>pDate</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>PCK_OPE_KPI.CALCULATE_OPE_KPI_05_021</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <pDate>
+                    <xsl:value-of select="concat(substring-before($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value, &quot;/&quot;) ,'/',tib:substring-after-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value, &quot;/&quot;))"/>
+                </pDate>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetLastDayOfMonth">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1043</pd:x>
+        <pd:y>171</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
+        </config>
+        <pd:inputBindings>
+            <InputDate>
+                <xsl:value-of select="tib:parse-date('MM/dd/yyyy', $ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value)"/>
+            </InputDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>ReadExcelCommon</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ReadExcelCommon</pd:from>
+        <pd:to>updateProductValue</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>updateProductValue</pd:from>
+        <pd:to>updateCrudeValue</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>updateCrudeValue</pd:from>
+        <pd:to>GetLastDayOfMonth</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>calculate_0502</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>Success</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$calculate_0502/resultSet/Record[1]/PCK_OPE_KPI.CALCULATE_OPE_KPI_05_021 = 1</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetLastDayOfMonth</pd:from>
+        <pd:to>calculate_0502</pd:to>
+        <pd:xpathDescription>EndOfMonth</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>tib:get-day-from-date(tib:parse-date('MM/dd/yyyy', $ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value)) = $GetLastDayOfMonth/LastDay</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetLastDayOfMonth</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="bsr/common/apps/appdataenv/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="bsr/common/apps/kpischedulesenv/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/common/apps/kpischedulesenv/1.0" schemaLocation="/SharedResource/Schema/Common/KPIsSchedulesEvelop.xsd"/>
+    <pd:name>Apps/Global/Test/HistoryOA/HistoryOA.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Month" type="xsd:string"/>
+                    <xsd:element name="Year" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>38</pd:startX>
+    <pd:startY>71</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>821</pd:endX>
+    <pd:endY>152</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1465234350736</pd:targetNamespace>
+    <pd:activity name="Join">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>554</pd:x>
+        <pd:y>149</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="OACalculationMonthly">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>433</pd:x>
+        <pd:y>64</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateMonthlyOA.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="$Start/root/Month"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="$Start/root/Year"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="OACalculationYTD">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>440</pd:x>
+        <pd:y>149</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateYTDOA.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="$Start/root/Month"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="$Start/root/Year"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Split">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>336</pd:x>
+        <pd:y>148</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="OACalculationRolling2Years">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>433</pd:x>
+        <pd:y>233</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateRolling2YearsOA.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="$Start/root/Month"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="$Start/root/Year"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CalculateRefinery">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>684</pd:x>
+        <pd:y>150</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateRefinery.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="$Start/root/Month"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="$Start/root/Year"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="del from 01_01">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>118</pd:x>
+        <pd:y>145</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>delete from OPE_KPI_01_01 where VALID_DATE = to_date(?,'DD-MM-YY')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                </VALID_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="del from 01_01_detail">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>231</pd:x>
+        <pd:y>153</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>delete from OPE_KPI_01_01_DETAILS  where VALID_DATE = to_date(?,'DD-MM-YY')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="concat('1-', $Start/root/Month,'-',$Start/root/Year)"/>
+                </VALID_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>OACalculationMonthly</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>OACalculationMonthly</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Join</pd:from>
+        <pd:to>CalculateRefinery</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>OACalculationYTD</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>OACalculationYTD</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>OACalculationRolling2Years</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>OACalculationRolling2Years</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CalculateRefinery</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>del from 01_01</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>del from 01_01</pd:from>
+        <pd:to>del from 01_01_detail</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>del from 01_01_detail</pd:from>
+        <pd:to>Split</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

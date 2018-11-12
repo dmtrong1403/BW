@@ -1,0 +1,1108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns12="sbv/common/exceptionhandling/exception/1.0">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/AppExcel.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <pd:name>Apps/Global/Common/ReadExcelCommon.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="ns1:AppExcel"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>91</pd:startX>
+    <pd:startY>99</pd:startY>
+    <pd:returnBindings>
+        <xsl:copy-of select="$AccumulateSheet/pfx5:sheet"/>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType ref="pfx5:sheet"/>
+    <pd:endX>901</pd:endX>
+    <pd:endY>174</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="Read OLE2 XLS">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>294</pd:x>
+        <pd:y>97</pd:y>
+        <config>
+            <fileName>ReadExcelCommonReadOLE2XLS</fileName>
+            <packageName>Apps.Global.Common.ReadExcelCommon</packageName>
+            <fullsource>package Apps.Global.Common.ReadExcelCommon;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.io.*;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.xmlbeans.impl.regex.ParseException;
+
+public class ReadExcelCommonReadOLE2XLS{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String inputFile = "";
+	protected String sheet = "";
+	protected int rowOffset = 0;
+	protected int colOffset = 0;
+	protected int rowCount = 0;
+	protected int colCount = 0;
+	protected boolean normalizeOffset = false;
+	protected boolean returnNullValues = false;
+	protected Object[] rows = null;
+	protected boolean error = false;
+	protected String errorMessage = "";
+	public String getinputFile() {
+		return inputFile;
+	}
+	public void setinputFile(String val) {
+		inputFile = val;
+	}
+	public String getsheet() {
+		return sheet;
+	}
+	public void setsheet(String val) {
+		sheet = val;
+	}
+	public int getrowOffset() {
+		return rowOffset;
+	}
+	public void setrowOffset(int val) {
+		rowOffset = val;
+	}
+	public int getcolOffset() {
+		return colOffset;
+	}
+	public void setcolOffset(int val) {
+		colOffset = val;
+	}
+	public int getrowCount() {
+		return rowCount;
+	}
+	public void setrowCount(int val) {
+		rowCount = val;
+	}
+	public int getcolCount() {
+		return colCount;
+	}
+	public void setcolCount(int val) {
+		colCount = val;
+	}
+	public boolean getnormalizeOffset() {
+		return normalizeOffset;
+	}
+	public void setnormalizeOffset(boolean val) {
+		normalizeOffset = val;
+	}
+	public boolean getreturnNullValues() {
+		return returnNullValues;
+	}
+	public void setreturnNullValues(boolean val) {
+		returnNullValues = val;
+	}
+	public Object[] getrows() {
+		return rows;
+	}
+	public void setrows(Object[] val) {
+		rows = val;
+	}
+	public boolean geterror() {
+		return error;
+	}
+	public void seterror(boolean val) {
+		error = val;
+	}
+	public String geterrorMessage() {
+		return errorMessage;
+	}
+	public void seterrorMessage(String val) {
+		errorMessage = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public ReadExcelCommonReadOLE2XLS() {
+	}
+	
+	class Val
+	{
+		public Val( int _row, int _col, String _value)
+		{
+			row = _row;
+			col = _col;
+			value = _value;
+	
+		}
+		int row;
+		int col;
+		String value;
+	}
+
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String inputFile
+	In  : String sheet
+	In  : int rowOffset
+	In  : int colOffset
+	In  : int rowCount
+	In  : int colCount
+	In  : boolean normalizeOffset
+	In  : boolean returnNullValues
+	Out : Object[] rows
+	Out : boolean error
+	Out : String errorMessage
+* Available Variables: DO NOT MODIFY *****/
+		//Input parameter
+		String inputFile = "C:\\Users\\Do Minh Trong\\Desktop\\Apache POI Project\\Template\\TemplateXLS.xls", sheet = "KPI Template_A";
+		int rowOffset = 0, colOffset = 2, rowCount = 11, colCount = 6;
+		//Output parameter
+		boolean error;
+		String errorMessage;
+		Object[] rows;
+		
+		
+		error = false;
+		errorMessage = "";
+		HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream( inputFile ) );
+		if ( wb == null )
+		{
+			error = true;
+			errorMessage =  "Accessing workbook: " + inputFile + " returned null" ;
+			return;
+		}
+	    	HSSFSheet ws = wb.getSheet( sheet );
+		if ( ws == null )
+		{
+			error = true;
+			errorMessage =  "Accessing sheet: " + sheet + " returned null" ;
+			return;
+		}
+		//System.out.println( returnNullValues );
+		ArrayList&lt;Val&gt; cells = new ArrayList&lt;Val&gt;(100);
+		int toRow = rowOffset+rowCount;	
+		int toCol =colOffset+colCount;
+
+		String value = null;
+		//Determine end of data
+		if ( rowCount == -1 )
+		{
+			toRow = (ws.getLastRowNum() +1);
+			
+			boolean foundData = false;
+			while ( !foundData )
+			{
+				HSSFRow _row = ws.getRow( toRow-1 ) ;
+				if ( _row != null )
+				{
+					HSSFCell cell = null;
+					cell = _row.getCell( colOffset ) ;	
+				
+					if ( cell != null )
+					if ( cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC )
+						value = "" + cell.getNumericCellValue();
+					else
+						value =  cell.getStringCellValue();
+
+					if  ( value != null &amp;&amp; !value.equals( "" ) )
+						foundData = true;
+				}
+				if ( !foundData ) toRow--;
+			}			
+
+			rowCount = toRow - rowOffset;
+		}
+		
+		rows = new Object[rowCount];
+	    	for( int row= rowOffset; row&lt;toRow; row++ )
+		{			
+	    		HSSFRow _row = ws.getRow( row ) ;
+			if ( _row == null )
+				System.out.println( "Accessing row: " + row + " returned null" );
+	
+			if ( colCount == -1 &amp;&amp; row == rowOffset &amp;&amp; _row != null )
+			{
+				toCol = (_row.getLastCellNum() +1);
+				colCount = toCol - colOffset;
+			}
+
+			String[] vals = new String[colCount];
+			for( int col= colOffset; col&lt;toCol; col++ )
+			{
+	       		HSSFCell cell = null;
+				if ( _row != null )
+					cell = _row.getCell( col ) ;	
+				
+				
+				if ( cell != null )
+					if ( cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC )
+						{
+							// get date format cell
+							if (HSSFDateUtil.isCellDateFormatted(cell))
+							{
+								value = "" + cell.getDateCellValue();
+	   							String newDateString = "";
+	      						DateFormat df = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+	      						DateFormat newdf = new SimpleDateFormat("MM/dd/yyyy");
+	     						Date cellDate;
+	   							try {
+	             						cellDate = df.parse(value);
+	              						newDateString = newdf.format(cellDate);
+	              						value = newDateString;
+	          						} catch (ParseException e) {
+	           							value = e.toString();
+	          						}
+	      					}	
+							else
+							{
+								if(cell.getStringCellValue() != null &amp;&amp; !cell.getStringCellValue().equals(""))
+									value = cell.getStringCellValue();
+								else
+									value = "";
+							}
+						}
+					else
+						value =  cell.getStringCellValue();
+				vals[col-colOffset] = value;
+			}	
+			rows[row-rowOffset] = vals;
+		}
+	
+}
+}
+</fullsource>
+            <inputData>
+                <row>
+                    <fieldName>inputFile</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>sheet</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>rowOffset</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>colOffset</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>rowCount</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>colCount</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>normalizeOffset</fieldName>
+                    <fieldType>boolean</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>returnNullValues</fieldName>
+                    <fieldType>boolean</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </inputData>
+            <outputData>
+                <row>
+                    <fieldName>rows</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>error</fieldName>
+                    <fieldType>boolean</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>errorMessage</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </outputData>
+            <javaArchive>/SharedResource/Library/JavaCustom.aliaslib</javaArchive>
+            <byteCode>
+                <class>
+                    <name>ReadExcelCommonReadOLE2XLS$Val</name>
+                    <byteCode>yv66vgAAADQAIQkABgAVCgAHABYJAAYAFwkABgAYCQAGABkHABsHAB4BAANyb3cBAAFJAQADY29sAQAFdmFsdWUBABJMamF2YS9sYW5nL1N0cmluZzsBAAZ0aGlzJDABAD9MQXBwcy9HbG9iYWwvQ29tbW9uL1JlYWRFeGNlbENvbW1vbi9SZWFkRXhjZWxDb21tb25SZWFkT0xFMlhMUzsBAAY8aW5pdD4BAFYoTEFwcHMvR2xvYmFsL0NvbW1vbi9SZWFkRXhjZWxDb21tb24vUmVhZEV4Y2VsQ29tbW9uUmVhZE9MRTJYTFM7SUlMamF2YS9sYW5nL1N0cmluZzspVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAApTb3VyY2VGaWxlAQAfUmVhZEV4Y2VsQ29tbW9uUmVhZE9MRTJYTFMuamF2YQwADQAODAAPAB8MAAgACQwACgAJDAALAAwHACABAEFBcHBzL0dsb2JhbC9Db21tb24vUmVhZEV4Y2VsQ29tbW9uL1JlYWRFeGNlbENvbW1vblJlYWRPTEUyWExTJFZhbAEAA1ZhbAEADElubmVyQ2xhc3NlcwEAEGphdmEvbGFuZy9PYmplY3QBAAMoKVYBAD1BcHBzL0dsb2JhbC9Db21tb24vUmVhZEV4Y2VsQ29tbW9uL1JlYWRFeGNlbENvbW1vblJlYWRPTEUyWExTACAABgAHAAAABAAAAAgACQAAAAAACgAJAAAAAAALAAwAABAQAA0ADgAAAAEAAQAPABAAAQARAAAAQgACAAUAAAAaKiu1AAEqtwACKhy1AAMqHbUABCoZBLUABbEAAAABABIAAAAWAAUAAABlAAkAZgAOAGcAEwBoABkAagACABMAAAACABQAHQAAAAoAAQAGABoAHAAA</byteCode>
+                </class>
+                <class>
+                    <name>ReadExcelCommonReadOLE2XLS</name>
+                    <byteCode>yv66vgAAADQA5QkAOAB+CQA4AH8JADgAgAkAOACBCQA4AIIJADgAgwkAOACECQA4AIUJADgAhgkAOACHCQA4AIgKACYAiQgAiggAiwgAjAcAjQcAjgoAEQCPCgAQAJAHAJEKABQAiQgAkgoAFACTCACUCgAUAJUKABAAlggAlwcAmAoAHACZCgCaAJsKAJoAnAoAnQCeCgCfAKAKAJ8AoQoAFACiCgCfAKMKACwApAcApQkApgCnCACoCgAUAKkKAKoAqwoAnQCsBwCtCgCuAK8KAJ8AsAoAFACxBwCyCACzCgAwAI8IALQKALUAtgoAtQC3BwC4CgA2AJUHALkHALoBAANWYWwBAAxJbm5lckNsYXNzZXMBAAlpbnB1dEZpbGUBABJMamF2YS9sYW5nL1N0cmluZzsBAAVzaGVldAEACXJvd09mZnNldAEAAUkBAAljb2xPZmZzZXQBAAhyb3dDb3VudAEACGNvbENvdW50AQAPbm9ybWFsaXplT2Zmc2V0AQABWgEAEHJldHVybk51bGxWYWx1ZXMBAARyb3dzAQATW0xqYXZhL2xhbmcvT2JqZWN0OwEABWVycm9yAQAMZXJyb3JNZXNzYWdlAQAMZ2V0aW5wdXRGaWxlAQAUKClMamF2YS9sYW5nL1N0cmluZzsBAARDb2RlAQAPTGluZU51bWJlclRhYmxlAQAMc2V0aW5wdXRGaWxlAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWAQAIZ2V0c2hlZXQBAAhzZXRzaGVldAEADGdldHJvd09mZnNldAEAAygpSQEADHNldHJvd09mZnNldAEABChJKVYBAAxnZXRjb2xPZmZzZXQBAAxzZXRjb2xPZmZzZXQBAAtnZXRyb3dDb3VudAEAC3NldHJvd0NvdW50AQALZ2V0Y29sQ291bnQBAAtzZXRjb2xDb3VudAEAEmdldG5vcm1hbGl6ZU9mZnNldAEAAygpWgEAEnNldG5vcm1hbGl6ZU9mZnNldAEABChaKVYBABNnZXRyZXR1cm5OdWxsVmFsdWVzAQATc2V0cmV0dXJuTnVsbFZhbHVlcwEAB2dldHJvd3MBABUoKVtMamF2YS9sYW5nL09iamVjdDsBAAdzZXRyb3dzAQAWKFtMamF2YS9sYW5nL09iamVjdDspVgEACGdldGVycm9yAQAIc2V0ZXJyb3IBAA9nZXRlcnJvck1lc3NhZ2UBAA9zZXRlcnJvck1lc3NhZ2UBAAY8aW5pdD4BAAMoKVYBAAZpbnZva2UBAA1TdGFja01hcFRhYmxlBwC5BwCtBwCNBwC7BwCYBwC8BwC9BwBIBwC+BwC/BwC4AQAKRXhjZXB0aW9ucwcAwAEAClNvdXJjZUZpbGUBAB9SZWFkRXhjZWxDb21tb25SZWFkT0xFMlhMUy5qYXZhDAA8AD0MAD4APQwAPwBADABBAEAMAEIAQAwAQwBADABEAEUMAEYARQwARwBIDABJAEUMAEoAPQwAawBsAQAAAQBKQzpcVXNlcnNcRG8gTWluaCBUcm9uZ1xEZXNrdG9wXEFwYWNoZSBQT0kgUHJvamVjdFxUZW1wbGF0ZVxUZW1wbGF0ZVhMUy54bHMBAA5LUEkgVGVtcGxhdGVfQQEAKm9yZy9hcGFjaGUvcG9pL2hzc2YvdXNlcm1vZGVsL0hTU0ZXb3JrYm9vawEAF2phdmEvaW8vRmlsZUlucHV0U3RyZWFtDABrAFAMAGsAwQEAF2phdmEvbGFuZy9TdHJpbmdCdWlsZGVyAQAUQWNjZXNzaW5nIHdvcmtib29rOiAMAMIAwwEADiByZXR1cm5lZCBudWxsDADEAEwMAMUAxgEAEUFjY2Vzc2luZyBzaGVldDogAQATamF2YS91dGlsL0FycmF5TGlzdAwAawBWBwC7DADHAFQMAMgAyQcAvAwAygDLBwC9DADMAFQMAM0AzgwAwgDPDADQAEwMANEA0gEAEGphdmEvbGFuZy9PYmplY3QHANMMANQA1QEAD0FjY2Vzc2luZyByb3c6IAwAwgDWBwDXDADYAFAMANkA2gEAEGphdmEvbGFuZy9TdHJpbmcHANsMANwA3QwA3gDfDADCAOABABpqYXZhL3RleHQvU2ltcGxlRGF0ZUZvcm1hdAEAGEUgTU1NIGRkIEhIOm1tOnNzIFogeXl5eQEACk1NL2RkL3l5eXkHAL8MAOEA4gwA4wDkAQAtb3JnL2FwYWNoZS94bWxiZWFucy9pbXBsL3JlZ2V4L1BhcnNlRXhjZXB0aW9uAQA9QXBwcy9HbG9iYWwvQ29tbW9uL1JlYWRFeGNlbENvbW1vbi9SZWFkRXhjZWxDb21tb25SZWFkT0xFMlhMUwEAQUFwcHMvR2xvYmFsL0NvbW1vbi9SZWFkRXhjZWxDb21tb24vUmVhZEV4Y2VsQ29tbW9uUmVhZE9MRTJYTFMkVmFsAQAnb3JnL2FwYWNoZS9wb2kvaHNzZi91c2VybW9kZWwvSFNTRlNoZWV0AQAlb3JnL2FwYWNoZS9wb2kvaHNzZi91c2VybW9kZWwvSFNTRlJvdwEAJm9yZy9hcGFjaGUvcG9pL2hzc2YvdXNlcm1vZGVsL0hTU0ZDZWxsAQATW0xqYXZhL2xhbmcvU3RyaW5nOwEAFGphdmEvdGV4dC9EYXRlRm9ybWF0AQATamF2YS9sYW5nL0V4Y2VwdGlvbgEAGChMamF2YS9pby9JbnB1dFN0cmVhbTspVgEABmFwcGVuZAEALShMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmdCdWlsZGVyOwEACHRvU3RyaW5nAQAIZ2V0U2hlZXQBAD0oTGphdmEvbGFuZy9TdHJpbmc7KUxvcmcvYXBhY2hlL3BvaS9oc3NmL3VzZXJtb2RlbC9IU1NGU2hlZXQ7AQANZ2V0TGFzdFJvd051bQEABmdldFJvdwEAKihJKUxvcmcvYXBhY2hlL3BvaS9oc3NmL3VzZXJtb2RlbC9IU1NGUm93OwEAB2dldENlbGwBACsoSSlMb3JnL2FwYWNoZS9wb2kvaHNzZi91c2VybW9kZWwvSFNTRkNlbGw7AQALZ2V0Q2VsbFR5cGUBABNnZXROdW1lcmljQ2VsbFZhbHVlAQADKClEAQAcKEQpTGphdmEvbGFuZy9TdHJpbmdCdWlsZGVyOwEAEmdldFN0cmluZ0NlbGxWYWx1ZQEABmVxdWFscwEAFShMamF2YS9sYW5nL09iamVjdDspWgEAEGphdmEvbGFuZy9TeXN0ZW0BAANvdXQBABVMamF2YS9pby9QcmludFN0cmVhbTsBABwoSSlMamF2YS9sYW5nL1N0cmluZ0J1aWxkZXI7AQATamF2YS9pby9QcmludFN0cmVhbQEAB3ByaW50bG4BAA5nZXRMYXN0Q2VsbE51bQEAAygpUwEAKm9yZy9hcGFjaGUvcG9pL2hzc2YvdXNlcm1vZGVsL0hTU0ZEYXRlVXRpbAEAE2lzQ2VsbERhdGVGb3JtYXR0ZWQBACUoTG9yZy9hcGFjaGUvcG9pL3NzL3VzZXJtb2Rl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</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/*" element="ns1:AppExcel" cardinality=""/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <javaCodeActivityInput>
+                <inputFile>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:FileName"/>
+                </inputFile>
+                <sheet>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:SheetName"/>
+                </sheet>
+                <rowOffset>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:rowOffset"/>
+                </rowOffset>
+                <colOffset>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:colOffset"/>
+                </colOffset>
+                <rowCount>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:rowCount"/>
+                </rowCount>
+                <colCount>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:colCount"/>
+                </colCount>
+            </javaCodeActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="ExtractXSL">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>429</pd:x>
+        <pd:y>15</pd:y>
+        <pd:width>160</pd:width>
+        <pd:height>153</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$Read-OLE2-XLS/javaCodeActivityOutput/rows</pd:over>
+            <pd:iterationElementSlot>row</pd:iterationElementSlot>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:outSlot>xlsrows</pd:outSlot>
+            <pd:activityOutputName>ExtractXSLRows</pd:activityOutputName>
+            <pd:accumulateOutput>true</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>ExtractXSLRows</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>ExtractXSLRows</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="ExtractXSLRows">
+            <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+            <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+            <pd:x>506</pd:x>
+            <pd:y>98</pd:y>
+            <config>
+                <fileName>ReadExcelCommonExtractXSLRows</fileName>
+                <packageName>Apps.Global.Common.ReadExcelCommon</packageName>
+                <fullsource>package Apps.Global.Common.ReadExcelCommon;
+import java.util.*;
+import java.io.*;
+public class ReadExcelCommonExtractXSLRows{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected Object row = null;
+	protected String[] values = null;
+	public Object getrow() {
+		return row;
+	}
+	public void setrow(Object val) {
+		row = val;
+	}
+	public String[] getvalues() {
+		return values;
+	}
+	public void setvalues(String[] val) {
+		values = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public ReadExcelCommonExtractXSLRows() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : Object row
+	Out : String[] values
+* Available Variables: DO NOT MODIFY *****/
+
+String[] vals = (String[] )row;
+values = vals;}
+}
+</fullsource>
+                <inputData>
+                    <row>
+                        <fieldName>row</fieldName>
+                        <fieldType>ObjectReference</fieldType>
+                        <fieldRequired>required</fieldRequired>
+                    </row>
+                </inputData>
+                <outputData>
+                    <row>
+                        <fieldName>values</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>repeating</fieldRequired>
+                    </row>
+                </outputData>
+                <javaArchive>/SharedResource/Library/JavaCustom.aliaslib</javaArchive>
+                <byteCode>
+                    <class>
+                        <name>ReadExcelCommonExtractXSLRows</name>
+                        <byteCode>yv66vgAAADQAIgkABQAcCQAFAB0KAAYAHgcACgcAHwcAIAEAA3JvdwEAEkxqYXZhL2xhbmcvT2JqZWN0OwEABnZhbHVlcwEAE1tMamF2YS9sYW5nL1N0cmluZzsBAAZnZXRyb3cBABQoKUxqYXZhL2xhbmcvT2JqZWN0OwEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAAZzZXRyb3cBABUoTGphdmEvbGFuZy9PYmplY3Q7KVYBAAlnZXR2YWx1ZXMBABUoKVtMamF2YS9sYW5nL1N0cmluZzsBAAlzZXR2YWx1ZXMBABYoW0xqYXZhL2xhbmcvU3RyaW5nOylWAQAGPGluaXQ+AQADKClWAQAGaW52b2tlAQAKRXhjZXB0aW9ucwcAIQEAClNvdXJjZUZpbGUBACJSZWFkRXhjZWxDb21tb25FeHRyYWN0WFNMUm93cy5qYXZhDAAHAAgMAAkACgwAFQAWAQBAQXBwcy9HbG9iYWwvQ29tbW9uL1JlYWRFeGNlbENvbW1vbi9SZWFkRXhjZWxDb21tb25FeHRyYWN0WFNMUm93cwEAEGphdmEvbGFuZy9PYmplY3QBABNqYXZhL2xhbmcvRXhjZXB0aW9uACEABQAGAAAAAgAEAAcACAAAAAQACQAKAAAABgABAAsADAABAA0AAAAdAAEAAQAAAAUqtAABsAAAAAEADgAAAAYAAQAAAAkAAQAPABAAAQANAAAAIgACAAIAAAAGKiu1AAGxAAAAAQAOAAAACgACAAAADAAFAA0AAQARABIAAQANAAAAHQABAAEAAAAFKrQAArAAAAABAA4AAAAGAAEAAAAPAAEAEwAUAAEADQAAACIAAgACAAAABiortQACsQAAAAEADgAAAAoAAgAAABIABQATAAEAFQAWAAEADQAAADMAAgABAAAADyq3AAMqAbUAASoBtQACsQAAAAEADgAAABIABAAAABUABAAGAAkABwAOABYAAQAXABYAAgANAAAALQACAAIAAAARKrQAAcAABMAABEwqK7UAArEAAAABAA4AAAAKAAIAAAAdAAsAHgAYAAAABAABABkAAQAaAAAAAgAb</byteCode>
+                    </class>
+                </byteCode>
+            </config>
+            <pd:inputBindings>
+                <javaCodeActivityInput>
+                    <row>
+                        <xsl:value-of select="$row/rows"/>
+                    </row>
+                </javaCodeActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:group name="ExtractXSLX">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>429</pd:x>
+        <pd:y>189</pd:y>
+        <pd:width>150</pd:width>
+        <pd:height>140</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$Read-XLSX/javaCodeActivityOutput/rows</pd:over>
+            <pd:iterationElementSlot>xrow</pd:iterationElementSlot>
+            <pd:indexSlot>j</pd:indexSlot>
+            <pd:outSlot>xlsxrows</pd:outSlot>
+            <pd:activityOutputName>ExtractXSLXRows</pd:activityOutputName>
+            <pd:accumulateOutput>true</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>ExtractXSLXRows</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>ExtractXSLXRows</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="ExtractXSLXRows">
+            <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+            <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+            <pd:x>504</pd:x>
+            <pd:y>268</pd:y>
+            <config>
+                <fileName>ReadExcelCommonExtractXSLXRows</fileName>
+                <packageName>Apps.Global.Common.ReadExcelCommon</packageName>
+                <fullsource>package Apps.Global.Common.ReadExcelCommon;
+import java.util.*;
+import java.io.*;
+public class ReadExcelCommonExtractXSLXRows{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected Object row = null;
+	protected String[] values = null;
+	public Object getrow() {
+		return row;
+	}
+	public void setrow(Object val) {
+		row = val;
+	}
+	public String[] getvalues() {
+		return values;
+	}
+	public void setvalues(String[] val) {
+		values = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public ReadExcelCommonExtractXSLXRows() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : Object row
+	Out : String[] values
+* Available Variables: DO NOT MODIFY *****/
+
+String[] vals = (String[] )row;
+values = vals;}
+}
+</fullsource>
+                <inputData>
+                    <row>
+                        <fieldName>row</fieldName>
+                        <fieldType>ObjectReference</fieldType>
+                        <fieldRequired>required</fieldRequired>
+                    </row>
+                </inputData>
+                <outputData>
+                    <row>
+                        <fieldName>values</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>repeating</fieldRequired>
+                    </row>
+                </outputData>
+                <javaArchive>/SharedResource/Library/JavaCustom.aliaslib</javaArchive>
+                <byteCode>
+                    <class>
+                        <name>ReadExcelCommonExtractXSLXRows</name>
+                        <byteCode>yv66vgAAADQAIgkABQAcCQAFAB0KAAYAHgcACgcAHwcAIAEAA3JvdwEAEkxqYXZhL2xhbmcvT2JqZWN0OwEABnZhbHVlcwEAE1tMamF2YS9sYW5nL1N0cmluZzsBAAZnZXRyb3cBABQoKUxqYXZhL2xhbmcvT2JqZWN0OwEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAAZzZXRyb3cBABUoTGphdmEvbGFuZy9PYmplY3Q7KVYBAAlnZXR2YWx1ZXMBABUoKVtMamF2YS9sYW5nL1N0cmluZzsBAAlzZXR2YWx1ZXMBABYoW0xqYXZhL2xhbmcvU3RyaW5nOylWAQAGPGluaXQ+AQADKClWAQAGaW52b2tlAQAKRXhjZXB0aW9ucwcAIQEAClNvdXJjZUZpbGUBACNSZWFkRXhjZWxDb21tb25FeHRyYWN0WFNMWFJvd3MuamF2YQwABwAIDAAJAAoMABUAFgEAQUFwcHMvR2xvYmFsL0NvbW1vbi9SZWFkRXhjZWxDb21tb24vUmVhZEV4Y2VsQ29tbW9uRXh0cmFjdFhTTFhSb3dzAQAQamF2YS9sYW5nL09iamVjdAEAE2phdmEvbGFuZy9FeGNlcHRpb24AIQAFAAYAAAACAAQABwAIAAAABAAJAAoAAAAGAAEACwAMAAEADQAAAB0AAQABAAAABSq0AAGwAAAAAQAOAAAABgABAAAACQABAA8AEAABAA0AAAAiAAIAAgAAAAYqK7UAAbEAAAABAA4AAAAKAAIAAAAMAAUADQABABEAEgABAA0AAAAdAAEAAQAAAAUqtAACsAAAAAEADgAAAAYAAQAAAA8AAQATABQAAQANAAAAIgACAAIAAAAGKiu1AAKxAAAAAQAOAAAACgACAAAAEgAFABMAAQAVABYAAQANAAAAMwACAAEAAAAPKrcAAyoBtQABKgG1AAKxAAAAAQAOAAAAEgAEAAAAFQAEAAYACQAHAA4AFgABABcAFgACAA0AAAAtAAIAAgAAABEqtAABwAAEwAAETCortQACsQAAAAEADgAAAAoAAgAAAB0ACwAeABgAAAAEAAEAGQABABoAAAACABs=</byteCode>
+                    </class>
+                </byteCode>
+            </config>
+            <pd:inputBindings>
+                <javaCodeActivityInput>
+                    <row>
+                        <xsl:value-of select="$xrow/rows"/>
+                    </row>
+                </javaCodeActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="AccumulateSheet">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>754</pd:x>
+        <pd:y>173</pd:y>
+        <config>
+            <element ref="pfx5:sheet"/>
+        </config>
+        <pd:inputBindings>
+            <pfx5:sheet>
+                <xsl:for-each xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="$xlsxrows/AccumulatedOutput/javaCodeActivityOutput">
+                    <pfx5:row>
+                        <xsl:for-each select="values">
+                            <pfx5:cell>
+                                <pfx5:value>
+                                    <xsl:value-of select="."/>
+                                </pfx5:value>
+                            </pfx5:cell>
+                        </xsl:for-each>
+                    </pfx5:row>
+                </xsl:for-each>
+            </pfx5:sheet>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Null">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>640</pd:x>
+        <pd:y>171</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Read-XLSX">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>291</pd:x>
+        <pd:y>267</pd:y>
+        <config>
+            <fileName>ReadExcelCommonReadXLSX</fileName>
+            <packageName>Apps.Global.Common.ReadExcelCommon</packageName>
+            <fullsource>package Apps.Global.Common.ReadExcelCommon;
+import java.util.*;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFDataFormat;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+
+public class ReadExcelCommonReadXLSX{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String inputFile = "";
+	protected String sheet = "";
+	protected int rowOffset = 0;
+	protected int colOffset = 0;
+	protected int rowCount = 0;
+	protected int colCount = 0;
+	protected boolean normalizeOffset = false;
+	protected boolean returnNullValues = false;
+	protected Object[] rows = null;
+	protected boolean error = false;
+	protected String errorMessage = "";
+	public String getinputFile() {
+		return inputFile;
+	}
+	public void setinputFile(String val) {
+		inputFile = val;
+	}
+	public String getsheet() {
+		return sheet;
+	}
+	public void setsheet(String val) {
+		sheet = val;
+	}
+	public int getrowOffset() {
+		return rowOffset;
+	}
+	public void setrowOffset(int val) {
+		rowOffset = val;
+	}
+	public int getcolOffset() {
+		return colOffset;
+	}
+	public void setcolOffset(int val) {
+		colOffset = val;
+	}
+	public int getrowCount() {
+		return rowCount;
+	}
+	public void setrowCount(int val) {
+		rowCount = val;
+	}
+	public int getcolCount() {
+		return colCount;
+	}
+	public void setcolCount(int val) {
+		colCount = val;
+	}
+	public boolean getnormalizeOffset() {
+		return normalizeOffset;
+	}
+	public void setnormalizeOffset(boolean val) {
+		normalizeOffset = val;
+	}
+	public boolean getreturnNullValues() {
+		return returnNullValues;
+	}
+	public void setreturnNullValues(boolean val) {
+		returnNullValues = val;
+	}
+	public Object[] getrows() {
+		return rows;
+	}
+	public void setrows(Object[] val) {
+		rows = val;
+	}
+	public boolean geterror() {
+		return error;
+	}
+	public void seterror(boolean val) {
+		error = val;
+	}
+	public String geterrorMessage() {
+		return errorMessage;
+	}
+	public void seterrorMessage(String val) {
+		errorMessage = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public ReadExcelCommonReadXLSX() {
+	}
+	
+	class Val
+	{
+		public Val( int _row, int _col, String _value)
+		{
+			row = _row;
+			col = _col;
+			value = _value;
+	
+		}
+		int row;
+		int col;
+		String value;
+	}
+
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String inputFile
+	In  : String sheet
+	In  : int rowOffset
+	In  : int colOffset
+	In  : int rowCount
+	In  : int colCount
+	In  : boolean normalizeOffset
+	In  : boolean returnNullValues
+	Out : Object[] rows
+	Out : boolean error
+	Out : String errorMessage
+* Available Variables: DO NOT MODIFY *****/
+		error = false;
+		errorMessage = "";
+		XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(inputFile ) );
+		if ( wb == null )
+		{
+			error = true;
+			errorMessage =  "Accessing workbook: " + inputFile + " returned null" ;
+			return;
+		}
+
+		FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+
+	    	XSSFSheet ws = wb.getSheet(sheet);
+		if ( ws == null )
+		{
+			error = true;
+			errorMessage =  "Accessing sheet: " + sheet + " returned null" ;
+			return;
+		}
+		//System.out.println( returnNullValues );
+		ArrayList&lt;Val&gt; cells = new ArrayList&lt;Val&gt;(100);
+		int toRow = rowOffset+rowCount;	
+		int toCol =colOffset+colCount;
+
+		String value = null;
+		//Determine end of data
+		if ( rowCount == -1 )
+		{
+			toRow = (ws.getLastRowNum() +1);
+			
+			boolean foundData = false;
+			while ( !foundData )
+			{
+				XSSFRow _row = ws.getRow( toRow-1 ) ;
+				if ( _row != null )
+				{
+					XSSFCell cell = null;
+					cell = _row.getCell( colOffset ) ;	
+				
+					if ( cell != null )
+					if ( cell.getCellType() == XSSFCell.CELL_TYPE_NUMERIC )
+						value = "" + cell.getNumericCellValue();
+					else
+						value =  cell.getStringCellValue();
+
+					if  ( value != null &amp;&amp; !value.equals( "" ) )
+						foundData = true;
+				}
+				if ( !foundData ) toRow--;
+			}			
+
+			rowCount = toRow - rowOffset;
+		}
+		
+		rows = new Object[rowCount];
+	    	for( int row= rowOffset; row&lt;toRow; row++ )
+		{			
+	    		XSSFRow _row = ws.getRow( row ) ;
+			if ( _row == null )
+				System.out.println( "Accessing row: " + row + " returned null" );
+	
+			if ( colCount == -1 &amp;&amp; row == rowOffset &amp;&amp; _row != null )
+			{
+				toCol = (_row.getLastCellNum() +1);
+				colCount = toCol - colOffset;
+			}
+
+			String[] vals = new String[colCount];
+
+			for( int col= colOffset; col&lt;toCol; col++ )
+			{
+	       			XSSFCell cell = null;
+				if ( _row != null )
+					cell = _row.getCell( col ) ;	
+				
+				if ( cell != null )
+					//in case: Formular
+					if ( evaluator.evaluateInCell(cell).getCellType() == XSSFCell.CELL_TYPE_NUMERIC )
+					{
+					// get date format cell
+						if (HSSFDateUtil.isCellDateFormatted(cell))
+						{
+							value = "" + cell.getDateCellValue();
+       							String newDateString = "";
+              						DateFormat df = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+       							DateFormat newdf = new SimpleDateFormat("MM/dd/yyyy");
+             						Date cellDate;
+       							try {
+                 						cellDate = df.parse(value);
+                  						newDateString = newdf.format(cellDate);
+        							value = newDateString;
+              						} catch (ParseException e) {
+               							value = e.toString();
+              						}
+      						}	
+						else
+							value = "" + cell.getNumericCellValue();
+					}
+				else 
+				{
+					if(cell.getStringCellValue() != null &amp;&amp; !cell.getStringCellValue().equals(""))
+						value = cell.getStringCellValue();
+					else
+						value = "";
+				}
+				vals[col-colOffset] = value;
+			}	
+			rows[row-rowOffset] = vals;
+		}
+	
+}
+}
+</fullsource>
+            <inputData>
+                <row>
+                    <fieldName>inputFile</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>sheet</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>rowOffset</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>colOffset</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>rowCount</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>colCount</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>normalizeOffset</fieldName>
+                    <fieldType>boolean</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>returnNullValues</fieldName>
+                    <fieldType>boolean</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </inputData>
+            <javaArchive>/SharedResource/Library/JavaCustom.aliaslib</javaArchive>
+            <outputData>
+                <row>
+                    <fieldName>rows</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>error</fieldName>
+                    <fieldType>boolean</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>errorMessage</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </outputData>
+            <byteCode>
+                <class>
+                    <name>ReadExcelCommonReadXLSX$Val</name>
+                    <byteCode>yv66vgAAADQAIQkABgAVCgAHABYJAAYAFwkABgAYCQAGABkHABsHAB4BAANyb3cBAAFJAQADY29sAQAFdmFsdWUBABJMamF2YS9sYW5nL1N0cmluZzsBAAZ0aGlzJDABADxMQXBwcy9HbG9iYWwvQ29tbW9uL1JlYWRFeGNlbENvbW1vbi9SZWFkRXhjZWxDb21tb25SZWFkWExTWDsBAAY8aW5pdD4BAFMoTEFwcHMvR2xvYmFsL0NvbW1vbi9SZWFkRXhjZWxDb21tb24vUmVhZEV4Y2VsQ29tbW9uUmVhZFhMU1g7SUlMamF2YS9sYW5nL1N0cmluZzspVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAApTb3VyY2VGaWxlAQAcUmVhZEV4Y2VsQ29tbW9uUmVhZFhMU1guamF2YQwADQAODAAPAB8MAAgACQwACgAJDAALAAwHACABAD5BcHBzL0dsb2JhbC9Db21tb24vUmVhZEV4Y2VsQ29tbW9uL1JlYWRFeGNlbENvbW1vblJlYWRYTFNYJFZhbAEAA1ZhbAEADElubmVyQ2xhc3NlcwEAEGphdmEvbGFuZy9PYmplY3QBAAMoKVYBADpBcHBzL0dsb2JhbC9Db21tb24vUmVhZEV4Y2VsQ29tbW9uL1JlYWRFeGNlbENvbW1vblJlYWRYTFNYACAABgAHAAAABAAAAAgACQAAAAAACgAJAAAAAAALAAwAABAQAA0ADgAAAAEAAQAPABAAAQARAAAAQgACAAUAAAAaKiu1AAEqtwACKhy1AAMqHbUABCoZBLUABbEAAAABABIAAAAWAAUAAABpAAkAagAOAGsAEwBsABkAbgACABMAAAACABQAHQAAAAoAAQAGABoAHAAA</byteCode>
+                </class>
+                <class>
+                    <name>ReadExcelCommonReadXLSX</name>
+                    <byteCode>yv66vgAAADQA9AkAOgCACQA6AIEJADoAggkAOgCDCQA6AIQJADoAhQkAOgCGCQA6AIcJADoAiAkAOgCJCQA6AIoKACYAiwgAjAcAjQcAjgoADwCPCgAOAJAHAJEKABIAiwgAkgoAEgCTCACUCgASAJUKAA4AlgoAlwCYCgAOAJkIAJoHAJsKABwAnAoAnQCeCgCdAJ8KAKAAoQoAogCjCgCiAKQKABIApQoAogCmCgAsAKcHAKgJAKkAqggAqwoAEgCsCgCtAK4KAKAArwcAsAsAsQCyCwCzAKMKALQAtQoAogC2CgASALcHALgIALkKADIAjwgAugoAuwC8CgC7AL0HAL4KADgAlQcAvwcAwAEAA1ZhbAEADElubmVyQ2xhc3NlcwEACWlucHV0RmlsZQEAEkxqYXZhL2xhbmcvU3RyaW5nOwEABXNoZWV0AQAJcm93T2Zmc2V0AQABSQEACWNvbE9mZnNldAEACHJvd0NvdW50AQAIY29sQ291bnQBAA9ub3JtYWxpemVPZmZzZXQBAAFaAQAQcmV0dXJuTnVsbFZhbHVlcwEABHJvd3MBABNbTGphdmEvbGFuZy9PYmplY3Q7AQAFZXJyb3IBAAxlcnJvck1lc3NhZ2UBAAxnZXRpbnB1dEZpbGUBABQoKUxqYXZhL2xhbmcvU3RyaW5nOwEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAAxzZXRpbnB1dEZpbGUBABUoTGphdmEvbGFuZy9TdHJpbmc7KVYBAAhnZXRzaGVldAEACHNldHNoZWV0AQAMZ2V0cm93T2Zmc2V0AQADKClJAQAMc2V0cm93T2Zmc2V0AQAEKEkpVgEADGdldGNvbE9mZnNldAEADHNldGNvbE9mZnNldAEAC2dldHJvd0NvdW50AQALc2V0cm93Q291bnQBAAtnZXRjb2xDb3VudAEAC3NldGNvbENvdW50AQASZ2V0bm9ybWFsaXplT2Zmc2V0AQADKClaAQASc2V0bm9ybWFsaXplT2Zmc2V0AQAEKFopVgEAE2dldHJldHVybk51bGxWYWx1ZXMBABNzZXRyZXR1cm5OdWxsVmFsdWVzAQAHZ2V0cm93cwEAFSgpW0xqYXZhL2xhbmcvT2JqZWN0OwEAB3NldHJvd3MBABYoW0xqYXZhL2xhbmcvT2JqZWN0OylWAQAIZ2V0ZXJyb3IBAAhzZXRlcnJvcgEAD2dldGVycm9yTWVzc2FnZQEAD3NldGVycm9yTWVzc2FnZQEABjxpbml0PgEAAygpVgEABmludm9rZQEADVN0YWNrTWFwVGFibGUHAI0HAMEHAMIHAL8HAJsHALAHAMMHAMQHAMUHAMYHAL4BAApFeGNlcHRpb25zBwDHAQAKU291cmNlRmlsZQEAHFJlYWRFeGNlbENvbW1vblJlYWRYTFNYLmphdmEMAD4APwwAQAA/DABBAEIMAEMAQgwARABCDABFAEIMAEYARwwASABHDABJAEoMAEsARwwATAA/DABtAG4BAAABACpvcmcvYXBhY2hlL3BvaS94c3NmL3VzZXJtb2RlbC9YU1NGV29ya2Jvb2sBABdqYXZhL2lvL0ZpbGVJbnB1dFN0cmVhbQwAbQBSDABtAMgBABdqYXZhL2xhbmcvU3RyaW5nQnVpbGRlcgEAFEFjY2Vzc2luZyB3b3JrYm9vazogDADJAMoBAA4gcmV0dXJuZWQgbnVsbAwAywBODADMAM0HAM4MAM8A0AwA0QDSAQARQWNjZXNzaW5nIHNoZWV0OiABABNqYXZhL3V0aWwvQXJyYXlMaXN0DABtAFgHAMIMANMAVgwA1ADVBwDDDADWANcHAMQMANgAVgwA2QDaDADJANsMANwATgwA3QDeAQAQamF2YS9sYW5nL09iamVjdAcA3wwA4ADhAQAPQWNjZXNzaW5nIHJvdzogDADJAOIHAOMMAOQAUgwA5QDmAQAQamF2YS9sYW5nL1N0cmluZwcAwQwA5wDoBwDpBwDqDADrAOwMAO0A7gwAyQDvAQAaamF2YS90ZXh0L1NpbXBsZURhdGVGb3JtYXQBABhFIE1NTSBkZCBISDptbTpzcyBaIHl5eXkBAApNTS9kZC95eXl5BwDGDADwAPEMAPIA8wEAGGphdmEvdGV4dC9QYXJzZUV4Y2VwdGlvbgEAOkFwcHMvR2xvYmFsL0NvbW1vbi9SZWFkRXhjZWxDb21tb24vUmVhZEV4Y2VsQ29tbW9uUmVhZFhMU1gBAD5BcHBzL0dsb2JhbC9Db21tb24vUmVhZEV4Y2VsQ29tbW9uL1JlYWRFeGNlbENvbW1vblJlYWRYTFNYJFZhbAEALG9yZy9hcGFjaGUvcG9pL3NzL3VzZXJtb2RlbC9Gb3JtdWxhRXZhbHVhdG9yAQAnb3JnL2FwYWNoZS9wb2kveHNzZi91c2VybW9kZWwvWFNTRlNoZWV0AQAlb3JnL2FwYWNoZS9wb2kveHNzZi91c2VybW9kZWwvWFNTRlJvdwEAJm9yZy9hcGFjaGUvcG9pL3hzc2YvdXNlcm1vZGVsL1hTU0ZDZWxsAQATW0xqYXZhL2xhbmcvU3RyaW5nOwEAFGphdmEvdGV4dC9EYXRlRm9ybWF0AQATamF2YS9sYW5nL0V4Y2VwdGlvbgEAGChMamF2YS9pby9JbnB1dFN0cmVhbTspVgEABmFwcGVuZAEALShMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmdCdWlsZGVyOwEACHRvU3RyaW5nAQARZ2V0Q3JlYXRpb25IZWxwZXIBADQoKUxvcmcvYXBhY2hlL3BvaS94c3NmL3VzZXJtb2RlbC9YU1NGQ3JlYXRpb25IZWxwZXI7AQAwb3JnL2FwYWNoZS9wb2kveHNzZi91c2VybW9kZWwvWFNTRkNyZWF0aW9uSGVscGVyAQAWY3JlYXRlRm9ybXVsYUV2YWx1YXRvcgEANigpTG9yZy9hcGFjaGUvcG9pL3hzc2YvdXNlcm1vZGVsL1hTU0ZGb3JtdWxhRXZhbHVhdG9yOwEACGdldFNoZWV0AQA9KExqYXZhL2xhbmcvU3RyaW5nOylMb3JnL2FwYWNoZS9wb2kveHNzZi91c2VybW9kZWwvWFNTRlNoZWV0OwEADWdldExhc3RSb3dOdW0BAAZnZXRSb3cBACooSSlMb3JnL2FwYWNoZS9wb2kveHNzZi91c2VybW9kZWwvWFNTRlJvdzsBAAdnZXRDZWxsAQArKEkpTG9yZy9hcGFjaGUvcG9pL3hzc2YvdXNlcm1vZGVsL1hTU0ZDZWxsOwEAC2dldENlbGxUeXBlAQATZ2V0TnVtZXJpY0NlbGxWYWx1ZQEAAygpRAEAHChEKUxqYXZhL2xhbmcvU3RyaW5nQnVpbGRlcjsBABJnZXRTdHJpbmdDZWxsVmFsdWUBAAZlcXVhbHMBABUoTGphdmEvbGFuZy9PYmplY3Q7KVoBABBqYXZhL2xhbmcvU3lzdGVtAQADb3V0AQAVTGphdmEvaW8vUHJpbnRTdHJlYW07AQAcKEkpTGphdmEvbGFu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</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:inputBindings>
+            <javaCodeActivityInput>
+                <inputFile>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:FileName"/>
+                </inputFile>
+                <sheet>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:SheetName"/>
+                </sheet>
+                <rowOffset>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:rowOffset"/>
+                </rowOffset>
+                <colOffset>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:colOffset"/>
+                </colOffset>
+                <rowCount>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:rowCount"/>
+                </rowCount>
+                <colCount>
+                    <xsl:value-of select="$Start/root/ns1:AppExcel/ns1:colCount"/>
+                </colCount>
+            </javaCodeActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>546</pd:x>
+        <pd:y>363</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>771</pd:x>
+        <pd:y>368</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns12:Exception>
+                <pfx4:Metadata>
+                    <pfx4:AppCode>
+                        <xsl:value-of select="&quot;ReadExcelCommon&quot;"/>
+                    </pfx4:AppCode>
+                    <pfx4:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </pfx4:Version>
+                    <pfx4:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns4:ProcessContext), tib:timestamp())"/>
+                    </pfx4:ID>
+                    <pfx4:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx4:CreateTime>
+                </pfx4:Metadata>
+                <ns12:ExceptionBody>
+                    <ns12:ErrorReport>
+                        <StackTrace>
+                            <xsl:value-of select="$_error/ns4:ErrorReport/StackTrace"/>
+                        </StackTrace>
+                        <Msg>
+                            <xsl:value-of select="$_error/ns4:ErrorReport/Msg"/>
+                        </Msg>
+                        <FullClass>
+                            <xsl:value-of select="$_error/ns4:ErrorReport/FullClass"/>
+                        </FullClass>
+                        <ObjectClass>
+                            <xsl:value-of select="$_error/ns4:ErrorReport/Class"/>
+                        </ObjectClass>
+                        <ProcessStack>
+                            <xsl:value-of select="$_error/ns4:ErrorReport/ProcessStack"/>
+                        </ProcessStack>
+                        <xsl:if test="$_error/ns4:ErrorReport/MsgCode">
+                            <MsgCode>
+                                <xsl:value-of select="$_error/ns4:ErrorReport/MsgCode"/>
+                            </MsgCode>
+                        </xsl:if>
+                        <xsl:copy-of select="$_error/ns4:ErrorReport/Data"/>
+                    </ns12:ErrorReport>
+                </ns12:ExceptionBody>
+            </ns12:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Read OLE2 XLS</pd:from>
+        <pd:to>ExtractXSL</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExtractXSL</pd:from>
+        <pd:to>Null</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExtractXSLX</pd:from>
+        <pd:to>Null</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Null</pd:from>
+        <pd:to>AccumulateSheet</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Read-XLSX</pd:from>
+        <pd:to>ExtractXSLX</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>AccumulateSheet</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Read OLE2 XLS</pd:to>
+        <pd:xpathDescription>XLS</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>upper-case(tib:substring-after-last($Start/root/ns1:AppExcel/ns1:FileName, "."))  = "XLS"</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Read-XLSX</pd:to>
+        <pd:xpathDescription>XLSX</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

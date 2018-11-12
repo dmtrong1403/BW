@@ -1,0 +1,38 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>colCount</name>
+			<value>5</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Integer</type>
+			<modTime>1475601072656</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>colOffset</name>
+			<value>0</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Integer</type>
+			<modTime>1475601072678</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>rowCount</name>
+			<value>15</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Integer</type>
+			<modTime>1537779862159</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>rowOffset</name>
+			<value>54</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Integer</type>
+			<constraint></constraint>
+			<modTime>1475225083781</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

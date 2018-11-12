@@ -1,0 +1,38 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>Backup_Weekly</name>
+			<value>C:\Backup_Excel\Weekly_Plan\ </value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1481709356066</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>FileName</name>
+			<value>Z:\Weekly_Plan\Weekly Operation Plan_week*</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1481709356113</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>Interval</name>
+			<value>2</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Integer</type>
+			<modTime>1457948262227</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>SheetName</name>
+			<value>TEMP</value>
+			<description></description>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1475219614361</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

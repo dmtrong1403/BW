@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <pd:name>Apps/Global/ForHistoryData/Aggregate_Raw_Data_KPI_02_03.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="EACH_DATE" type="xsd:string"/>
+    </pd:startType>
+    <pd:startX>30</pd:startX>
+    <pd:startY>352</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1469</pd:endX>
+    <pd:endY>356</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <ORDER_ID>
+            <xsd:element name="ORDER_ID" type="xsd:string"/>
+        </ORDER_ID>
+        <OPE_KPI_APP_OMS_BLN_COMP_ID>
+            <xsd:element name="OPE_KPI_APP_OMS_BLN_COMP_ID" type="xsd:decimal"/>
+        </OPE_KPI_APP_OMS_BLN_COMP_ID>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1471747063475</pd:targetNamespace>
+    <pd:activity name="getBlnIdbyDateInActualDaily">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>139</pd:x>
+        <pd:y>352</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select t.BLN_ID,t.ORDER_ID  from OPE_KPI_APP_OMS_BLN_COMP t where t.last_upd_dt = to_date(?,'MM/DD/YYYY') group by t.BLN_ID,t.ORDER_ID</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>EACH_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>BLN_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ORDER_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <EACH_DATE>
+                    <xsl:value-of select="$Start/EACH_DATE"/>
+                </EACH_DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="LoopBLN_ID">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>225</pd:x>
+        <pd:y>41</pd:y>
+        <pd:width>1086</pd:width>
+        <pd:height>610</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$getBlnIdbyDateInActualDaily/resultSet/Record</pd:over>
+            <pd:iterationElementSlot>bRecords</pd:iterationElementSlot>
+            <pd:indexSlot>b</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>getMPlan</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>LoopMPlan</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getMPlan</pd:from>
+            <pd:to>LoopMPlan</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="getMPlan">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>309</pd:x>
+            <pd:y>354</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>SELECT * FROM OPE_KPI_PROD_RECIPE p where p.BLN_ID =? </statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>BLN_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>OPE_KPI_PROD_RECIPE_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>BLN_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>FINAL_PROD_CD</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>COMP_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>COMP_PROD_CD</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>PROD_RECIPE_PCT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>RATIO_UNIT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>PROD_RECIPE_VOL</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>VOL_UNIT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>LAST_UPD_DT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>LAST_USER_CD</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <BLN_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($bRecords/Record/BLN_ID)">
+                                <xsl:value-of select="$bRecords/Record/BLN_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </BLN_ID>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:group name="LoopMPlan">
+            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+            <pd:resourceType>ae.process.group</pd:resourceType>
+            <pd:x>402</pd:x>
+            <pd:y>106</pd:y>
+            <pd:width>837</pd:width>
+            <pd:height>477</pd:height>
+            <pd:collapsedWidth>57</pd:collapsedWidth>
+            <pd:collapsedHeight>70</pd:collapsedHeight>
+            <pd:groupVariables/>
+            <pd:joinToggle>inherit</pd:joinToggle>
+            <config>
+                <pd:groupType>inputLoop</pd:groupType>
+                <pd:serializable>false</pd:serializable>
+                <pd:over>$getMPlan/resultSet/Record</pd:over>
+                <pd:iterationElementSlot>mRecords</pd:iterationElementSlot>
+                <pd:indexSlot>n</pd:indexSlot>
+                <pd:activityOutputName/>
+                <pd:accumulateOutput>false</pd:accumulateOutput>
+            </config>
+            <pd:inputBindings/>
+            <pd:expanded>true</pd:expanded>
+            <pd:transition>
+                <pd:from>start</pd:from>
+                <pd:to>getActualByDate</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Loop_Actual</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Insert_From_MPlan</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>getActualByDate</pd:from>
+                <pd:to>Loop_Actual</pd:to>
+                <pd:xpathDescription>exists</pd:xpathDescription>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>exists($getActualByDate/resultSet/Record)</pd:xpath>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>getActualByDate</pd:from>
+                <pd:to>get_OPE_0203_SEQ</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>get_OPE_0203_SEQ</pd:from>
+                <pd:to>Insert_From_MPlan</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:activity name="getActualByDate">
+                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                <pd:x>478</pd:x>
+                <pd:y>256</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <maxRows>100</maxRows>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>select * from OPE_KPI_APP_OMS_BLN_COMP t WHERE t.LAST_UPD_DT = to_date(?,'MM/DD/YYYY') and t.BLN_ID =? and t.COMP_ID =?</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>EACH_DATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>BLN_ID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>COMP_ID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                    <oraObjects/>
+                    <oraTables/>
+                    <QueryOutputCachedSchemaColumns>OPE_KPI_APP_OMS_BLN_COMP_ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>ORDER_ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>BLN_ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>COMP_ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>COMP_TANK_ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>ACTUAL_PER</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>ACTUAL_VOL</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>ACTUAL_RATIO</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>ACTUAL_WT</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>LAST_UPD_DT</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>LAST_USER_CD</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                </config>
+                <pd:inputBindings>
+                    <jdbcQueryActivityInput>
+                        <EACH_DATE>
+                            <xsl:value-of select="$Start/EACH_DATE"/>
+                        </EACH_DATE>
+                        <BLN_ID>
+                            <xsl:choose>
+                                <xsl:when test="exists($mRecords/Record/BLN_ID)">
+                                    <xsl:value-of select="$mRecords/Record/BLN_ID"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </BLN_ID>
+                        <COMP_ID>
+                            <xsl:choose>
+                                <xsl:when test="exists($mRecords/Record/COMP_ID)">
+                                    <xsl:value-of select="$mRecords/Record/COMP_ID"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </COMP_ID>
+                    </jdbcQueryActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:group name="Loop_Actual">
+                <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+                <pd:resourceType>ae.process.group</pd:resourceType>
+                <pd:x>584</pd:x>
+                <pd:y>165</pd:y>
+                <pd:width>473</pd:width>
+                <pd:height>312</pd:height>
+                <pd:collapsedWidth>57</pd:collapsedWidth>
+                <pd:collapsedHeight>70</pd:collapsedHeight>
+                <pd:groupVariables/>
+                <pd:joinToggle>inherit</pd:joinToggle>
+                <config>
+                    <pd:groupType>inputLoop</pd:groupType>
+                    <pd:serializable>false</pd:serializable>
+                    <pd:over>$getActualByDate/resultSet/Record</pd:over>
+                    <pd:iterationElementSlot>aRecords</pd:iterationElementSlot>
+                    <pd:indexSlot>n1</pd:indexSlot>
+                    <pd:activityOutputName/>
+                    <pd:accumulateOutput>false</pd:accumulateOutput>
+                </config>
+                <pd:inputBindings/>
+                <pd:expanded>true</pd:expanded>
+                <pd:transition>
+                    <pd:from>start</pd:from>
+                    <pd:to>Assign</pd:to>
+                    <pd:lineType>Default</pd:lineType>
+                    <pd:lineColor>-16777216</pd:lineColor>
+                    <pd:conditionType>always</pd:conditionType>
+                </pd:transition>
+                <pd:transition>
+                    <pd:from>Insert_From_Actual</pd:from>
+                    <pd:to>end</pd:to>
+                    <pd:lineType>Default</pd:lineType>
+                    <pd:lineColor>-16777216</pd:lineColor>
+                    <pd:conditionType>always</pd:conditionType>
+                </pd:transition>
+                <pd:transition>
+                    <pd:from>get_OPE_0203_SEQ-1</pd:from>
+                    <pd:to>Insert_From_Actual</pd:to>
+                    <pd:lineType>Default</pd:lineType>
+                    <pd:lineColor>-16777216</pd:lineColor>
+                    <pd:conditionType>always</pd:conditionType>
+                </pd:transition>
+                <pd:transition>
+                    <pd:from>Assign</pd:from>
+                    <pd:to>get_OPE_0203_SEQ-1</pd:to>
+                    <pd:xpathDescription/>
+                    <pd:lineType>Default</pd:lineType>
+                    <pd:lineColor>-16777216</pd:lineColor>
+                    <pd:conditionType>always</pd:conditionType>
+                </pd:transition>
+                <pd:activity name="Insert_From_Actual">
+                    <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                    <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                    <pd:x>940</pd:x>
+                    <pd:y>331</pd:y>
+                    <config>
+                        <timeout>10</timeout>
+                        <commit>false</commit>
+                        <emptyStrAsNil>false</emptyStrAsNil>
+                        <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                        <statement>insert into ope_kpi_02_03_details
+  (ope_kpi_02_03_details_id, order_id, bln_id, final_prod_cd, comp_id, comp_prod_cd, actual_ratio, actual_vol, m_plan_ratio, weekly_ratio, last_upd_dt)
+values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
+                        <Prepared_Param_DataType>
+                            <parameter>
+                                <parameterName>v_ope_kpi_02_03_details_id</parameterName>
+                                <dataType>NUMERIC</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_order_id</parameterName>
+                                <dataType>VARCHAR</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_bln_id</parameterName>
+                                <dataType>NUMERIC</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_final_prod_cd</parameterName>
+                                <dataType>VARCHAR</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_comp_id</parameterName>
+                                <dataType>NUMERIC</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_comp_prod_cd</parameterName>
+                                <dataType>VARCHAR</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_actual_ratio</parameterName>
+                                <dataType>FLOAT</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_actual_vol</parameterName>
+                                <dataType>FLOAT</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_m_plan</parameterName>
+                                <dataType>FLOAT</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_weekly</parameterName>
+                                <dataType>FLOAT</dataType>
+                            </parameter>
+                            <parameter>
+                                <parameterName>v_last_upd_dt</parameterName>
+                                <dataType>VARCHAR</dataType>
+                            </parameter>
+                        </Prepared_Param_DataType>
+                    </config>
+                    <pd:inputBindings>
+                        <jdbcUpdateActivityInput>
+                            <v_ope_kpi_02_03_details_id>
+                                <xsl:choose>
+                                    <xsl:when test="exists($get_OPE_0203_SEQ-1/resultSet/Record[1]/NEXTVAL)">
+                                        <xsl:value-of select="$get_OPE_0203_SEQ-1/resultSet/Record[1]/NEXTVAL"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_ope_kpi_02_03_details_id>
+                            <v_order_id>
+                                <xsl:choose>
+                                    <xsl:when test="exists($aRecords/Record/ORDER_ID)">
+                                        <xsl:value-of select="$aRecords/Record/ORDER_ID"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_order_id>
+                            <v_bln_id>
+                                <xsl:choose>
+                                    <xsl:when test="exists($aRecords/Record/BLN_ID)">
+                                        <xsl:value-of select="$aRecords/Record/BLN_ID"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_bln_id>
+                            <v_final_prod_cd>
+                                <xsl:choose>
+                                    <xsl:when test="exists($mRecords/Record/FINAL_PROD_CD)">
+                                        <xsl:value-of select="$mRecords/Record/FINAL_PROD_CD"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_final_prod_cd>
+                            <v_comp_id>
+                                <xsl:choose>
+                                    <xsl:when test="exists($aRecords/Record/COMP_ID)">
+                                        <xsl:value-of select="$aRecords/Record/COMP_ID"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_comp_id>
+                            <v_comp_prod_cd>
+                                <xsl:choose>
+                                    <xsl:when test="exists($mRecords/Record/COMP_PROD_CD)">
+                                        <xsl:value-of select="$mRecords/Record/COMP_PROD_CD"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_comp_prod_cd>
+                            <v_actual_ratio>
+                                <xsl:choose>
+                                    <xsl:when test="exists($aRecords/Record/ACTUAL_RATIO)">
+                                        <xsl:value-of select="$aRecords/Record/ACTUAL_RATIO"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_actual_ratio>
+                            <v_actual_vol>
+                                <xsl:choose>
+                                    <xsl:when test="exists($aRecords/Record/ACTUAL_VOL)">
+                                        <xsl:value-of select="$aRecords/Record/ACTUAL_VOL"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_actual_vol>
+                            <v_m_plan>
+                                <xsl:choose>
+                                    <xsl:when test="exists($mRecords/Record/PROD_RECIPE_PCT)">
+                                        <xsl:value-of select="$mRecords/Record/PROD_RECIPE_PCT"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </v_m_plan>
+                            <v_weekly>
+                                <xsl:value-of select="99999"/>
+                            </v_weekly>
+                            <v_last_upd_dt>
+                                <xsl:value-of select="$Start/EACH_DATE"/>
+                            </v_last_upd_dt>
+                        </jdbcUpdateActivityInput>
+                    </pd:inputBindings>
+                </pd:activity>
+                <pd:activity name="get_OPE_0203_SEQ-1">
+                    <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                    <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                    <pd:x>780</pd:x>
+                    <pd:y>333</pd:y>
+                    <config>
+                        <timeout>10</timeout>
+                        <commit>false</commit>
+                        <maxRows>100</maxRows>
+                        <emptyStrAsNil>false</emptyStrAsNil>
+                        <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                        <statement>select ope_kpi_02_03_detail_seq.nextval from dual</statement>
+                        <oraObjects/>
+                        <oraTables/>
+                        <QueryOutputCachedSchemaColumns>NEXTVAL</QueryOutputCachedSchemaColumns>
+                        <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                        <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                        <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    </config>
+                    <pd:inputBindings>
+                        <jdbcQueryActivityInput/>
+                    </pd:inputBindings>
+                </pd:activity>
+                <pd:activity name="Assign">
+                    <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+                    <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+                    <pd:x>666</pd:x>
+                    <pd:y>333</pd:y>
+                    <config>
+                        <variableName>OPE_KPI_APP_OMS_BLN_COMP_ID</variableName>
+                    </config>
+                    <pd:inputBindings>
+                        <OPE_KPI_APP_OMS_BLN_COMP_ID>
+                            <xsl:value-of select="$aRecords/Record/OPE_KPI_APP_OMS_BLN_COMP_ID"/>
+                        </OPE_KPI_APP_OMS_BLN_COMP_ID>
+                    </pd:inputBindings>
+                </pd:activity>
+            </pd:group>
+            <pd:activity name="Insert_From_MPlan">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:x>1113</pd:x>
+                <pd:y>520</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>insert into ope_kpi_02_03_details
+  (ope_kpi_02_03_details_id, order_id, bln_id, final_prod_cd, comp_id, comp_prod_cd, actual_ratio, actual_vol, m_plan_ratio, weekly_ratio, last_upd_dt)
+values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>v_ope_kpi_02_03_details_id</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_order_id</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_bln_id</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_final_prod_cd</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_comp_id</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_comp_prod_cd</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_actual_ratio</parameterName>
+                            <dataType>FLOAT</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_actual_vol</parameterName>
+                            <dataType>FLOAT</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_m_plan</parameterName>
+                            <dataType>FLOAT</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_weekly</parameterName>
+                            <dataType>FLOAT</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>v_last_upd_dt</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput>
+                        <v_ope_kpi_02_03_details_id>
+                            <xsl:choose>
+                                <xsl:when test="exists($get_OPE_0203_SEQ/resultSet/Record[1]/NEXTVAL)">
+                                    <xsl:value-of select="$get_OPE_0203_SEQ/resultSet/Record[1]/NEXTVAL"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </v_ope_kpi_02_03_details_id>
+                        <v_order_id>
+                            <xsl:choose>
+                                <xsl:when test="exists($bRecords/Record/ORDER_ID)">
+                                    <xsl:value-of select="$bRecords/Record/ORDER_ID"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </v_order_id>
+                        <v_bln_id>
+                            <xsl:choose>
+                                <xsl:when test="exists($mRecords/Record/BLN_ID)">
+                                    <xsl:value-of select="$mRecords/Record/BLN_ID"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </v_bln_id>
+                        <v_final_prod_cd>
+                            <xsl:choose>
+                                <xsl:when test="exists($mRecords/Record/FINAL_PROD_CD)">
+                                    <xsl:value-of select="$mRecords/Record/FINAL_PROD_CD"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </v_final_prod_cd>
+                        <v_comp_id>
+                            <xsl:choose>
+                                <xsl:when test="exists($mRecords/Record/COMP_ID)">
+                                    <xsl:value-of select="$mRecords/Record/COMP_ID"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </v_comp_id>
+                        <v_comp_prod_cd>
+                            <xsl:choose>
+                                <xsl:when test="exists($mRecords/Record/COMP_PROD_CD)">
+                                    <xsl:value-of select="$mRecords/Record/COMP_PROD_CD"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </v_comp_prod_cd>
+                        <v_actual_ratio>
+                            <xsl:value-of select="0"/>
+                        </v_actual_ratio>
+                        <v_actual_vol>
+                            <xsl:value-of select="0"/>
+                        </v_actual_vol>
+                        <v_m_plan>
+                            <xsl:choose>
+                                <xsl:when test="exists($mRecords/Record/PROD_RECIPE_PCT)">
+                                    <xsl:value-of select="$mRecords/Record/PROD_RECIPE_PCT"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </v_m_plan>
+                        <v_weekly>
+                            <xsl:value-of select="0"/>
+                        </v_weekly>
+                        <v_last_upd_dt>
+                            <xsl:value-of select="$Start/EACH_DATE"/>
+                        </v_last_upd_dt>
+                    </jdbcUpdateActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="get_OPE_0203_SEQ">
+                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                <pd:x>477</pd:x>
+                <pd:y>519</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <maxRows>100</maxRows>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>select ope_kpi_02_03_detail_seq.nextval from dual</statement>
+                    <oraObjects/>
+                    <oraTables/>
+                    <QueryOutputCachedSchemaColumns>NEXTVAL</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                </config>
+                <pd:inputBindings>
+                    <jdbcQueryActivityInput/>
+                </pd:inputBindings>
+            </pd:activity>
+        </pd:group>
+    </pd:group>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>getBlnIdbyDateInActualDaily</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LoopBLN_ID</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getBlnIdbyDateInActualDaily</pd:from>
+        <pd:to>LoopBLN_ID</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

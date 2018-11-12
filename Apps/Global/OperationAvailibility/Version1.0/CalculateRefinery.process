@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>Apps/Global/OperationAvailibility/Version1.0/CalculateRefinery.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Month" type="xsd:string"/>
+                    <xsd:element name="Year" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>96</pd:startX>
+    <pd:startY>164</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>749</pd:endX>
+    <pd:endY>168</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1480476557855</pd:targetNamespace>
+    <pd:activity name="CalculateOARefineryMonthly">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>242</pd:x>
+        <pd:y>163</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOARefineryMonthly.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="$Start/root/Month"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="$Start/root/Year"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CalculateOARefineryRolling2Years">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>400</pd:x>
+        <pd:y>166</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOARefineryRolling2Years.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="$Start/root/Month"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="$Start/root/Year"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CalculateOARefineryYTD">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>585</pd:x>
+        <pd:y>166</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOARefineryYTD.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="$Start/root/Month"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="$Start/root/Year"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>CalculateOARefineryMonthly</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CalculateOARefineryMonthly</pd:from>
+        <pd:to>CalculateOARefineryRolling2Years</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CalculateOARefineryRolling2Years</pd:from>
+        <pd:to>CalculateOARefineryYTD</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CalculateOARefineryYTD</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

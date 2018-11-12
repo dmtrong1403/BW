@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Repository:repository xmlns:Repository="http://www.tibco.com/xmlns/repo/types/2002">
+    <enterpriseArchive>
+        <sharedArchive name="Shared Archive">
+            <resourceType>shared.archive.resource</resourceType>
+            <authorProperty>Administrator</authorProperty>
+        </sharedArchive>
+        <processArchive name="OPE_KPI_02_01_LIMS">
+            <resourceType>process.archive.resource</resourceType>
+            <authorProperty>Administrator</authorProperty>
+            <processProperty>/Apps/Global/SyncDW_0201/Implement/SourcesSynchronization.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/insert&amp;Calculate_CrdQuality.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/sub_insert&amp;Calculate0201.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/SyncVslimCrudeQuality.process,/Apps/Global/SyncDW_0201/Version1.0/MainProcess.process</processProperty>
+        </processArchive>
+        <versionProperty>13</versionProperty>
+        <authorProperty>Administrator</authorProperty>
+        <addServiceSettableGvars>true</addServiceSettableGvars>
+        <name>OPE_KPI_02_01_LIMS</name>
+        <designer>
+            <lockedProperties/>
+            <fixedChildren/>
+            <resourceDescriptions/>
+        </designer>
+        <fileLocationProperty>C:\Users\Administrator\PRODUCTION DEPLOYMENT\OPE_KPI_02_01_LIMS.ear</fileLocationProperty>
+    </enterpriseArchive>
+</Repository:repository>

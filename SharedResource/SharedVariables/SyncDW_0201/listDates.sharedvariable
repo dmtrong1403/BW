@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource xmlns:pfx="http://www.tibco.com/ns/no_namespace_schema_location/Apps/Global/Test/Data Format.sharedparse" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <import namespace="http://www.tibco.com/ns/no_namespace_schema_location/Apps/Global/Test/Data Format.sharedparse" schemaLocation="/Apps/Global/Test/Data Format.sharedparse"/>
+    <name>listDates</name>
+    <resourceType>ae.shared.sharedVariable</resourceType>
+    <config xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <persistent>false</persistent>
+        <multi-engine>false</multi-engine>
+        <initialValue>none</initialValue>
+        <xsdString>
+            <xsd:element name="root" type="xsd:string"/>
+        </xsdString>
+    </config>
+</BWSharedResource>

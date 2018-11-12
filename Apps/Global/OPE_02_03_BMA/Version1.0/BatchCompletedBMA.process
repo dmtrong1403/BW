@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <pd:name>Apps/Global/OPE_02_03_BMA/Version1.0/BatchCompletedBMA.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="StartDate" type="xsd:date"/>
+    </pd:startType>
+    <pd:startX>58</pd:startX>
+    <pd:startY>175</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>816</pd:endX>
+    <pd:endY>173</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1471415125027</pd:targetNamespace>
+    <pd:activity name="getActualBMAinDW">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>288</pd:x>
+        <pd:y>173</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select t.ORDER_ID,t.BLN_ID, t.COMP_ID, avg(t.INITIAL_RATIO), avg(t.ACTUAL_VOL) from DQRDB.APP_OMS_BLN_COMP t
+where t.REPORT_END &lt;= to_date(?,'MM/DD/YYYY HH:MI:SS AM')
+and t.REPORT_END &gt;= to_date(?,'MM/DD/YYYY HH:MI:SS AM')
+and NOT EXISTS (select a.ORDER_ID  from  DQRDB.APP_OMS_BLN_COMP a where  a.ORDER_ID = t.ORDER_ID and a.REPORT_END &gt; to_date(?,'MM/DD/YYYY HH:MI:SS AM'))
+group by t.BLN_ID, t.COMP_ID, t.ORDER_ID</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>toDate</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>fromDate</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>toDate1</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>ORDER_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>BLN_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>COMP_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>AVGT.INITIAL_RATIO</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>AVGT.ACTUAL_VOL</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <toDate>
+                    <xsl:choose>
+                        <xsl:when test="exists(concat($getNextDay/resultSet/Record[1]/TODATE, ' 01:00:00 AM'))">
+                            <xsl:value-of select="concat($getNextDay/resultSet/Record[1]/TODATE, ' 01:00:00 AM')"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </toDate>
+                <fromDate>
+                    <xsl:value-of select="concat(tib:format-date('MM/dd/yyyy', $Start/StartDate), ' 01:00:00 AM')"/>
+                </fromDate>
+                <toDate1>
+                    <xsl:choose>
+                        <xsl:when test="exists(concat($getNextDay/resultSet/Record[1]/TODATE, ' 01:00:00 AM'))">
+                            <xsl:value-of select="concat($getNextDay/resultSet/Record[1]/TODATE, ' 01:00:00 AM')"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </toDate1>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="getNextDay">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>169</pd:x>
+        <pd:y>175</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select to_char ( to_date(?,'MM/DD/YYYY') + 1  ,'MM/DD/YYYY')as toDate from dual</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>fromDate</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>TODATE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <fromDate>
+                    <xsl:value-of select="tib:format-date('MM/dd/yyyy', $Start/StartDate)"/>
+                </fromDate>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="forAllBlendingOrder">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>382</pd:x>
+        <pd:y>64</pd:y>
+        <pd:width>233</pd:width>
+        <pd:height>199</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$getActualBMAinDW/resultSet/Record</pd:over>
+            <pd:iterationElementSlot>irecords</pd:iterationElementSlot>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>insertBMAStore</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>insertBMAStore</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="insertBMAStore">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:x>498</pd:x>
+            <pd:y>174</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>true</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>insert into ope_kpi_app_oms_bln_comp (ORDER_ID,  BLN_ID, COMP_ID,  ACTUAL_RATIO, ACTUAL_VOL , LAST_UPD_DT)
+values ( ?, ?, ?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>v_order_id</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>v_bln_id</parameterName>
+                        <dataType>FLOAT</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>v_comp_id</parameterName>
+                        <dataType>FLOAT</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>v_initial_ratio</parameterName>
+                        <dataType>FLOAT</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>v_actual_vol</parameterName>
+                        <dataType>FLOAT</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>v_report_end</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <v_order_id>
+                        <xsl:choose>
+                            <xsl:when test="exists($irecords/Record/ORDER_ID)">
+                                <xsl:value-of select="$irecords/Record/ORDER_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </v_order_id>
+                    <v_bln_id>
+                        <xsl:choose>
+                            <xsl:when test="exists($irecords/Record/BLN_ID)">
+                                <xsl:value-of select="$irecords/Record/BLN_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </v_bln_id>
+                    <v_comp_id>
+                        <xsl:choose>
+                            <xsl:when test="exists($irecords/Record/COMP_ID)">
+                                <xsl:value-of select="$irecords/Record/COMP_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </v_comp_id>
+                    <v_initial_ratio>
+                        <xsl:choose>
+                            <xsl:when test="exists($irecords/Record/AVGT.INITIAL_RATIO)">
+                                <xsl:value-of select="$irecords/Record/AVGT.INITIAL_RATIO"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </v_initial_ratio>
+                    <v_actual_vol>
+                        <xsl:choose>
+                            <xsl:when test="exists($irecords/Record/AVGT.ACTUAL_VOL)">
+                                <xsl:value-of select="$irecords/Record/AVGT.ACTUAL_VOL"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </v_actual_vol>
+                    <v_report_end>
+                        <xsl:value-of select="tib:format-date('MM/dd/yyyy', $Start/StartDate)"/>
+                    </v_report_end>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:transition>
+        <pd:from>getNextDay</pd:from>
+        <pd:to>getActualBMAinDW</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getActualBMAinDW</pd:from>
+        <pd:to>forAllBlendingOrder</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>forAllBlendingOrder</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>getNextDay</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

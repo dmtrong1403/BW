@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="bsr/common/apps/appdataenv/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns12="www.tibco.com/plugin/Sleep" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/apps/kpischedulesenv/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="www.tibco.com/plugin/Timer">
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/common/apps/kpischedulesenv/1.0" schemaLocation="/SharedResource/Schema/Common/KPIsSchedulesEvelop.xsd"/>
+    <pd:name>Apps/Global/OperationAvailibility/Implement/SourcesSynchronization.process</pd:name>
+    <pd:startName>Timer</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="Timer">
+        <pd:type>com.tibco.plugin.timer.TimerEventSource</pd:type>
+        <pd:resourceType>ae.activities.timer</pd:resourceType>
+        <pd:x>47</pd:x>
+        <pd:y>143</pd:y>
+        <config>
+            <StartTime>1476151200000</StartTime>
+            <Frequency>false</Frequency>
+            <TimeInterval>1</TimeInterval>
+            <FrequencyIndex>Day</FrequencyIndex>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>600</pd:endX>
+    <pd:endY>146</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1457944554017</pd:targetNamespace>
+    <pd:activity name="ChecEOM">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>198</pd:x>
+        <pd:y>146</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select LAST_DAY(to_date(?,'DD-MM-YY')) from DUAL</statement>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>LAST_DAYTO_DATE1DD-MM-YY</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>CurrentDate</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <CurrentDate>
+                    <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="tib:left(current-dateTime(), 10)"/>
+                </CurrentDate>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="MainProcessOperation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>379</pd:x>
+        <pd:y>72</pd:y>
+        <config>
+            <processName>/Apps/TemplateProcess/MainProcessOperation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <pfx:AppDataEnvelope>
+                    <pfx:Metadata>
+                        <pfx:AppCode>
+                            <xsl:value-of select="&quot;OperationAvailibility&quot;"/>
+                        </pfx:AppCode>
+                        <pfx:Version>
+                            <xsl:value-of select="&quot;1.0&quot;"/>
+                        </pfx:Version>
+                        <pfx:ID>
+                            <xsl:value-of select="concat(generate-id($_processContext/ns1:ProcessContext), tib:timestamp())"/>
+                        </pfx:ID>
+                        <pfx:CreateTime>
+                            <xsl:value-of select="current-dateTime()"/>
+                        </pfx:CreateTime>
+                    </pfx:Metadata>
+                    <pfx:AppData>
+                        <ns2:KPIsSchedule>
+                            <ns2:KPIsName>
+                                <xsl:value-of select="&quot;OPE_01_01&quot;"/>
+                            </ns2:KPIsName>
+                            <ns2:ScheduleDate>
+                                <xsl:value-of select="current-date()"/>
+                            </ns2:ScheduleDate>
+                        </ns2:KPIsSchedule>
+                    </pfx:AppData>
+                </pfx:AppDataEnvelope>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>ChecEOM</pd:from>
+        <pd:to>MainProcessOperation</pd:to>
+        <pd:xpathDescription>EOM</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>tib:compare-date($Timer/ns3:TimerOutputSchema/Date, $ChecEOM/resultSet/Record[1]/LAST_DAYTO_DATE1DD-MM-YY) = 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Timer</pd:from>
+        <pd:to>ChecEOM</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>MainProcessOperation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ChecEOM</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

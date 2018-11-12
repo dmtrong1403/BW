@@ -1,0 +1,37 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>KPI_02_02</name>
+			<value>1476334044000</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1476679477079</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>KPI_02_03</name>
+			<value>1476334044000</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1476333962838</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>KPI_04_01</name>
+			<value>1475103600000</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1476678755472</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>SyncLims</name>
+			<value>1475100000000</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1476679394961</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

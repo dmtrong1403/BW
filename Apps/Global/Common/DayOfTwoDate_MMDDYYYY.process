@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="bsr/apps/date/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="bsr/apps/date/1.0" schemaLocation="/SharedResource/Schema/Apps/OPE_02_03/Date.xsd"/>
+    <pd:name>Apps/Global/Common/DayOfTwoDate_MMDDYYYY.process</pd:name>
+    <pd:description>Lay so ngay tu toDate- fromDate , input dau vao dinh dang String : MM/DD/YYYY</pd:description>
+    <pd:startName>Start</pd:startName>
+    <pd:startType ref="pfx:root"/>
+    <pd:startX>149</pd:startX>
+    <pd:startY>124</pd:startY>
+    <pd:returnBindings>
+        <NoOfDate>
+            <xsl:value-of select="$Query-Dual/resultSet/Record[1]/NOOFDATE"/>
+        </NoOfDate>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="NoOfDate" type="xsd:decimal"/>
+    </pd:endType>
+    <pd:endX>522</pd:endX>
+    <pd:endY>125</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1472364866458</pd:targetNamespace>
+    <pd:activity name="Query Dual">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>317</pd:x>
+        <pd:y>125</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select to_date(?,'MM/DD/YYYY')- to_date(?,'MM/DD/YYYY')  as NoOfDate FROM DUAL</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>toDate</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>fromDate</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>NOOFDATE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <toDate>
+                    <xsl:value-of select="$Start/pfx:root/pfx:toDate"/>
+                </toDate>
+                <fromDate>
+                    <xsl:value-of select="$Start/pfx:root/pfx:fromDate"/>
+                </fromDate>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Query Dual</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Query Dual</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>IsManual</name>
+			<value>true</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Boolean</type>
+			<modTime>1470799435948</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>ManualTimeFrom</name>
+			<value>2016-05-01</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1470818276556</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>ManualTimeTo</name>
+			<value>2016-05-31</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1470818276579</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

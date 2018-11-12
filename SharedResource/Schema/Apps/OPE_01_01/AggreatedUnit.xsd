@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="bsr/apps/ope0101/aggregatedunit/1.0"
+	 targetNamespace="bsr/apps/ope0101/aggregatedunit/1.0"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="OperationAvailability">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Record" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="CDU" type="CDU"/>
+							<xs:element name="RFCC" type="RFCC"/>
+							<xs:element name="CCR" type="CCR"/>
+							<xs:element name="ISOMER" type="ISOMER"/>
+							<xs:element name="NHT" type="NHT"/>
+							<xs:element name="LCOHDT" type="LCOHDT"/>
+							<xs:element name="PRU" type="PRU"/>
+							<xs:element name="DIH" type="DIH"/>
+							<xs:element name="Refinery" type="Refinery"/>
+							<xs:element name="SRU1" type="SRU1"/>
+							<xs:element name="SRU2" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="CDU">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RFCC">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:string"/>
+			<xs:element name="DateType" type="xs:date"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CCR">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ISOMER">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NHT">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LCOHDT">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PRU">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DIH">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Refinery">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SRU1">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SRU2">
+		<xs:sequence>
+			<xs:element name="Value" type="xs:float" minOccurs="0"/>
+			<xs:element name="OADate" type="xs:date"/>
+			<xs:element name="DateType" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

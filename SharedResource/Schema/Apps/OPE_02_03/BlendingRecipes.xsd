@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="bsr/apps/blendingrecipes/1.0"
+	 targetNamespace="bsr/apps/blendingrecipes/1.0"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="BlendingRecipe">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Products" type="xs:string"/>
+				<xs:element name="Component" type="xs:string"/>
+				<xs:element name="Ratio" type="xs:float"/>
+				<xs:element name="Volume" type="xs:float"/>
+				<xs:element name="Date" type="xs:date"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

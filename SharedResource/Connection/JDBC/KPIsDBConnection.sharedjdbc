@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource>
+    <name>KPIsDBConnection</name>
+    <resourceType>ae.shared.JDBCSharedResource</resourceType>
+    <config>
+        <driver>oracle.jdbc.driver.OracleDriver (thin)</driver>
+        <maxConnections>%%APPsInfo/Connections/KPIs/MaxConnection%%</maxConnections>
+        <loginTimeout>%%APPsInfo/Connections/KPIs/Timeout%%</loginTimeout>
+        <connectionType>JDBC</connectionType>
+        <UseSharedJndiConfig>false</UseSharedJndiConfig>
+        <location>%%APPsInfo/Connections/KPIs/Url%%</location>
+        <user>%%APPsInfo/Connections/KPIs/Username%%</user>
+        <password>%%APPsInfo/Connections/KPIs/Password%%</password>
+    </config>
+</BWSharedResource>

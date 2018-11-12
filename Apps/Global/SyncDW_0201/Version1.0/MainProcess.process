@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="bsr/common/apps/appdataenv/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="bsr/apps/blendingrecipes/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/apps/blendingrecipes/1.0" schemaLocation="/SharedResource/Schema/Apps/OPE_02_03/BlendingRecipes.xsd"/>
+    <pd:name>Apps/Global/SyncDW_0201/Version1.0/MainProcess.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx:AppDataEnvelope"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>155</pd:startX>
+    <pd:startY>81</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1278</pd:endX>
+    <pd:endY>83</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1482376836717</pd:targetNamespace>
+    <pd:activity name="GetVariable">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>577</pd:x>
+        <pd:y>81</pd:y>
+        <config>
+            <variableConfig>/SharedResource/SharedVariables/SyncDW_0201/listDates.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="SyncLIMS_0201">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>418</pd:x>
+        <pd:y>81</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW_0201/Version1.0/SubProcess/SyncVslimCrudeQuality.process</processName>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx:AppDataEnvelope/pfx:AppData/*" element="ns:BlendingRecipe"/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <StartDate>
+                <xsl:value-of select="$Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:BlendingRecipe[1]/ns:Date"/>
+            </StartDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="getListDate">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>782</pd:x>
+        <pd:y>83</pd:y>
+        <config>
+            <fileName>MainProcessgetListDate</fileName>
+            <packageName>Apps.Global.SyncDW_0201.Version1_0.MainProcess</packageName>
+            <fullsource>package Apps.Global.SyncDW_0201.Version1_0.MainProcess;
+import java.util.*;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
+public class MainProcessgetListDate{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String listDates = "";
+	protected String[] listDate = null;
+	public String getlistDates() {
+		return listDates;
+	}
+	public void setlistDates(String val) {
+		listDates = val;
+	}
+	public String[] getlistDate() {
+		return listDate;
+	}
+	public void setlistDate(String[] val) {
+		listDate = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public MainProcessgetListDate() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String listDates
+	Out : String[] listDate
+* Available Variables: DO NOT MODIFY *****/
+DateFormat df = new SimpleDateFormat("MM/dd/yyyy"); 
+		
+		//Create ArrayList of date
+		ArrayList&lt;String&gt; tempArray = new ArrayList&lt;String&gt;();
+		for (String val: listDates.split("_")) 
+		{
+	         //Skip duplicate row
+	         boolean isRead = false;
+	         if(!tempArray.isEmpty())
+		 		{
+		 			for(String item : tempArray)
+		 			{
+		 				if(val.equals(item)) isRead = true;
+		 			}
+		 		}
+	         //Add distinct value
+	         if(!isRead &amp;&amp; !val.equals("")) 
+		 		{
+		 			tempArray.add(val);
+		 		}
+	    }
+		//Sort &amp; Convert to String[] object
+		for(int i = 1; i &lt; tempArray.size(); i++)
+		{
+			for(int j = 0; j &lt; i; j++)
+			{
+				if(df.parse(tempArray.get(j)).compareTo(df.parse(tempArray.get(i))) == 1)
+				{
+					String tempDate = tempArray.get(j);
+					tempArray.set(j, tempArray.get(i));
+					tempArray.set(i, tempDate);
+					
+				}
+			}
+		}
+		
+		listDate = new String[tempArray.size()];
+		listDate = tempArray.toArray(listDate);
+}
+}
+</fullsource>
+            <outputData>
+                <row>
+                    <fieldName>listDate</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+            </outputData>
+            <inputData>
+                <row>
+                    <fieldName>listDates</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>required</fieldRequired>
+                </row>
+            </inputData>
+            <byteCode>
+                <class>
+                    <name>MainProcessgetListDate</name>
+                    <byteCode>yv66vgAAADQAbwkAGgA3CQAaADgKABsAOQgAOgcAOwgAPAoABQA9BwA+CgAIADkIAD8KABAAQAoACABBCgAIAEILAEMARAsAQwBFBwBGCgAQAEcKAAgASAoACABJCgAIAEoKAEsATAoATQBOCgAIAE8KAAgAUAcAHwcAUQcAUgEACWxpc3REYXRlcwEAEkxqYXZhL2xhbmcvU3RyaW5nOwEACGxpc3REYXRlAQATW0xqYXZhL2xhbmcvU3RyaW5nOwEADGdldGxpc3REYXRlcwEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEADHNldGxpc3REYXRlcwEAFShMamF2YS9sYW5nL1N0cmluZzspVgEAC2dldGxpc3REYXRlAQAVKClbTGphdmEvbGFuZy9TdHJpbmc7AQALc2V0bGlzdERhdGUBABYoW0xqYXZhL2xhbmcvU3RyaW5nOylWAQAGPGluaXQ+AQADKClWAQAGaW52b2tlAQANU3RhY2tNYXBUYWJsZQcAUQcAUwcAPgcARgcAVAEACkV4Y2VwdGlvbnMHAFUBAApTb3VyY2VGaWxlAQAbTWFpblByb2Nlc3NnZXRMaXN0RGF0ZS5qYXZhDAAcAB0MAB4AHwwAKgArAQAAAQAaamF2YS90ZXh0L1NpbXBsZURhdGVGb3JtYXQBAApNTS9kZC95eXl5DAAqACUBABNqYXZhL3V0aWwvQXJyYXlMaXN0AQABXwwAVgBXDABYAFkMAFoAWwcAVAwAXABZDABdAF4BABBqYXZhL2xhbmcvU3RyaW5nDABfAGAMAGEAYAwAYgBjDABkAGUHAFMMAGYAZwcAaAwAaQBqDABrAGwMAG0AbgEARUFwcHMvR2xvYmFsL1N5bmNEV18wMjAxL1ZlcnNpb24xXzAvTWFpblByb2Nlc3MvTWFpblByb2Nlc3NnZXRMaXN0RGF0ZQEAEGphdmEvbGFuZy9PYmplY3QBABRqYXZhL3RleHQvRGF0ZUZvcm1hdAEAEmphdmEvdXRpbC9JdGVyYXRvcgEAE2phdmEvbGFuZy9FeGNlcHRpb24BAAVzcGxpdAEAJyhMamF2YS9sYW5nL1N0cmluZzspW0xqYXZhL2xhbmcvU3RyaW5nOwEAB2lzRW1wdHkBAAMoKVoBAAhpdGVyYXRvcgEAFigpTGphdmEvdXRpbC9JdGVyYXRvcjsBAAdoYXNOZXh0AQAEbmV4dAEAFCgpTGphdmEvbGFuZy9PYmplY3Q7AQAGZXF1YWxzAQAVKExqYXZhL2xhbmcvT2JqZWN0OylaAQADYWRkAQAEc2l6ZQEAAygpSQEAA2dldAEAFShJKUxqYXZhL2xhbmcvT2JqZWN0OwEABXBhcnNlAQAkKExqYXZhL2xhbmcvU3RyaW5nOylMamF2YS91dGlsL0RhdGU7AQAOamF2YS91dGlsL0RhdGUBAAljb21wYXJlVG8BABMoTGphdmEvdXRpbC9EYXRlOylJAQADc2V0AQAnKElMamF2YS9sYW5nL09iamVjdDspTGphdmEvbGFuZy9PYmplY3Q7AQAHdG9BcnJheQEAKChbTGphdmEvbGFuZy9PYmplY3Q7KVtMamF2YS9sYW5nL09iamVjdDsAIQAaABsAAAACAAQAHAAdAAAABAAeAB8AAAAGAAEAIAAhAAEAIgAAAB0AAQABAAAABSq0AAGwAAAAAQAjAAAABgABAAAADgABACQAJQABACIAAAAiAAIAAgAAAAYqK7UAAbEAAAABACMAAAAKAAIAAAARAAUAEgABACYAJwABACIAAAAdAAEAAQAAAAUqtAACsAAAAAEAIwAAAAYAAQAAABQAAQAoACkAAQAiAAAAIgACAAIAAAAGKiu1AAKxAAAAAQAjAAAACgACAAAAFwAFABgAAQAqACsAAQAiAAAANAACAAEAAAAQKrcAAyoSBLUAASoBtQACsQAAAAEAIwAAABIABAAAABoABAALAAoADAAPABsAAQAsACsAAgAiAAABqQAEAAoAAAD7uwAFWRIGtwAHTLsACFm3AAlNKrQAARIKtgALTi2+NgQDNgUVBRUEogBbLRUFMjoGAzYHLLYADJoALyy2AA06CBkIuQAOAQCZAB8ZCLkADwEAwAAQOgkZBhkJtgARmQAGBDYHp//dFQeaABQZBhIEtgARmgAKLBkGtgASV4QFAaf/pAQ+HSy2ABOiAFcDNgQVBB2iAEgrLBUEtgAUwAAQtgAVKywdtgAUwAAQtgAVtgAWBKAAIiwVBLYAFMAAEDoFLBUELB22ABS2ABdXLB0ZBbYAF1eEBAGn/7iEAwGn/6cqLLYAE70AELUAAiosKrQAArYAGMAAGbUAArEAAAACACMAAABaABYAAAAhAAoAJAASACUAMAAoADMAKQA6ACsAVgAtAGMALgBmADEAdQAzAHwAJQCCADcAjAA5AJUAOwC1AD0AwAA+AMwAPwDUADkA2gA3AOAARQDrAEYA+gBHAC0AAAA8AAv/ACMABgcALgcALwcAMAcAGQEBAAD+ABwHADEBBwAyIvoAAvkAFfgABfwAAQH8AAoB+wBE+gAF+gAFADMAAAAEAAEANAABADUAAAACADY=</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:inputBindings>
+            <javaCodeActivityInput>
+                <listDates>
+                    <xsl:value-of select="$GetVariable/root"/>
+                </listDates>
+            </javaCodeActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="forEachDate">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>948</pd:x>
+        <pd:y>5</pd:y>
+        <pd:width>165</pd:width>
+        <pd:height>140</pd:height>
+        <pd:collapsedWidth>52</pd:collapsedWidth>
+        <pd:collapsedHeight>69</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$getListDate/javaCodeActivityOutput/listDate</pd:over>
+            <pd:iterationElementSlot>eachDate</pd:iterationElementSlot>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>CalQuality_0201</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CalQuality_0201</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="CalQuality_0201">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>1033</pd:x>
+            <pd:y>84</pd:y>
+            <config>
+                <processName>/Apps/Global/SyncDW_0201/Version1.0/SubProcess/insert&amp;Calculate_CrdQuality.process</processName>
+            </config>
+            <pd:inputBindings>
+                <eachDate>
+                    <xsl:value-of select="$eachDate/listDate"/>
+                </eachDate>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:transition>
+        <pd:from>SyncLIMS_0201</pd:from>
+        <pd:to>GetVariable</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>SyncLIMS_0201</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetVariable</pd:from>
+        <pd:to>getListDate</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getListDate</pd:from>
+        <pd:to>forEachDate</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>forEachDate</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

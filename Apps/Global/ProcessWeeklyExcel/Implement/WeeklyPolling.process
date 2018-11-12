@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="bsr/common/apps/appdataenv/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:pfx3="sbv/common/exceptionhandling/exception/1.0" xmlns:ns12="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <pd:name>Apps/Global/ProcessWeeklyExcel/Implement/WeeklyPolling.process</pd:name>
+    <pd:startName>File Poller</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="File Poller">
+        <pd:type>com.tibco.plugin.file.FileEventSource</pd:type>
+        <pd:resourceType>ae.activities.FileEventSourceResource</pd:resourceType>
+        <pd:x>87</pd:x>
+        <pd:y>62</pd:y>
+        <config>
+            <pollInterval>%%APPsInfo/Polling/OPWeekly/Interval%%</pollInterval>
+            <createEvent>true</createEvent>
+            <modifyEvent>false</modifyEvent>
+            <deleteEvent>false</deleteEvent>
+            <mode>files-and-directories</mode>
+            <encoding>text</encoding>
+            <sortby>File Name</sortby>
+            <sortorder>descending</sortorder>
+            <fileName>%%APPsInfo/Polling/OPWeekly/FileName%%</fileName>
+            <includeCurrent>true</includeCurrent>
+            <excludeContent>true</excludeContent>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>707</pd:endX>
+    <pd:endY>62</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1457944554017</pd:targetNamespace>
+    <pd:activity name="Backup Weekly File To Server">
+        <pd:type>com.tibco.plugin.file.FileCopyActivity</pd:type>
+        <pd:resourceType>ae.activities.FileCopyActivity</pd:resourceType>
+        <pd:x>406</pd:x>
+        <pd:y>70</pd:y>
+        <config>
+            <overwrite>true</overwrite>
+        </config>
+        <pd:inputBindings>
+            <ns12:CopyActivityConfig>
+                <fromFileName>
+                    <xsl:value-of select="$File-Poller/ns12:EventSourceOuputNoContentClass/fileInfo/fullName"/>
+                </fromFileName>
+                <toFileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/APPsInfo/Polling/OPWeekly/Backup_Weekly, $File-Poller/ns12:EventSourceOuputNoContentClass/fileInfo/fileName)"/>
+                </toFileName>
+            </ns12:CopyActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>368</pd:x>
+        <pd:y>199</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>539</pd:x>
+        <pd:y>198</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx3:Exception>
+                <pfx:Metadata>
+                    <pfx:AppCode>
+                        <xsl:value-of select="&quot;ProcessWeeklyExcel&quot;"/>
+                    </pfx:AppCode>
+                    <pfx:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </pfx:Version>
+                    <pfx:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns1:ProcessContext), tib:timestamp())"/>
+                    </pfx:ID>
+                    <pfx:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx:CreateTime>
+                </pfx:Metadata>
+                <pfx3:ExceptionBody>
+                    <pfx3:ErrorReport>
+                        <StackTrace>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/StackTrace"/>
+                        </StackTrace>
+                        <Msg>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                        </Msg>
+                        <FullClass>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/FullClass"/>
+                        </FullClass>
+                        <ObjectClass>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/Class"/>
+                        </ObjectClass>
+                        <ProcessStack>
+                            <xsl:value-of select="$_error/ns1:ErrorReport/ProcessStack"/>
+                        </ProcessStack>
+                        <xsl:if test="$_error/ns1:ErrorReport/MsgCode">
+                            <MsgCode>
+                                <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                            </MsgCode>
+                        </xsl:if>
+                        <xsl:copy-of select="$_error/ns1:ErrorReport/Data"/>
+                    </pfx3:ErrorReport>
+                </pfx3:ExceptionBody>
+            </pfx3:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="MainProcessOperation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>262</pd:x>
+        <pd:y>62</pd:y>
+        <config>
+            <processName>/Apps/TemplateProcess/MainProcessOperation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <pfx:AppDataEnvelope>
+                    <pfx:Metadata>
+                        <pfx:AppCode>
+                            <xsl:value-of select="&quot;ProcessWeeklyExcel&quot;"/>
+                        </pfx:AppCode>
+                        <pfx:Version>
+                            <xsl:value-of select="&quot;1.0&quot;"/>
+                        </pfx:Version>
+                        <pfx:ID>
+                            <xsl:value-of select="concat(generate-id($_processContext/ns1:ProcessContext), tib:timestamp())"/>
+                        </pfx:ID>
+                        <pfx:CreateTime>
+                            <xsl:value-of select="current-dateTime()"/>
+                        </pfx:CreateTime>
+                    </pfx:Metadata>
+                    <pfx:AppData>
+                        <ns2:InputExcel>
+                            <ns2:FileName>
+                                <xsl:value-of select="$File-Poller/ns12:EventSourceOuputNoContentClass/fileInfo/fullName"/>
+                            </ns2:FileName>
+                            <ns2:SheetName>
+                                <xsl:value-of select="$_globalVariables/ns:GlobalVariables/APPsInfo/Polling/OPWeekly/SheetName"/>
+                            </ns2:SheetName>
+                            <ns2:rowCount>
+                                <xsl:value-of select="&quot;&quot;"/>
+                            </ns2:rowCount>
+                            <ns2:colCount>
+                                <xsl:value-of select="&quot;&quot;"/>
+                            </ns2:colCount>
+                            <ns2:rowOffset>
+                                <xsl:value-of select="&quot;&quot;"/>
+                            </ns2:rowOffset>
+                            <ns2:colOffset>
+                                <xsl:value-of select="&quot;&quot;"/>
+                            </ns2:colOffset>
+                        </ns2:InputExcel>
+                    </pfx:AppData>
+                </pfx:AppDataEnvelope>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Remove Origin File">
+        <pd:type>com.tibco.plugin.file.FileRemoveActivity</pd:type>
+        <pd:resourceType>ae.activities.FileRemoveActivity</pd:resourceType>
+        <pd:x>537</pd:x>
+        <pd:y>62</pd:y>
+        <config/>
+        <pd:inputBindings>
+            <ns12:RemoveActivityInputClass>
+                <fileName>
+                    <xsl:value-of select="$File-Poller/ns12:EventSourceOuputNoContentClass/fileInfo/fullName"/>
+                </fileName>
+            </ns12:RemoveActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>File Poller</pd:from>
+        <pd:to>MainProcessOperation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>MainProcessOperation</pd:from>
+        <pd:to>Backup Weekly File To Server</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Backup Weekly File To Server</pd:from>
+        <pd:to>Remove Origin File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Remove Origin File</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

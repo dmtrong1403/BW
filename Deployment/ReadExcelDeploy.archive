@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Repository:repository xmlns:Repository="http://www.tibco.com/xmlns/repo/types/2002">
+    <enterpriseArchive>
+        <sharedArchive name="Shared Archive">
+            <resourceType>shared.archive.resource</resourceType>
+            <authorProperty>Administrator</authorProperty>
+        </sharedArchive>
+        <processArchive name="ReadExcel">
+            <resourceType>process.archive.resource</resourceType>
+            <authorProperty>Administrator</authorProperty>
+            <processProperty>/Apps/Global/ProcessMonthlyExcel/Implement/MonthlyPolling.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_01_03.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/MainProcess.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_02_01.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_02_02.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_02_03.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_02_05.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_03_01.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_MONTHLY_PLAN_GM.process,/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_MONTHLY_PLAN_PRICE.process,/Apps/Global/ProcessWeeklyExcel/Implement/WeeklyPolling.process,/Apps/Global/ProcessWeeklyExcel/Version1.0/MainProcess.process,/Apps/Global/ProcessWeeklyExcel/Version1.0/SubProcess/OPE_02_02.process,/Apps/Global/ProcessWeeklyExcel/Version1.0/SubProcess/OPE_01_03.process,/Apps/Global/ProcessDailyExcel/Implement/DailyPolling.process,/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_01_03.process,/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_02_01.process,/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_02_05.process,/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_03_01.process,/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_03_02.process,/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_05_02.process,/Apps/Global/ProcessDailyExcel/Version1.0/MainProcess.process</processProperty>
+        </processArchive>
+        <versionProperty>9</versionProperty>
+        <authorProperty>Administrator</authorProperty>
+        <addServiceSettableGvars>true</addServiceSettableGvars>
+        <name>ReadExcelDeploy</name>
+        <designer>
+            <lockedProperties/>
+            <fixedChildren/>
+            <resourceDescriptions/>
+        </designer>
+        <fileLocationProperty>C:\Users\Administrator\Desktop\ReadExcelDeploy.ear</fileLocationProperty>
+    </enterpriseArchive>
+</Repository:repository>

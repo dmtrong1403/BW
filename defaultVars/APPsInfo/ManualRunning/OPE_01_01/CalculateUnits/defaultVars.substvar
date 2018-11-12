@@ -1,0 +1,37 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>DateType</name>
+			<value>Rolling2Years</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1477411292821</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>MonthList</name>
+			<value>10,11</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1480498336977</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>UnitList</name>
+			<value>1,2,3,4,5,6,7,8,9,10</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1477405834310</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>YearList</name>
+			<value>2016</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1480498337024</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

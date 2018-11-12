@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="bsr/apps/ope0101/targetvsactualenv/1.0"
+	 targetNamespace="bsr/apps/ope0101/targetvsactualenv/1.0"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="TargetvsActualEnv">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Crude" type="PRODType" minOccurs="0"/>
+				<xs:element name="Blending" type="PRODType" minOccurs="0"/>
+				<xs:element name="FinishedProduct" type="PRODType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="PRODType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="TargetValue" type="xs:float"/>
+			<xs:element name="ActualValue" type="xs:float"/>
+			<xs:element name="EnterDate" type="xs:date"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

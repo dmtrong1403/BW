@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource>
+    <name>DWHConnection</name>
+    <resourceType>ae.shared.JDBCSharedResource</resourceType>
+    <config>
+        <driver>oracle.jdbc.driver.OracleDriver (thin)</driver>
+        <maxConnections>%%APPsInfo/Connections/DWH/MaxConnection%%</maxConnections>
+        <loginTimeout>%%APPsInfo/Connections/DWH/Timeout%%</loginTimeout>
+        <connectionType>JDBC</connectionType>
+        <UseSharedJndiConfig>false</UseSharedJndiConfig>
+        <location>%%APPsInfo/Connections/DWH/Url%%</location>
+        <user>%%APPsInfo/Connections/DWH/Username%%</user>
+        <password>%%APPsInfo/Connections/DWH/Password%%</password>
+    </config>
+</BWSharedResource>

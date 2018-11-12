@@ -1,0 +1,37 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>Backup_Daily</name>
+			<value>C:\Users\OS\Desktop\Excel_Templates\Backup_Excel\Daily_Actual</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1537774782000</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>FileName</name>
+			<value>C:\Users\OS\Desktop\Excel_Templates\Daily_Actual\DDSX Daily KPI*</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1537774782044</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>Interval</name>
+			<value>2</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Integer</type>
+			<modTime>1470812750112</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>SheetName</name>
+			<value>Daily KPI</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1516617054145</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

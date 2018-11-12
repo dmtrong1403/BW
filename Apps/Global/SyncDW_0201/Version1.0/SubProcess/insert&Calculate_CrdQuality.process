@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/namespaces/tnt/plugins/file/v2" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="bsr/apps/blendingrecipes/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="bsr/common/apps/appdataenv/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
+    <xsd:import namespace="bsr/apps/blendingrecipes/1.0" schemaLocation="/SharedResource/Schema/Apps/OPE_02_03/BlendingRecipes.xsd"/>
+    <pd:name>Apps/Global/SyncDW_0201/Version1.0/SubProcess/insert&amp;Calculate_CrdQuality.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="eachDate" type="xsd:string"/>
+    </pd:startType>
+    <pd:startX>188</pd:startX>
+    <pd:startY>120</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>985</pd:endX>
+    <pd:endY>115</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1477027198001</pd:targetNamespace>
+    <pd:activity name="MainProcess">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>775</pd:x>
+        <pd:y>119</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW_0201/Version1.0/SubProcess/sub_insert&amp;Calculate0201.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <ns0:AppDataEnvelope>
+                    <ns0:Metadata>
+                        <ns0:AppCode>
+                            <xsl:value-of select="&quot;History 02_01 Quality LIMS&quot;"/>
+                        </ns0:AppCode>
+                        <ns0:Version>
+                            <xsl:value-of select="&quot;1.1&quot;"/>
+                        </ns0:Version>
+                        <ns0:ID>
+                            <xsl:value-of select="concat(generate-id($_processContext/ns1:ProcessContext), tib:timestamp())"/>
+                        </ns0:ID>
+                        <ns0:CreateTime>
+                            <xsl:value-of select="current-dateTime()"/>
+                        </ns0:CreateTime>
+                    </ns0:Metadata>
+                    <ns0:AppData>
+                        <ns:BlendingRecipe>
+                            <ns:Products>
+                                <xsl:value-of select="&quot;Start&quot;"/>
+                            </ns:Products>
+                            <ns:Component>
+                                <xsl:value-of select="&quot;Start&quot;"/>
+                            </ns:Component>
+                            <ns:Ratio>
+                                <xsl:value-of select="1.0"/>
+                            </ns:Ratio>
+                            <ns:Volume>
+                                <xsl:value-of select="1.0"/>
+                            </ns:Volume>
+                            <ns:Date>
+                                <xsl:value-of select="tib:parse-date('MM/dd/yyyy', $Start/eachDate)"/>
+                            </ns:Date>
+                        </ns:BlendingRecipe>
+                    </ns0:AppData>
+                </ns0:AppDataEnvelope>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="delExistsRecordsDetails">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:description>delete exists records from table OPE_KPI_02_01_QUALITY_DETAILS</pd:description>
+        <pd:x>490</pd:x>
+        <pd:y>119</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>delete from OPE_KPI_02_01_QUALITY_DETAILS where VALID_DATE &gt;= TO_DATE(?,'MM/DD/YYYY')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/eachDate"/>
+                </VALID_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="delExistsRecordsResult">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:description>delete exists records from table OPE_KPI_02_01_QUALITY_RESULT</pd:description>
+        <pd:x>627</pd:x>
+        <pd:y>118</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>delete from OPE_KPI_02_01_QUALITY_RESULTS where VALID_DATE &gt;= TO_DATE(?,'MM/DD/YYYY')</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/eachDate"/>
+                </VALID_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>delExistsRecordsDetails</pd:from>
+        <pd:to>delExistsRecordsResult</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>delExistsRecordsResult</pd:from>
+        <pd:to>MainProcess</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>MainProcess</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>delExistsRecordsDetails</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

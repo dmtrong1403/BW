@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Repository:repository xmlns:Repository="http://www.tibco.com/xmlns/repo/types/2002">
+    <enterpriseArchive>
+        <sharedArchive name="Shared Archive">
+            <resourceType>shared.archive.resource</resourceType>
+            <authorProperty>Administrator</authorProperty>
+        </sharedArchive>
+        <processArchive name="OPE_KPI_01_01">
+            <resourceType>process.archive.resource</resourceType>
+            <authorProperty>Administrator</authorProperty>
+            <processProperty>/Apps/Global/OperationAvailibility/Implement/SourcesSynchronization.process,/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOARefineryMonthly.process,/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOARefineryRolling2Years.process,/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOARefineryYTD.process,/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOAUnitMonthly.process,/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOAUnitRolling2Years.process,/Apps/Global/OperationAvailibility/Version1.0/SubProcess/CalculateOAUnitYTD.process,/Apps/Global/OperationAvailibility/Version1.0/CalculateMonthlyOA.process,/Apps/Global/OperationAvailibility/Version1.0/CalculateRefinery.process,/Apps/Global/OperationAvailibility/Version1.0/CalculateRolling2YearsOA.process,/Apps/Global/OperationAvailibility/Version1.0/CalculateYTDOA.process,/Apps/Global/OperationAvailibility/Version1.0/MainProcess.process</processProperty>
+        </processArchive>
+        <versionProperty>11</versionProperty>
+        <authorProperty>Administrator</authorProperty>
+        <addServiceSettableGvars>true</addServiceSettableGvars>
+        <name>OPE_KPI_01_01</name>
+        <designer>
+            <lockedProperties/>
+            <fixedChildren/>
+            <resourceDescriptions/>
+        </designer>
+        <fileLocationProperty>C:\Users\Administrator\PRODUCTION DEPLOYMENT\OPE_KPI_01_01.ear</fileLocationProperty>
+    </enterpriseArchive>
+</Repository:repository>

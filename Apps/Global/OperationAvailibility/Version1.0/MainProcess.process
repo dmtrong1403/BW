@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="bsr/common/apps/appdataenv/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="bsr/common/apps/kpischedulesenv/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/common/apps/kpischedulesenv/1.0" schemaLocation="/SharedResource/Schema/Common/KPIsSchedulesEvelop.xsd"/>
+    <pd:name>Apps/Global/OperationAvailibility/Version1.0/MainProcess.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx:AppDataEnvelope"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>40</pd:startX>
+    <pd:startY>226</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>794</pd:endX>
+    <pd:endY>225</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1465234350736</pd:targetNamespace>
+    <pd:activity name="Join">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>380</pd:x>
+        <pd:y>226</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="OACalculationMonthly">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>259</pd:x>
+        <pd:y>141</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateMonthlyOA.process</processName>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx:AppDataEnvelope/pfx:AppData/*" element="ns:KPIsSchedule"/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="tib:get-month-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate)"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="tib:right(tib:get-year-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate), 2)"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="OACalculationYTD">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>266</pd:x>
+        <pd:y>226</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateYTDOA.process</processName>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx:AppDataEnvelope/pfx:AppData/*" element="ns:KPIsSchedule"/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="tib:get-month-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate)"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="tib:right(tib:get-year-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate), 2)"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Split">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>162</pd:x>
+        <pd:y>225</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="OACalculationRolling2Years">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>259</pd:x>
+        <pd:y>310</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateRolling2YearsOA.process</processName>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx:AppDataEnvelope/pfx:AppData/*" element="ns:KPIsSchedule"/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="tib:get-month-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate)"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="tib:right(tib:get-year-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate), 2)"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CalculateRefinery">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>557</pd:x>
+        <pd:y>222</pd:y>
+        <config>
+            <processName>/Apps/Global/OperationAvailibility/Version1.0/CalculateRefinery.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Month>
+                    <xsl:value-of select="tib:get-month-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate)"/>
+                </Month>
+                <Year>
+                    <xsl:value-of select="tib:right(tib:get-year-from-date($Start/root/pfx:AppDataEnvelope/pfx:AppData/ns:KPIsSchedule[1]/ns:ScheduleDate), 2)"/>
+                </Year>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Split</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>OACalculationMonthly</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>OACalculationMonthly</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Join</pd:from>
+        <pd:to>CalculateRefinery</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>OACalculationYTD</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>OACalculationYTD</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>OACalculationRolling2Years</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>OACalculationRolling2Years</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CalculateRefinery</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
