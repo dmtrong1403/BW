@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <pd:name>Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_05_01_Spread.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx4:AppDataEnvelope"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>49</pd:startX>
+    <pd:startY>208</pd:startY>
+    <pd:returnBindings>
+        <pfx3:cell/>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1709</pd:endX>
+    <pd:endY>217</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1568</pd:x>
+        <pd:y>332</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="HandleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1708</pd:x>
+        <pd:y>334</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns5:Exception>
+                <pfx4:Metadata>
+                    <pfx4:AppCode>
+                        <xsl:value-of select="&quot;DEV_ProcessDailyExcel 01_03&quot;"/>
+                    </pfx4:AppCode>
+                    <pfx4:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </pfx4:Version>
+                    <pfx4:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext), tib:timestamp())"/>
+                    </pfx4:ID>
+                    <pfx4:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx4:CreateTime>
+                </pfx4:Metadata>
+                <ns5:ExceptionBody>
+                    <xsl:for-each select="$_error">
+                        <ns5:ErrorReport>
+                            <StackTrace>
+                                <xsl:value-of select="ns4:ErrorReport/StackTrace"/>
+                            </StackTrace>
+                            <Msg>
+                                <xsl:value-of select="ns4:ErrorReport/Msg"/>
+                            </Msg>
+                            <FullClass>
+                                <xsl:value-of select="ns4:ErrorReport/FullClass"/>
+                            </FullClass>
+                            <ObjectClass>
+                                <xsl:value-of select="ns4:ErrorReport/Class"/>
+                            </ObjectClass>
+                            <ProcessStack>
+                                <xsl:value-of select="ns4:ErrorReport/ProcessStack"/>
+                            </ProcessStack>
+                            <xsl:if test="ns4:ErrorReport/MsgCode">
+                                <MsgCode>
+                                    <xsl:value-of select="ns4:ErrorReport/MsgCode"/>
+                                </MsgCode>
+                            </xsl:if>
+                            <xsl:copy-of select="ns4:ErrorReport/Data"/>
+                        </ns5:ErrorReport>
+                    </xsl:for-each>
+                </ns5:ExceptionBody>
+            </ns5:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ReadExcelCommon">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:description>Read excel process</pd:description>
+        <pd:x>176</pd:x>
+        <pd:y>209</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:group name="Transaction Group">
+        <pd:type>com.tibco.pe.core.TransactionGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:description>Transaction JDBC</pd:description>
+        <pd:x>262</pd:x>
+        <pd:y>6</pd:y>
+        <pd:width>1108</pd:width>
+        <pd:height>418</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>transactionGroup</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:transactionType>JDBCTransaction</pd:transactionType>
+            <pd:includeCheckpoint>false</pd:includeCheckpoint>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>Spread Group</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Spread Group</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:group name="Spread Group">
+            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+            <pd:resourceType>ae.process.group</pd:resourceType>
+            <pd:description>Loop for each product spread</pd:description>
+            <pd:x>283</pd:x>
+            <pd:y>36</pd:y>
+            <pd:width>1045</pd:width>
+            <pd:height>347</pd:height>
+            <pd:collapsedWidth>57</pd:collapsedWidth>
+            <pd:collapsedHeight>70</pd:collapsedHeight>
+            <pd:groupVariables/>
+            <pd:joinToggle>inherit</pd:joinToggle>
+            <config>
+                <pd:groupType>simpleGroup</pd:groupType>
+                <pd:serializable>false</pd:serializable>
+            </config>
+            <pd:inputBindings/>
+            <pd:expanded>true</pd:expanded>
+            <pd:transition>
+                <pd:from>start</pd:from>
+                <pd:to>updateDB</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>insertResultTable</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>checkRecordExists</pd:from>
+                <pd:to>delRecordExists</pd:to>
+                <pd:xpathDescription>if existed</pd:xpathDescription>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>$checkRecordExists/resultSet/Record/COUNT &gt; 0</pd:xpath>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>delRecordExists</pd:from>
+                <pd:to>Calculate KPI Result</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Calculate KPI Result</pd:from>
+                <pd:to>insertResultTable</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>checkRecordExists</pd:from>
+                <pd:to>Calculate KPI Result</pd:to>
+                <pd:xpathDescription>else</pd:xpathDescription>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>updateDB</pd:from>
+                <pd:to>checkRecordExists</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:activity name="checkRecordExists">
+                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                <pd:description>Check if result record existed</pd:description>
+                <pd:x>649</pd:x>
+                <pd:y>216</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <maxRows>100</maxRows>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>select  count(*) from OPE_KPI_01_03_RESULT t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY') </statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>DATE_UPDATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                    <oraObjects/>
+                    <oraTables/>
+                    <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                </config>
+                <pd:inputBindings>
+                    <jdbcQueryActivityInput>
+                        <DATE_UPDATE>
+                            <xsl:choose>
+                                <xsl:when test="exists($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value)">
+                                    <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </DATE_UPDATE>
+                    </jdbcQueryActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="delRecordExists">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:description>Delete existed result  record</pd:description>
+                <pd:x>826</pd:x>
+                <pd:y>98</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>delete OPE_KPI_01_03_RESULT t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY')</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>DATE_UPDATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput>
+                        <DATE_UPDATE>
+                            <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
+                        </DATE_UPDATE>
+                    </jdbcUpdateActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="insertResultTable">
+                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                <pd:description>Insert record into result table</pd:description>
+                <pd:x>1155</pd:x>
+                <pd:y>216</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <maxRows>100</maxRows>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>select PCK_OPE_KPI.calculate_OPE_KPI_01_03(?)  from dual</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>pDate</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                    <oraObjects/>
+                    <oraTables/>
+                    <QueryOutputCachedSchemaColumns>PCK_OPE_KPI.CALCULATE_OPE_KPI_01_031</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                </config>
+                <pd:inputBindings>
+                    <jdbcQueryActivityInput>
+                        <pDate>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[5]/pfx5:value"/>
+                        </pDate>
+                    </jdbcQueryActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="Calculate KPI Result">
+                <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+                <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+                <pd:description>Calculate KPI Value: Daily</pd:description>
+                <pd:x>1010</pd:x>
+                <pd:y>222</pd:y>
+                <config/>
+                <pd:inputBindings/>
+            </pd:activity>
+            <pd:activity name="updateDB">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:description>Update actual value record of detail table</pd:description>
+                <pd:x>439</pd:x>
+                <pd:y>216</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput/>
+                </pd:inputBindings>
+            </pd:activity>
+        </pd:group>
+    </pd:group>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>HandleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>HandleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>ReadExcelCommon</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ReadExcelCommon</pd:from>
+        <pd:to>Transaction Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Transaction Group</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
