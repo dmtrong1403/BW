@@ -39,8 +39,8 @@
             <property key="projectName" value="BW"/>
             <property key="ae.palette.transaction.palette.version" value="5.13.0"/>
             <property key="ae.palette.rvpalette.version" value="5.13.0"/>
-            <property key="tuxedo.palette.version" value="6.0.0.8"/>
             <property key="ae.palette.jrmi.palette.version" value="5.13.0"/>
+            <property key="tuxedo.palette.version" value="6.0.0.8"/>
         </projectProperties>
     </folder>
 </Repository:repository>

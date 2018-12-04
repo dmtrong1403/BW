@@ -13,6 +13,7 @@
             <xsd:complexType>
                 <xsd:sequence>
                     <xsd:element ref="pfx4:AppDataEnvelope"/>
+                    <xsd:element name="DATE_UPDATE" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
         </xsd:element>
@@ -26,7 +27,11 @@
     <pd:endX>1244</pd:endX>
     <pd:endY>213</pd:endY>
     <pd:errorSchemas/>
-    <pd:processVariables/>
+    <pd:processVariables>
+        <KPI-Results>
+            <xsd:element name="DailyKPI" type="xsd:double"/>
+        </KPI-Results>
+    </pd:processVariables>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
@@ -98,222 +103,257 @@
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
         <pd:description>Query Actual &amp; Design Capacity of Process Units from OPE_KPI_01_03_DETAILS</pd:description>
         <pd:x>212</pd:x>
-        <pd:y>205</pd:y>
+        <pd:y>206</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select UNIT_ID, ACTUAL, DESIGN_CAPACITY from OPE_KPI_01_03_DATA where DATE_UPDATE = to_date(?,'MM/DD/YYYY') </statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ACTUAL</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>DESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
         </config>
         <pd:inputBindings>
-            <jdbcQueryActivityInput/>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/DATE_UPDATE"/>
+                </DATE_UPDATE>
+            </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
-    <pd:group name="Transaction Group">
-        <pd:type>com.tibco.pe.core.TransactionGroup</pd:type>
+    <pd:group name="Process Unit Group">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>296</pd:x>
-        <pd:y>2</pd:y>
-        <pd:width>792</pd:width>
-        <pd:height>409</pd:height>
-        <pd:collapsedWidth>52</pd:collapsedWidth>
-        <pd:collapsedHeight>69</pd:collapsedHeight>
+        <pd:x>328</pd:x>
+        <pd:y>31</pd:y>
+        <pd:width>729</pd:width>
+        <pd:height>338</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
         <config>
-            <pd:groupType>transactionGroup</pd:groupType>
+            <pd:groupType>inputLoop</pd:groupType>
             <pd:serializable>false</pd:serializable>
-            <pd:transactionType>JDBCTransaction</pd:transactionType>
-            <pd:includeCheckpoint>false</pd:includeCheckpoint>
+            <pd:over>$queryDailyCapacity/resultSet/Record</pd:over>
+            <pd:iterationElementSlot>record</pd:iterationElementSlot>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
         </config>
         <pd:inputBindings/>
         <pd:expanded>true</pd:expanded>
         <pd:transition>
             <pd:from>start</pd:from>
-            <pd:to>Process Unit Group</pd:to>
+            <pd:to>checkRecordExists</pd:to>
             <pd:lineType>Default</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
         <pd:transition>
-            <pd:from>Process Unit Group</pd:from>
+            <pd:from>insertResultTable</pd:from>
             <pd:to>end</pd:to>
             <pd:lineType>Default</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
-        <pd:group name="Process Unit Group">
-            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
-            <pd:resourceType>ae.process.group</pd:resourceType>
-            <pd:x>317</pd:x>
-            <pd:y>32</pd:y>
-            <pd:width>729</pd:width>
-            <pd:height>338</pd:height>
-            <pd:collapsedWidth>52</pd:collapsedWidth>
-            <pd:collapsedHeight>69</pd:collapsedHeight>
-            <pd:groupVariables/>
+        <pd:transition>
+            <pd:from>checkRecordExists</pd:from>
+            <pd:to>delRecordExists</pd:to>
+            <pd:xpathDescription>if existed</pd:xpathDescription>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$checkRecordExists/resultSet/Record/COUNT &gt; 0</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>delRecordExists</pd:from>
+            <pd:to>Calculate KPI Result</pd:to>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>checkRecordExists</pd:from>
+            <pd:to>Calculate KPI Result</pd:to>
+            <pd:xpathDescription>else</pd:xpathDescription>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Calculate KPI Result</pd:from>
+            <pd:to>insertResultTable</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="checkRecordExists">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:description>Check if result record of input date existed</pd:description>
+            <pd:x>425</pd:x>
+            <pd:y>208</pd:y>
             <config>
-                <pd:groupType>simpleGroup</pd:groupType>
-                <pd:serializable>false</pd:serializable>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>select  count(*) from OPE_KPI_01_02_RESULT t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY') 
+and UNIT_ID = ?</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>DATE_UPDATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UNIT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
             </config>
-            <pd:inputBindings/>
-            <pd:expanded>true</pd:expanded>
-            <pd:transition>
-                <pd:from>start</pd:from>
-                <pd:to>checkRecordExists</pd:to>
-                <pd:lineType>Default</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>always</pd:conditionType>
-            </pd:transition>
-            <pd:transition>
-                <pd:from>insertResultTable</pd:from>
-                <pd:to>end</pd:to>
-                <pd:lineType>Default</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>always</pd:conditionType>
-            </pd:transition>
-            <pd:transition>
-                <pd:from>checkRecordExists</pd:from>
-                <pd:to>delRecordExists</pd:to>
-                <pd:xpathDescription>if existed</pd:xpathDescription>
-                <pd:lineType>Multiple Bends</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>xpath</pd:conditionType>
-                <pd:xpath>$checkRecordExists/resultSet/Record/COUNT &gt; 0</pd:xpath>
-            </pd:transition>
-            <pd:transition>
-                <pd:from>delRecordExists</pd:from>
-                <pd:to>Calculate KPI Result</pd:to>
-                <pd:lineType>Multiple Bends</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>always</pd:conditionType>
-            </pd:transition>
-            <pd:transition>
-                <pd:from>Calculate KPI Result</pd:from>
-                <pd:to>insertResultTable</pd:to>
-                <pd:lineType>Default</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>always</pd:conditionType>
-            </pd:transition>
-            <pd:transition>
-                <pd:from>checkRecordExists</pd:from>
-                <pd:to>Calculate KPI Result</pd:to>
-                <pd:xpathDescription>else</pd:xpathDescription>
-                <pd:lineType>Default</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>always</pd:conditionType>
-            </pd:transition>
-            <pd:activity name="checkRecordExists">
-                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
-                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:description>Check if result record of input date existed</pd:description>
-                <pd:x>415</pd:x>
-                <pd:y>209</pd:y>
-                <config>
-                    <timeout>10</timeout>
-                    <commit>false</commit>
-                    <maxRows>100</maxRows>
-                    <emptyStrAsNil>false</emptyStrAsNil>
-                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                    <statement>select  count(*) from OPE_KPI_01_03_RESULT t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY') </statement>
-                    <Prepared_Param_DataType>
-                        <parameter>
-                            <parameterName>DATE_UPDATE</parameterName>
-                            <dataType>VARCHAR</dataType>
-                        </parameter>
-                    </Prepared_Param_DataType>
-                    <oraObjects/>
-                    <oraTables/>
-                    <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
-                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-                </config>
-                <pd:inputBindings>
-                    <jdbcQueryActivityInput>
-                        <DATE_UPDATE>
-                            <xsl:choose>
-                                <xsl:when test="exists($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value)">
-                                    <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </DATE_UPDATE>
-                    </jdbcQueryActivityInput>
-                </pd:inputBindings>
-            </pd:activity>
-            <pd:activity name="delRecordExists">
-                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
-                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-                <pd:description>Delete result existed record</pd:description>
-                <pd:x>582</pd:x>
-                <pd:y>87</pd:y>
-                <config>
-                    <timeout>10</timeout>
-                    <commit>false</commit>
-                    <emptyStrAsNil>false</emptyStrAsNil>
-                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                    <statement>delete OPE_KPI_01_03_RESULT t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY')</statement>
-                    <Prepared_Param_DataType>
-                        <parameter>
-                            <parameterName>DATE_UPDATE</parameterName>
-                            <dataType>VARCHAR</dataType>
-                        </parameter>
-                    </Prepared_Param_DataType>
-                </config>
-                <pd:inputBindings>
-                    <jdbcUpdateActivityInput>
-                        <DATE_UPDATE>
-                            <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
-                        </DATE_UPDATE>
-                    </jdbcUpdateActivityInput>
-                </pd:inputBindings>
-            </pd:activity>
-            <pd:activity name="insertResultTable">
-                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
-                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:description>Insert record into result table</pd:description>
-                <pd:x>919</pd:x>
-                <pd:y>211</pd:y>
-                <config>
-                    <timeout>10</timeout>
-                    <commit>false</commit>
-                    <maxRows>100</maxRows>
-                    <emptyStrAsNil>false</emptyStrAsNil>
-                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                    <statement>select PCK_OPE_KPI.calculate_OPE_KPI_01_03(?)  from dual</statement>
-                    <Prepared_Param_DataType>
-                        <parameter>
-                            <parameterName>pDate</parameterName>
-                            <dataType>VARCHAR</dataType>
-                        </parameter>
-                    </Prepared_Param_DataType>
-                    <oraObjects/>
-                    <oraTables/>
-                    <QueryOutputCachedSchemaColumns>PCK_OPE_KPI.CALCULATE_OPE_KPI_01_031</QueryOutputCachedSchemaColumns>
-                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-                </config>
-                <pd:inputBindings>
-                    <jdbcQueryActivityInput>
-                        <pDate>
-                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[5]/pfx5:value"/>
-                        </pDate>
-                    </jdbcQueryActivityInput>
-                </pd:inputBindings>
-            </pd:activity>
-            <pd:activity name="Calculate KPI Result">
-                <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
-                <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-                <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
-                <pd:x>773</pd:x>
-                <pd:y>217</pd:y>
-                <config/>
-                <pd:inputBindings/>
-            </pd:activity>
-        </pd:group>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <DATE_UPDATE>
+                        <xsl:value-of select="$Start/root/DATE_UPDATE"/>
+                    </DATE_UPDATE>
+                    <UNIT_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($record/Record/UNIT_ID)">
+                                <xsl:value-of select="$record/Record/UNIT_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </UNIT_ID>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="delRecordExists">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:description>Delete result existed record</pd:description>
+            <pd:x>593</pd:x>
+            <pd:y>86</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>delete OPE_KPI_01_03_RESULT t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY')
+and UNIT_ID = ?</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>DATE_UPDATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UNIT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <DATE_UPDATE>
+                        <xsl:value-of select="$Start/root/DATE_UPDATE"/>
+                    </DATE_UPDATE>
+                    <UNIT_ID>
+                        <xsl:value-of select="$record/Record/UNIT_ID"/>
+                    </UNIT_ID>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="Calculate KPI Result">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
+            <pd:x>784</pd:x>
+            <pd:y>216</pd:y>
+            <config>
+                <variableName>KPI-Results</variableName>
+            </config>
+            <pd:inputBindings>
+                <DailyKPI>
+                    <xsl:value-of select="100 * $record/Record/ACTUAL div $record/Record/DESIGN_CAPACITY"/>
+                </DailyKPI>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="insertResultTable">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:x>933</pd:x>
+            <pd:y>209</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>insert into OPE_KPI_01_02_RESULT (UNIT_ID, KPI_DAILY_UNIT, DATE_UPDATE)
+ values (?, ?, to_date(?,'MM/DD/YYYY'))</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>UNIT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>KPI_DAILY_UNIT</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>DATE_UPDATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <UNIT_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($record/Record/UNIT_ID)">
+                                <xsl:value-of select="$record/Record/UNIT_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </UNIT_ID>
+                    <KPI_DAILY_UNIT>
+                        <xsl:value-of select="$KPI-Results/DailyKPI"/>
+                    </KPI_DAILY_UNIT>
+                    <DATE_UPDATE>
+                        <xsl:value-of select="$Start/root/DATE_UPDATE"/>
+                    </DATE_UPDATE>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
     </pd:group>
     <pd:transition>
         <pd:from>Catch</pd:from>
@@ -338,13 +378,13 @@
     </pd:transition>
     <pd:transition>
         <pd:from>queryDailyCapacity</pd:from>
-        <pd:to>Transaction Group</pd:to>
+        <pd:to>Process Unit Group</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Transaction Group</pd:from>
+        <pd:from>Process Unit Group</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>

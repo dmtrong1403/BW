@@ -20,9 +20,14 @@
     <pd:startX>49</pd:startX>
     <pd:startY>204</pd:startY>
     <pd:returnBindings>
-        <pfx3:cell/>
+        <DATE_UPDATE>
+            <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value"/>
+        </DATE_UPDATE>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="DATE_UPDATE" type="xsd:string"/>
+    </pd:endType>
     <pd:endX>1244</pd:endX>
     <pd:endY>201</pd:endY>
     <pd:errorSchemas/>
@@ -196,7 +201,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     <pd:activity name="checkRecordExists">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>531</pd:x>
+        <pd:x>532</pd:x>
         <pd:y>203</pd:y>
         <config>
             <timeout>10</timeout>
