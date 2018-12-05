@@ -17,8 +17,8 @@
             </xsd:complexType>
         </xsd:element>
     </pd:startType>
-    <pd:startX>56</pd:startX>
-    <pd:startY>238</pd:startY>
+    <pd:startX>50</pd:startX>
+    <pd:startY>285</pd:startY>
     <pd:returnBindings>
         <pfx3:cell/>
     </pd:returnBindings>
@@ -31,8 +31,8 @@
     <pd:activity name="ReadExcelCommon">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>172</pd:x>
-        <pd:y>237</pd:y>
+        <pd:x>166</pd:x>
+        <pd:y>284</pd:y>
         <config>
             <processName>/Apps/Global/Common/ReadExcelCommon.process</processName>
         </config>
@@ -67,8 +67,8 @@
     <pd:activity name="GetLastDayOfMonth">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>453</pd:x>
-        <pd:y>241</pd:y>
+        <pd:x>447</pd:x>
+        <pd:y>288</pd:y>
         <config>
             <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
         </config>
@@ -432,8 +432,8 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
                     <oraObjects/>
                     <oraTables/>
                     <QueryOutputCachedSchemaColumns>TYPE_ID</QueryOutputCachedSchemaColumns>
-                    <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
-                    <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
                     <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
                 </config>
                 <pd:inputBindings>
@@ -465,8 +465,8 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
     <pd:activity name="Map Data">
         <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
         <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
-        <pd:x>304</pd:x>
-        <pd:y>238</pd:y>
+        <pd:x>298</pd:x>
+        <pd:y>285</pd:y>
         <config>
             <element>
                 <xsd:element name="inputDate" type="xsd:date"/>
@@ -546,8 +546,8 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
     <pd:activity name="ConvertData">
         <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
         <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
-        <pd:x>172</pd:x>
-        <pd:y>40</pd:y>
+        <pd:x>166</pd:x>
+        <pd:y>87</pd:y>
         <config>
             <element>
                 <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="ValidDateMonth" type="xsd:date"/>
@@ -562,8 +562,8 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
     <pd:activity name="GetValidDate">
         <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
         <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
-        <pd:x>58</pd:x>
-        <pd:y>40</pd:y>
+        <pd:x>52</pd:x>
+        <pd:y>87</pd:y>
         <config>
             <variableConfig>/SharedResource/SharedVariables/ExcelFiles/ValidDate.sharedvariable</variableConfig>
         </config>

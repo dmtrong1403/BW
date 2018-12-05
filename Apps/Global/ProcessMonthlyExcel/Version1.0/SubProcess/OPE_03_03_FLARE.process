@@ -90,7 +90,7 @@
         </config>
         <pd:inputBindings>
             <inputDate>
-                <xsl:value-of select="tib:create-date(tib:substring-after-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value,&quot;/&quot;), tib:substring-before-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value, &quot;/&quot;), 01)"/>
+                <xsl:value-of select="tib:create-date(tib:substring-after-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[7]/pfx5:value,&quot;/&quot;), tib:substring-before-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[7]/pfx5:value, &quot;/&quot;), 01)"/>
             </inputDate>
         </pd:inputBindings>
     </pd:activity>
@@ -184,9 +184,10 @@
         <pd:y>1</pd:y>
         <pd:width>563</pd:width>
         <pd:height>525</pd:height>
-        <pd:collapsedWidth>52</pd:collapsedWidth>
-        <pd:collapsedHeight>69</pd:collapsedHeight>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
         <config>
             <pd:groupType>transactionGroup</pd:groupType>
             <pd:serializable>false</pd:serializable>

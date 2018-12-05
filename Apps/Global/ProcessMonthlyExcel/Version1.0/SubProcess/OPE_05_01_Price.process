@@ -6,13 +6,14 @@
     <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
     <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
-    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Spread.process</pd:name>
+    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Price.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="root">
             <xsd:complexType>
                 <xsd:sequence>
                     <xsd:element ref="pfx4:AppDataEnvelope"/>
+                    <xsd:element name="firstDateOfMonth" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
         </xsd:element>
@@ -26,19 +27,7 @@
     <pd:endX>1592</pd:endX>
     <pd:endY>273</pd:endY>
     <pd:errorSchemas/>
-    <pd:processVariables>
-        <ColumnOffsets>
-            <xsd:element name="Offsets">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="Month_Offset" type="xsd:int"/>
-                        <xsd:element name="Plan_Offset" type="xsd:int"/>
-                        <xsd:element name="ID_Offset" type="xsd:int"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-        </ColumnOffsets>
-    </pd:processVariables>
+    <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
@@ -144,8 +133,8 @@
         <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
         <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
         <pd:description>Get date from template</pd:description>
-        <pd:x>432</pd:x>
-        <pd:y>268</pd:y>
+        <pd:x>384</pd:x>
+        <pd:y>270</pd:y>
         <config>
             <element>
                 <xsd:element name="inputDate" type="xsd:date"/>
@@ -153,44 +142,8 @@
         </config>
         <pd:inputBindings>
             <inputDate>
-                <xsl:value-of select="tib:create-date(tib:substring-after-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($ColumnOffsets/Offsets/Month_Offset)]/pfx5:value,&quot;/&quot;), tib:substring-before-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($ColumnOffsets/Offsets/Month_Offset)]/pfx5:value, &quot;/&quot;), 01)"/>
+                <xsl:value-of select="tib:parse-date('MM/dd/yyyy', $Start/root/firstDateOfMonth)"/>
             </inputDate>
-        </pd:inputBindings>
-    </pd:activity>
-    <pd:activity name="ReadExcelCommon">
-        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
-        <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>174</pd:x>
-        <pd:y>268</pd:y>
-        <config>
-            <processName>/Apps/Global/Common/ReadExcelCommon.process</processName>
-        </config>
-        <pd:coercions>
-            <pd:coercion xpath="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/*" element="ns1:InputExcel" cardinality=""/>
-        </pd:coercions>
-        <pd:inputBindings>
-            <root>
-                <ns1:AppExcel>
-                    <ns1:FileName>
-                        <xsl:value-of select="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/ns1:InputExcel/ns1:FileName"/>
-                    </ns1:FileName>
-                    <ns1:SheetName>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/Sheetname"/>
-                    </ns1:SheetName>
-                    <ns1:rowCount>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/OPE_05_01_Spread/rowCount"/>
-                    </ns1:rowCount>
-                    <ns1:colCount>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/OPE_05_01_Spread/colCount"/>
-                    </ns1:colCount>
-                    <ns1:rowOffset>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/OPE_05_01_Spread/rowOffset"/>
-                    </ns1:rowOffset>
-                    <ns1:colOffset>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/OPE_05_01_Spread/colOffset"/>
-                    </ns1:colOffset>
-                </ns1:AppExcel>
-            </root>
         </pd:inputBindings>
     </pd:activity>
     <pd:group name="Transaction Group">
@@ -492,38 +445,45 @@ where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
             </pd:group>
         </pd:group>
     </pd:group>
-    <pd:activity name="Assign_Offsets">
-        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
-        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-        <pd:x>311</pd:x>
-        <pd:y>267</pd:y>
+    <pd:activity name="queryPrdPrice">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:description>Query monthly plan price from OPE_KPI_05_02_DETAILS</pd:description>
+        <pd:x>177</pd:x>
+        <pd:y>269</pd:y>
         <config>
-            <variableName>ColumnOffsets</variableName>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select PROD_PRICE from OPE_KPI_05_02_DETAILS a 
+join OPE_KPI_05_02_CATEGORY b on a.PRODUCT_ID = b.PRODUCT_ID
+where GET_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>GET_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>PROD_PRICE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
         </config>
         <pd:inputBindings>
-            <Offsets>
-                <Month_Offset>
-                    <xsl:value-of select="7"/>
-                </Month_Offset>
-                <Plan_Offset>
-                    <xsl:value-of select="5"/>
-                </Plan_Offset>
-                <ID_Offset>
-                    <xsl:value-of select="1"/>
-                </ID_Offset>
-            </Offsets>
+            <jdbcQueryActivityInput>
+                <GET_DATE>
+                    <xsl:value-of select="$Start/root/firstDateOfMonth"/>
+                </GET_DATE>
+            </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
     <pd:transition>
         <pd:from>Start</pd:from>
         <pd:to>GetValidDate</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>ReadExcelCommon</pd:from>
-        <pd:to>Assign_Offsets</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -557,13 +517,6 @@ where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>ConvertData</pd:from>
-        <pd:to>ReadExcelCommon</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
         <pd:from>Transaction Group</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
@@ -578,7 +531,14 @@ where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Assign_Offsets</pd:from>
+        <pd:from>ConvertData</pd:from>
+        <pd:to>queryPrdPrice</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryPrdPrice</pd:from>
         <pd:to>Map Data</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
