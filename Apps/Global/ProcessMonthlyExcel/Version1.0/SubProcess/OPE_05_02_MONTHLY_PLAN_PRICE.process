@@ -20,9 +20,14 @@
     <pd:startX>50</pd:startX>
     <pd:startY>285</pd:startY>
     <pd:returnBindings>
-        <pfx3:cell/>
+        <inputDate>
+            <xsl:value-of select="$Map-Data/inputDate"/>
+        </inputDate>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="inputDate" type="xsd:date"/>
+    </pd:endType>
     <pd:endX>1341</pd:endX>
     <pd:endY>295</pd:endY>
     <pd:errorSchemas/>
@@ -183,21 +188,6 @@
                 <pd:xpath>exists($queryTypeProduct/resultSet/Record/PRODUCT_ID)</pd:xpath>
             </pd:transition>
             <pd:transition>
-                <pd:from>QueryTypeID</pd:from>
-                <pd:to>InsertDB</pd:to>
-                <pd:lineType>Default</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>always</pd:conditionType>
-            </pd:transition>
-            <pd:transition>
-                <pd:from>queryTypeProduct</pd:from>
-                <pd:to>QueryTypeID</pd:to>
-                <pd:xpathDescription>Otherwise</pd:xpathDescription>
-                <pd:lineType>Multiple Bends</pd:lineType>
-                <pd:lineColor>-16777216</pd:lineColor>
-                <pd:conditionType>otherwise</pd:conditionType>
-            </pd:transition>
-            <pd:transition>
                 <pd:from>Null</pd:from>
                 <pd:to>queryTypeProduct</pd:to>
                 <pd:xpathDescription>Otherwise</pd:xpathDescription>
@@ -214,6 +204,13 @@
                 <pd:conditionType>xpath</pd:conditionType>
                 <pd:xpath>tib:compare-date( tib:add-to-date($Map-Data/inputDate, 0, 0, ($i - 1)) ,$ConvertData/ValidDateMonth ) &gt;= 0</pd:xpath>
             </pd:transition>
+            <pd:transition>
+                <pd:from>queryTypeProduct</pd:from>
+                <pd:to>InsertDB</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
             <pd:activity name="InsertDB">
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
@@ -224,13 +221,9 @@
                     <commit>false</commit>
                     <emptyStrAsNil>true</emptyStrAsNil>
                     <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                    <statement>insert into OPE_KPI_05_02_DETAILS ( TYPE_ID, PRODUCT_ID, PROD_PRICE, PROD_PRICE_UNIT, GET_DATE )
-values (?,?,?,?,?)</statement>
+                    <statement>insert into OPE_KPI_05_02_DETAILS ( PRODUCT_ID, PROD_PRICE, PROD_PRICE_UNIT, GET_DATE )
+values (?,?,?,?)</statement>
                     <Prepared_Param_DataType>
-                        <parameter>
-                            <parameterName>TypeID</parameterName>
-                            <dataType>VARCHAR</dataType>
-                        </parameter>
                         <parameter>
                             <parameterName>ProductID</parameterName>
                             <dataType>NUMERIC</dataType>
@@ -251,16 +244,6 @@ values (?,?,?,?,?)</statement>
                 </config>
                 <pd:inputBindings>
                     <jdbcUpdateActivityInput>
-                        <TypeID>
-                            <xsl:choose>
-                                <xsl:when test="exists($QueryTypeID/resultSet/Record[1]/TYPE_ID)">
-                                    <xsl:value-of select="$QueryTypeID/resultSet/Record[1]/TYPE_ID"/>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </TypeID>
                         <ProductID>
                             <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
                         </ProductID>
@@ -308,8 +291,9 @@ values (?,?,?,?,?)</statement>
                     <maxRows>100</maxRows>
                     <emptyStrAsNil>true</emptyStrAsNil>
                     <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                    <statement>SELECT TYPE_ID, PRODUCT_ID FROM OPE_KPI_05_02_DETAILS
-WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
+                    <statement>select a.PRODUCT_ID, b.TYPE_ID from OPE_KPI_05_02_DETAILS a
+join OPE_KPI_05_02_CATEGORY b on a.PRODUCT_ID = b.PRODUCT_ID
+where a.PRODUCT_ID = ? and a.GET_DATE = ?</statement>
                     <wizardData/>
                     <Prepared_Param_DataType>
                         <parameter>
@@ -323,11 +307,11 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
                     </Prepared_Param_DataType>
                     <oraObjects/>
                     <oraTables/>
-                    <QueryOutputCachedSchemaColumns>TYPE_ID</QueryOutputCachedSchemaColumns>
-                    <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
-                    <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
-                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
                     <QueryOutputCachedSchemaColumns>PRODUCT_ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>TYPE_ID</QueryOutputCachedSchemaColumns>
                     <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
                     <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
                     <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
@@ -347,13 +331,13 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
                 <pd:x>905</pd:x>
-                <pd:y>227</pd:y>
+                <pd:y>253</pd:y>
                 <config>
                     <timeout>10</timeout>
                     <commit>false</commit>
                     <emptyStrAsNil>true</emptyStrAsNil>
                     <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                    <statement>UPDATE OPE_KPI_05_02_DETAILS SET PROD_PRICE = ?, PROD_PRICE_UNIT = ? WHERE PRODUCT_ID = ? AND GET_DATE = TO_DATE(?,'YYYY-MM-DD') AND TYPE_ID = ?</statement>
+                    <statement>UPDATE OPE_KPI_05_02_DETAILS SET PROD_PRICE = ?, PROD_PRICE_UNIT = ? WHERE PRODUCT_ID = ? AND GET_DATE = TO_DATE(?,'YYYY-MM-DD')</statement>
                     <Prepared_Param_DataType>
                         <parameter>
                             <parameterName>ProductPrice</parameterName>
@@ -369,10 +353,6 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
                         </parameter>
                         <parameter>
                             <parameterName>Date</parameterName>
-                            <dataType>VARCHAR</dataType>
-                        </parameter>
-                        <parameter>
-                            <parameterName>TypeID</parameterName>
                             <dataType>VARCHAR</dataType>
                         </parameter>
                     </Prepared_Param_DataType>
@@ -398,50 +378,7 @@ WHERE PRODUCT_ID = ? and GET_DATE = ?</statement>
                         <Date>
                             <xsl:value-of select="tib:add-to-date($Map-Data/inputDate, 0, 0, ($i - 1))"/>
                         </Date>
-                        <TypeID>
-                            <xsl:choose>
-                                <xsl:when test="exists($queryTypeProduct/resultSet/Record[1]/TYPE_ID)">
-                                    <xsl:value-of select="$queryTypeProduct/resultSet/Record[1]/TYPE_ID"/>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </TypeID>
                     </jdbcUpdateActivityInput>
-                </pd:inputBindings>
-            </pd:activity>
-            <pd:activity name="QueryTypeID">
-                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
-                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>872</pd:x>
-                <pd:y>301</pd:y>
-                <config>
-                    <timeout>10</timeout>
-                    <commit>false</commit>
-                    <maxRows>100</maxRows>
-                    <emptyStrAsNil>true</emptyStrAsNil>
-                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                    <statement>SELECT TYPE_ID FROM OPE_KPI_05_02_CATEGORY WHERE PRODUCT_ID = ?</statement>
-                    <Prepared_Param_DataType>
-                        <parameter>
-                            <parameterName>ProductID</parameterName>
-                            <dataType>NUMERIC</dataType>
-                        </parameter>
-                    </Prepared_Param_DataType>
-                    <oraObjects/>
-                    <oraTables/>
-                    <QueryOutputCachedSchemaColumns>TYPE_ID</QueryOutputCachedSchemaColumns>
-                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-                </config>
-                <pd:inputBindings>
-                    <jdbcQueryActivityInput>
-                        <ProductID>
-                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
-                        </ProductID>
-                    </jdbcQueryActivityInput>
                 </pd:inputBindings>
             </pd:activity>
             <pd:activity name="Null">

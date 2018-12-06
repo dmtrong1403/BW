@@ -13,7 +13,7 @@
             <xsd:complexType>
                 <xsd:sequence>
                     <xsd:element ref="pfx4:AppDataEnvelope"/>
-                    <xsd:element name="firstDateOfMonth" type="xsd:string"/>
+                    <xsd:element name="inputDate" type="xsd:date"/>
                 </xsd:sequence>
             </xsd:complexType>
         </xsd:element>
@@ -68,7 +68,7 @@
         </config>
         <pd:inputBindings>
             <InputDate>
-                <xsl:value-of select="$Map-Data/inputDate"/>
+                <xsl:value-of select="$Start/root/inputDate"/>
             </InputDate>
         </pd:inputBindings>
     </pd:activity>
@@ -95,7 +95,7 @@
             <pfx6:Exception>
                 <pfx4:Metadata>
                     <pfx4:AppCode>
-                        <xsl:value-of select="&quot;OPE_05_01_Spread&quot;"/>
+                        <xsl:value-of select="&quot;OPE_05_01_Price&quot;"/>
                     </pfx4:AppCode>
                     <pfx4:Version>
                         <xsl:value-of select="&quot;1.0&quot;"/>
@@ -127,23 +127,6 @@
                     </pfx6:ErrorReport>
                 </pfx6:ExceptionBody>
             </pfx6:Exception>
-        </pd:inputBindings>
-    </pd:activity>
-    <pd:activity name="Map Data">
-        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
-        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
-        <pd:description>Get date from template</pd:description>
-        <pd:x>384</pd:x>
-        <pd:y>270</pd:y>
-        <config>
-            <element>
-                <xsd:element name="inputDate" type="xsd:date"/>
-            </element>
-        </config>
-        <pd:inputBindings>
-            <inputDate>
-                <xsl:value-of select="tib:parse-date('MM/dd/yyyy', $Start/root/firstDateOfMonth)"/>
-            </inputDate>
         </pd:inputBindings>
     </pd:activity>
     <pd:group name="Transaction Group">
@@ -231,7 +214,7 @@
                 <config>
                     <pd:groupType>inputLoop</pd:groupType>
                     <pd:serializable>false</pd:serializable>
-                    <pd:over>$ReadExcelCommon/pfx5:sheet/pfx5:row</pd:over>
+                    <pd:over>$queryPrdPrice/resultSet/Record</pd:over>
                     <pd:iterationElementSlot>xrecords</pd:iterationElementSlot>
                     <pd:indexSlot>n</pd:indexSlot>
                     <pd:activityOutputName/>
@@ -304,7 +287,7 @@
                         <emptyStrAsNil>false</emptyStrAsNil>
                         <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
                         <statement>insert into OPE_KPI_05_01_DETAILS( CATE_ID, PLAN_VALUE, VALID_DATE ,CATE_TYPE)
-values (?,?,TO_DATE(?,'MM/DD/YYYY'),1)</statement>
+values (?,?,TO_DATE(?,'MM/DD/YYYY'),0)</statement>
                         <Prepared_Param_DataType>
                             <parameter>
                                 <parameterName>CATE_ID</parameterName>
@@ -323,12 +306,26 @@ values (?,?,TO_DATE(?,'MM/DD/YYYY'),1)</statement>
                     <pd:inputBindings>
                         <jdbcUpdateActivityInput>
                             <CATE_ID>
-                                <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($ColumnOffsets/Offsets/ID_Offset)]/pfx5:value"/>
+                                <xsl:choose>
+                                    <xsl:when test="exists($xrecords/Record/PRODUCT_ID)">
+                                        <xsl:value-of select="$xrecords/Record/PRODUCT_ID"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                             </CATE_ID>
                             <xsl:choose>
-                                <xsl:when test="string(number($xrecords/pfx5:row/pfx5:cell[number($ColumnOffsets/Offsets/Plan_Offset)]/pfx5:value)) !='NaN'">
+                                <xsl:when test="string(number($xrecords/Record/PROD_PRICE)) !='NaN'">
                                     <PLAN_VALUE>
-                                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($ColumnOffsets/Offsets/Plan_Offset)]/pfx5:value"/>
+                                        <xsl:choose>
+                                            <xsl:when test="exists($xrecords/Record/PROD_PRICE)">
+                                                <xsl:value-of select="$xrecords/Record/PROD_PRICE"/>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
                                     </PLAN_VALUE>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -336,7 +333,7 @@ values (?,?,TO_DATE(?,'MM/DD/YYYY'),1)</statement>
                                 </xsl:otherwise>
                             </xsl:choose>
                             <VALID_DATE>
-                                <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Map-Data/inputDate, 0, 0, ($i - 1)))"/>
+                                <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Start/root/inputDate, 0, 0, ($i - 1)))"/>
                             </VALID_DATE>
                         </jdbcUpdateActivityInput>
                     </pd:inputBindings>
@@ -375,10 +372,17 @@ WHERE CATE_ID = ? AND VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
                     <pd:inputBindings>
                         <jdbcQueryActivityInput>
                             <CATE_ID>
-                                <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($ColumnOffsets/Offsets/ID_Offset)]/pfx5:value"/>
+                                <xsl:choose>
+                                    <xsl:when test="exists($xrecords/Record/PRODUCT_ID)">
+                                        <xsl:value-of select="$xrecords/Record/PRODUCT_ID"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                             </CATE_ID>
                             <VALID_DATE>
-                                <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Map-Data/inputDate, 0, 0, ($i - 1)))"/>
+                                <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Start/root/inputDate, 0, 0, ($i - 1)))"/>
                             </VALID_DATE>
                         </jdbcQueryActivityInput>
                     </pd:inputBindings>
@@ -396,7 +400,7 @@ WHERE CATE_ID = ? AND VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
                         <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
                         <statement>update OPE_KPI_05_01_DETAILS 
 set PLAN_VALUE = ?
-where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
+where CATE_ID = ? and CATE_TYPE = 0 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
                         <Prepared_Param_DataType>
                             <parameter>
                                 <parameterName>PLAN_VALUE</parameterName>
@@ -415,9 +419,16 @@ where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
                     <pd:inputBindings>
                         <jdbcUpdateActivityInput>
                             <xsl:choose>
-                                <xsl:when test="string(number($xrecords/pfx5:row/pfx5:cell[number($ColumnOffsets/Offsets/Plan_Offset)]/pfx5:value)) !='NaN'">
+                                <xsl:when test="string(number($xrecords/Record/PROD_PRICE)) !='NaN'">
                                     <PLAN_VALUE>
-                                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($ColumnOffsets/Offsets/Plan_Offset)]/pfx5:value"/>
+                                        <xsl:choose>
+                                            <xsl:when test="exists($xrecords/Record/PROD_PRICE)">
+                                                <xsl:value-of select="$xrecords/Record/PROD_PRICE"/>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
                                     </PLAN_VALUE>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -425,10 +436,17 @@ where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
                                 </xsl:otherwise>
                             </xsl:choose>
                             <CATE_ID>
-                                <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($ColumnOffsets/Offsets/ID_Offset)]/pfx5:value"/>
+                                <xsl:choose>
+                                    <xsl:when test="exists($xrecords/Record/PRODUCT_ID)">
+                                        <xsl:value-of select="$xrecords/Record/PRODUCT_ID"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                             </CATE_ID>
                             <VALID_DATE>
-                                <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Map-Data/inputDate, 0, 0, ($i - 1)))"/>
+                                <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Start/root/inputDate, 0, 0, ($i - 1)))"/>
                             </VALID_DATE>
                         </jdbcUpdateActivityInput>
                     </pd:inputBindings>
@@ -457,26 +475,30 @@ where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select PROD_PRICE from OPE_KPI_05_02_DETAILS a 
+            <statement>select a.PRODUCT_ID, a.PROD_PRICE from OPE_KPI_05_02_DETAILS a 
 join OPE_KPI_05_02_CATEGORY b on a.PRODUCT_ID = b.PRODUCT_ID
-where GET_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
-            <Prepared_Param_DataType>
-                <parameter>
-                    <parameterName>GET_DATE</parameterName>
-                    <dataType>VARCHAR</dataType>
-                </parameter>
-            </Prepared_Param_DataType>
+where GET_DATE = ?</statement>
             <oraObjects/>
             <oraTables/>
+            <QueryOutputCachedSchemaColumns>PRODUCT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
             <QueryOutputCachedSchemaColumns>PROD_PRICE</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>GET_DATE</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
         </config>
         <pd:inputBindings>
             <jdbcQueryActivityInput>
                 <GET_DATE>
-                    <xsl:value-of select="$Start/root/firstDateOfMonth"/>
+                    <xsl:value-of select="$Start/root/inputDate"/>
                 </GET_DATE>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
@@ -484,13 +506,6 @@ where GET_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
     <pd:transition>
         <pd:from>Start</pd:from>
         <pd:to>GetValidDate</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>Map Data</pd:from>
-        <pd:to>GetLastDayOfMonth</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -539,7 +554,7 @@ where GET_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>queryPrdPrice</pd:from>
-        <pd:to>Map Data</pd:to>
+        <pd:to>GetLastDayOfMonth</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

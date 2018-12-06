@@ -18,23 +18,35 @@
         </xsd:element>
     </pd:startType>
     <pd:startX>27</pd:startX>
-    <pd:startY>79</pd:startY>
+    <pd:startY>88</pd:startY>
     <pd:returnBindings>
         <pfx3:cell/>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
     <pd:endX>1007</pd:endX>
-    <pd:endY>79</pd:endY>
+    <pd:endY>88</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
-    <pd:activity name="OPE_05_01_Spread">
+    <pd:activity name="GetValidDate">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>392</pd:x>
-        <pd:y>79</pd:y>
+        <pd:x>237</pd:x>
+        <pd:y>88</pd:y>
         <config>
-            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Spread.process</processName>
+            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/GetValidDate.process</processName>
+        </config>
+        <pd:inputBindings>
+            <xsl:copy-of select="$Start/root"/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="OPE_01_03">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>198</pd:x>
+        <pd:y>302</pd:y>
+        <config>
+            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_01_03.process</processName>
         </config>
         <pd:inputBindings>
             <xsl:copy-of select="$Start/root"/>
@@ -88,13 +100,30 @@
             <xsl:copy-of select="$Start/root"/>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="OPE_05_02_MONTHLY_PLAN_GM">
+    <pd:activity name="OPE_05_01_Price">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>907</pd:x>
-        <pd:y>390</pd:y>
+        <pd:x>818</pd:x>
+        <pd:y>88</pd:y>
         <config>
-            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_MONTHLY_PLAN_GM.process</processName>
+            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Price.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:copy-of select="$Start/root/pfx4:AppDataEnvelope"/>
+                <inputDate>
+                    <xsl:value-of select="$OPE_05_02_MONTHLY_PLAN_PRICE/inputDate"/>
+                </inputDate>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="OPE_05_01_Spread">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>597</pd:x>
+        <pd:y>88</pd:y>
+        <config>
+            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Spread.process</processName>
         </config>
         <pd:inputBindings>
             <xsl:copy-of select="$Start/root"/>
@@ -103,8 +132,8 @@
     <pd:activity name="OPE_05_02_MONTHLY_PLAN_PRICE">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1037</pd:x>
-        <pd:y>253</pd:y>
+        <pd:x>399</pd:x>
+        <pd:y>88</pd:y>
         <config>
             <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_MONTHLY_PLAN_PRICE.process</processName>
         </config>
@@ -112,33 +141,9 @@
             <xsl:copy-of select="$Start/root"/>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="OPE_01_03">
-        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
-        <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>198</pd:x>
-        <pd:y>302</pd:y>
-        <config>
-            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_01_03.process</processName>
-        </config>
-        <pd:inputBindings>
-            <xsl:copy-of select="$Start/root"/>
-        </pd:inputBindings>
-    </pd:activity>
-    <pd:activity name="GetValidDate">
-        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
-        <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>102</pd:x>
-        <pd:y>79</pd:y>
-        <config>
-            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/GetValidDate.process</processName>
-        </config>
-        <pd:inputBindings>
-            <xsl:copy-of select="$Start/root"/>
-        </pd:inputBindings>
-    </pd:activity>
     <pd:transition>
         <pd:from>OPE_05_01_Spread</pd:from>
-        <pd:to>End</pd:to>
+        <pd:to>OPE_05_01_Price</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -166,21 +171,21 @@
     </pd:transition>
     <pd:transition>
         <pd:from>OPE_03_01</pd:from>
-        <pd:to>OPE_05_02_MONTHLY_PLAN_GM</pd:to>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>OPE_05_02_MONTHLY_PLAN_GM</pd:from>
-        <pd:to>OPE_05_02_MONTHLY_PLAN_PRICE</pd:to>
+        <pd:from>OPE_05_01_Price</pd:from>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>OPE_05_02_MONTHLY_PLAN_PRICE</pd:from>
-        <pd:to>End</pd:to>
+        <pd:to>OPE_05_01_Spread</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -201,7 +206,7 @@
     </pd:transition>
     <pd:transition>
         <pd:from>GetValidDate</pd:from>
-        <pd:to>OPE_05_01_Spread</pd:to>
+        <pd:to>OPE_05_02_MONTHLY_PLAN_PRICE</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

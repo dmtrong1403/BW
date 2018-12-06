@@ -328,7 +328,7 @@
                     <pd:lineType>Default</pd:lineType>
                     <pd:lineColor>-16777216</pd:lineColor>
                     <pd:conditionType>xpath</pd:conditionType>
-                    <pd:xpath>exists($checkRecordExists/resultSet/Record/UNIT_ID)</pd:xpath>
+                    <pd:xpath>exists($checkRecordExists/resultSet/Record/COUNT)</pd:xpath>
                 </pd:transition>
                 <pd:transition>
                     <pd:from>compareDate</pd:from>
