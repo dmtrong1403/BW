@@ -339,7 +339,7 @@ public class ReadExcelCommonReadOLE2XLS{
                     <fieldRequired>optional</fieldRequired>
                 </row>
             </outputData>
-            <javaArchive>/SharedResource/Library/ApachePOI.aliaslib</javaArchive>
+            <javaArchive>/SharedResource/Library/JavaCustom.aliaslib</javaArchive>
             <byteCode>
                 <class>
                     <name>ReadExcelCommonReadOLE2XLS$Val</name>
@@ -917,7 +917,7 @@ public class ReadExcelCommonReadXLSX{
                     <fieldRequired>optional</fieldRequired>
                 </row>
             </inputData>
-            <javaArchive>/SharedResource/Library/ApachePOI.aliaslib</javaArchive>
+            <javaArchive>/SharedResource/Library/JavaCustom.aliaslib</javaArchive>
             <outputData>
                 <row>
                     <fieldName>rows</fieldName>

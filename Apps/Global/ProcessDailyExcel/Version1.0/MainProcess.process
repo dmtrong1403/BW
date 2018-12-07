@@ -28,10 +28,10 @@
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
-    <pd:activity name="OPE_05_01_Spread">
+    <pd:activity name="OPE_05_01_Price">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>450</pd:x>
+        <pd:x>249</pd:x>
         <pd:y>85</pd:y>
         <config>
             <processName>/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_05_01_Spread.process</processName>
@@ -40,21 +40,9 @@
             <xsl:copy-of select="$Start/root"/>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="OPE_05_01_Price">
-        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
-        <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>249</pd:x>
-        <pd:y>85</pd:y>
-        <config>
-            <processName>/Apps/Global/ProcessDailyExcel/Version1.0/SubProcess/OPE_05_01_Price.process</processName>
-        </config>
-        <pd:inputBindings>
-            <xsl:copy-of select="$Start/root"/>
-        </pd:inputBindings>
-    </pd:activity>
     <pd:transition>
         <pd:from>OPE_05_01_Price</pd:from>
-        <pd:to>OPE_05_01_Spread</pd:to>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -62,13 +50,6 @@
     <pd:transition>
         <pd:from>Start</pd:from>
         <pd:to>OPE_05_01_Price</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>OPE_05_01_Spread</pd:from>
-        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

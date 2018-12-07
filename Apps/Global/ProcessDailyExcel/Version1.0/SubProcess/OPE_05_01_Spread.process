@@ -49,346 +49,6 @@
         </columnOffset>
     </pd:processVariables>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
-    <pd:group name="Product Group">
-        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
-        <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:description>Loop for each product</pd:description>
-        <pd:x>552</pd:x>
-        <pd:y>31</pd:y>
-        <pd:width>1045</pd:width>
-        <pd:height>347</pd:height>
-        <pd:collapsedWidth>57</pd:collapsedWidth>
-        <pd:collapsedHeight>70</pd:collapsedHeight>
-        <pd:groupVariables/>
-        <pd:joinToggle>inherit</pd:joinToggle>
-        <config>
-            <pd:groupType>inputLoop</pd:groupType>
-            <pd:serializable>false</pd:serializable>
-            <pd:over>$ReadExcelCommon/pfx5:sheet/pfx5:row</pd:over>
-            <pd:iterationElementSlot>xrecords</pd:iterationElementSlot>
-            <pd:indexSlot>i</pd:indexSlot>
-            <pd:activityOutputName/>
-            <pd:accumulateOutput>false</pd:accumulateOutput>
-        </config>
-        <pd:inputBindings/>
-        <pd:expanded>true</pd:expanded>
-        <pd:transition>
-            <pd:from>start</pd:from>
-            <pd:to>updateDB</pd:to>
-            <pd:lineType>Default</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>always</pd:conditionType>
-        </pd:transition>
-        <pd:transition>
-            <pd:from>insertResultTable</pd:from>
-            <pd:to>end</pd:to>
-            <pd:lineType>Default</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>always</pd:conditionType>
-        </pd:transition>
-        <pd:transition>
-            <pd:from>checkRecordExists</pd:from>
-            <pd:to>delRecordExists</pd:to>
-            <pd:xpathDescription>if existed</pd:xpathDescription>
-            <pd:lineType>Multiple Bends</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>xpath</pd:conditionType>
-            <pd:xpath>$checkRecordExists/resultSet/Record/COUNT &gt; 0</pd:xpath>
-        </pd:transition>
-        <pd:transition>
-            <pd:from>delRecordExists</pd:from>
-            <pd:to>queryPlanValue</pd:to>
-            <pd:lineType>Multiple Bends</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>always</pd:conditionType>
-        </pd:transition>
-        <pd:transition>
-            <pd:from>checkRecordExists</pd:from>
-            <pd:to>queryPlanValue</pd:to>
-            <pd:xpathDescription>else</pd:xpathDescription>
-            <pd:lineType>Default</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>always</pd:conditionType>
-        </pd:transition>
-        <pd:transition>
-            <pd:from>updateDB</pd:from>
-            <pd:to>checkRecordExists</pd:to>
-            <pd:lineType>Default</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>always</pd:conditionType>
-        </pd:transition>
-        <pd:transition>
-            <pd:from>queryPlanValue</pd:from>
-            <pd:to>Calculate KPI Result</pd:to>
-            <pd:lineType>Default</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>always</pd:conditionType>
-        </pd:transition>
-        <pd:transition>
-            <pd:from>Calculate KPI Result</pd:from>
-            <pd:to>insertResultTable</pd:to>
-            <pd:lineType>Default</pd:lineType>
-            <pd:lineColor>-16777216</pd:lineColor>
-            <pd:conditionType>always</pd:conditionType>
-        </pd:transition>
-        <pd:activity name="checkRecordExists">
-            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
-            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-            <pd:description>Check if result record existed</pd:description>
-            <pd:x>800</pd:x>
-            <pd:y>209</pd:y>
-            <config>
-                <timeout>10</timeout>
-                <commit>false</commit>
-                <maxRows>100</maxRows>
-                <emptyStrAsNil>false</emptyStrAsNil>
-                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                <statement>select  count(*) from OPE_KPI_05_01_RESULT where VALID_DATE = to_date(?,'MM/DD/YYYY') and CATE_ID = ? and CATE_TYPE = 1 </statement>
-                <Prepared_Param_DataType>
-                    <parameter>
-                        <parameterName>VALID_DATE</parameterName>
-                        <dataType>VARCHAR</dataType>
-                    </parameter>
-                    <parameter>
-                        <parameterName>CATE_ID</parameterName>
-                        <dataType>NUMERIC</dataType>
-                    </parameter>
-                </Prepared_Param_DataType>
-                <oraObjects/>
-                <oraTables/>
-                <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
-                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-            </config>
-            <pd:inputBindings>
-                <jdbcQueryActivityInput>
-                    <VALID_DATE>
-                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($columnOffset/Offsets/Date_Offset)]/pfx5:value"/>
-                    </VALID_DATE>
-                    <CATE_ID>
-                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($columnOffset/Offsets/ID_Offset)]/pfx5:value"/>
-                    </CATE_ID>
-                </jdbcQueryActivityInput>
-            </pd:inputBindings>
-        </pd:activity>
-        <pd:activity name="delRecordExists">
-            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
-            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:description>Delete existed result  record</pd:description>
-            <pd:x>951</pd:x>
-            <pd:y>91</pd:y>
-            <config>
-                <timeout>10</timeout>
-                <commit>false</commit>
-                <emptyStrAsNil>false</emptyStrAsNil>
-                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                <statement>delete OPE_KPI_05_01_RESULT where DATE_UPDATE = to_date(?,'MM/DD/YYYY') and CATE_ID = ? and CATE_TYPE = 1</statement>
-                <Prepared_Param_DataType>
-                    <parameter>
-                        <parameterName>VALID_DATE</parameterName>
-                        <dataType>VARCHAR</dataType>
-                    </parameter>
-                    <parameter>
-                        <parameterName>CATE_ID</parameterName>
-                        <dataType>NUMERIC</dataType>
-                    </parameter>
-                </Prepared_Param_DataType>
-            </config>
-            <pd:inputBindings>
-                <jdbcUpdateActivityInput>
-                    <VALID_DATE>
-                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($columnOffset/Offsets/Date_Offset)]/pfx5:value"/>
-                    </VALID_DATE>
-                    <CATE_ID>
-                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($columnOffset/Offsets/ID_Offset)]/pfx5:value"/>
-                    </CATE_ID>
-                </jdbcUpdateActivityInput>
-            </pd:inputBindings>
-        </pd:activity>
-        <pd:activity name="Calculate KPI Result">
-            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
-            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-            <pd:description>Calculate KPI Value: Daily</pd:description>
-            <pd:x>1276</pd:x>
-            <pd:y>219</pd:y>
-            <config>
-                <variableName>kpiResults</variableName>
-            </config>
-            <pd:inputBindings>
-                <KPIs>
-                    <Daily>
-                        <xsl:value-of select="100 * ($queryPlanValue/resultSet/Record[1]/PLAN_VALUE - $xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/Actual_Offset)]/pfx5:value) div $queryPlanValue/resultSet/Record[1]/PLAN_VALUE"/>
-                    </Daily>
-                </KPIs>
-            </pd:inputBindings>
-        </pd:activity>
-        <pd:activity name="updateDB">
-            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
-            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:description>Update actual value record of detail table</pd:description>
-            <pd:x>662</pd:x>
-            <pd:y>212</pd:y>
-            <config>
-                <timeout>10</timeout>
-                <commit>false</commit>
-                <emptyStrAsNil>false</emptyStrAsNil>
-                <statement>update OPE_KPI_05_01_DETAILS set ACTUAL_VALUE = ? where CATE_ID = ? and CATE_TYPE = 1  and valid_date = to_date(?,'MM/DD/YYYY')</statement>
-                <Prepared_Param_DataType>
-                    <parameter>
-                        <parameterName>ACTUAL_VALUE</parameterName>
-                        <dataType>NUMERIC</dataType>
-                    </parameter>
-                    <parameter>
-                        <parameterName>CATE_ID</parameterName>
-                        <dataType>NUMERIC</dataType>
-                    </parameter>
-                    <parameter>
-                        <parameterName>VALID_DATE</parameterName>
-                        <dataType>VARCHAR</dataType>
-                    </parameter>
-                </Prepared_Param_DataType>
-                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            </config>
-            <pd:inputBindings>
-                <jdbcUpdateActivityInput>
-                    <xsl:choose>
-                        <xsl:when test="string(number($xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/Actual_Offset)]/pfx5:value)) !='NaN'">
-                            <ACTUAL_VALUE>
-                                <xsl:choose>
-                                    <xsl:when test="exists($xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/Actual_Offset)]/pfx5:value)">
-                                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/Actual_Offset)]/pfx5:value"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </ACTUAL_VALUE>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <ACTUAL_VALUE xsi:nil="true"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                    <CATE_ID>
-                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/ID_Offset)]/pfx5:value"/>
-                    </CATE_ID>
-                    <VALID_DATE>
-                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/Date_Offset)]/pfx5:value"/>
-                    </VALID_DATE>
-                </jdbcUpdateActivityInput>
-            </pd:inputBindings>
-        </pd:activity>
-        <pd:activity name="queryPlanValue">
-            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
-            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-            <pd:x>1130</pd:x>
-            <pd:y>209</pd:y>
-            <config>
-                <timeout>10</timeout>
-                <commit>false</commit>
-                <maxRows>100</maxRows>
-                <emptyStrAsNil>false</emptyStrAsNil>
-                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                <statement>select PLAN_VALUE from OPE_KPI_05_01_DETAILS where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = to_date(?,'MM/DD/YYYY')</statement>
-                <Prepared_Param_DataType>
-                    <parameter>
-                        <parameterName>CATE_ID</parameterName>
-                        <dataType>VARCHAR</dataType>
-                    </parameter>
-                    <parameter>
-                        <parameterName>VALID_DATE</parameterName>
-                        <dataType>VARCHAR</dataType>
-                    </parameter>
-                </Prepared_Param_DataType>
-                <oraObjects/>
-                <oraTables/>
-                <QueryOutputCachedSchemaColumns>PLAN_VALUE</QueryOutputCachedSchemaColumns>
-                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-            </config>
-            <pd:inputBindings>
-                <jdbcQueryActivityInput>
-                    <CATE_ID>
-                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/ID_Offset)]/pfx5:value"/>
-                    </CATE_ID>
-                    <VALID_DATE>
-                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($columnOffset/Offsets/Date_Offset)]/pfx5:value"/>
-                    </VALID_DATE>
-                </jdbcQueryActivityInput>
-            </pd:inputBindings>
-        </pd:activity>
-        <pd:activity name="insertResultTable">
-            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
-            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:x>1429</pd:x>
-            <pd:y>210</pd:y>
-            <config>
-                <timeout>10</timeout>
-                <commit>false</commit>
-                <emptyStrAsNil>false</emptyStrAsNil>
-                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                <statement>insert into OPE_KPI_05_01_RESULT (CATE_ID, DAILY_KPI_VALUE, CATE_TYPE, VALID_DATE) 
-values (?, ?, 1, to_date(?,'MM/DD/YYYY')) </statement>
-                <Prepared_Param_DataType>
-                    <parameter>
-                        <parameterName>CATE_ID</parameterName>
-                        <dataType>NUMERIC</dataType>
-                    </parameter>
-                    <parameter>
-                        <parameterName>DAILY_KPI_VALUE</parameterName>
-                        <dataType>NUMERIC</dataType>
-                    </parameter>
-                    <parameter>
-                        <parameterName>VALID_DATE</parameterName>
-                        <dataType>VARCHAR</dataType>
-                    </parameter>
-                </Prepared_Param_DataType>
-            </config>
-            <pd:inputBindings>
-                <jdbcUpdateActivityInput>
-                    <CATE_ID>
-                        <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[number($columnOffset/Offsets/ID_Offset)]/pfx5:value"/>
-                    </CATE_ID>
-                    <DAILY_KPI_VALUE>
-                        <xsl:choose>
-                            <xsl:when test="exists($queryPlanValue/resultSet/Record[1]/PLAN_VALUE)">
-                                <xsl:value-of select="$queryPlanValue/resultSet/Record[1]/PLAN_VALUE"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </DAILY_KPI_VALUE>
-                    <VALID_DATE>
-                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[number($columnOffset/Offsets/Date_Offset)]/pfx5:value"/>
-                    </VALID_DATE>
-                </jdbcUpdateActivityInput>
-            </pd:inputBindings>
-        </pd:activity>
-    </pd:group>
-    <pd:activity name="Assign">
-        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
-        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-        <pd:x>358</pd:x>
-        <pd:y>212</pd:y>
-        <config>
-            <variableName>columnOffset</variableName>
-        </config>
-        <pd:inputBindings>
-            <Offsets>
-                <ID_Offset>
-                    <xsl:value-of select="1"/>
-                </ID_Offset>
-                <Actual_Offset>
-                    <xsl:value-of select="5"/>
-                </Actual_Offset>
-                <Date_Offset>
-                    <xsl:value-of select="7"/>
-                </Date_Offset>
-            </Offsets>
-        </pd:inputBindings>
-    </pd:activity>
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
@@ -412,7 +72,7 @@ values (?, ?, 1, to_date(?,'MM/DD/YYYY')) </statement>
             <ns5:Exception>
                 <pfx4:Metadata>
                     <pfx4:AppCode>
-                        <xsl:value-of select="&quot;App_05_01_Spread&quot;"/>
+                        <xsl:value-of select="&quot;OPE_KPI_05_01_Spread&quot;"/>
                     </pfx4:AppCode>
                     <pfx4:Version>
                         <xsl:value-of select="&quot;1.0&quot;"/>
@@ -458,19 +118,22 @@ values (?, ?, 1, to_date(?,'MM/DD/YYYY')) </statement>
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
         <pd:description>Read Excel process</pd:description>
-        <pd:x>175</pd:x>
-        <pd:y>208</pd:y>
+        <pd:x>173</pd:x>
+        <pd:y>211</pd:y>
         <config>
             <processName>/Apps/Global/Common/ReadExcelCommon.process</processName>
         </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/*" element="ns1:InputExcel" cardinality=""/>
+        </pd:coercions>
         <pd:inputBindings>
             <root>
                 <ns1:AppExcel>
                     <ns1:FileName>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/FileName"/>
+                        <xsl:value-of select="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/ns1:InputExcel/ns1:FileName"/>
                     </ns1:FileName>
                     <ns1:SheetName>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/SheetName"/>
+                        <xsl:value-of select="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/ns1:InputExcel/ns1:SheetName"/>
                     </ns1:SheetName>
                     <ns1:rowCount>
                         <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPDaily/OPE_05_01_Spread/rowCount"/>
@@ -488,6 +151,350 @@ values (?, ?, 1, to_date(?,'MM/DD/YYYY')) </statement>
             </root>
         </pd:inputBindings>
     </pd:activity>
+    <pd:group name="Transaction Group">
+        <pd:type>com.tibco.pe.core.TransactionGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>242</pd:x>
+        <pd:y>27</pd:y>
+        <pd:width>1055</pd:width>
+        <pd:height>364</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>transactionGroup</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:transactionType>JDBCTransaction</pd:transactionType>
+            <pd:includeCheckpoint>false</pd:includeCheckpoint>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>checkResultRecord</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Product Group</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>checkResultRecord</pd:from>
+            <pd:to>Product Group</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>otherwise</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>checkResultRecord</pd:from>
+            <pd:to>deleteExistedRecord</pd:to>
+            <pd:xpathDescription>If Existed</pd:xpathDescription>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$checkResultRecord/resultSet/Record[1]/COUNT &gt; 0</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>deleteExistedRecord</pd:from>
+            <pd:to>Product Group</pd:to>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:group name="Product Group">
+            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+            <pd:resourceType>ae.process.group</pd:resourceType>
+            <pd:description>Loop for each product</pd:description>
+            <pd:x>594</pd:x>
+            <pd:y>52</pd:y>
+            <pd:width>637</pd:width>
+            <pd:height>293</pd:height>
+            <pd:collapsedWidth>57</pd:collapsedWidth>
+            <pd:collapsedHeight>70</pd:collapsedHeight>
+            <pd:groupVariables/>
+            <pd:joinToggle>inherit</pd:joinToggle>
+            <config>
+                <pd:groupType>inputLoop</pd:groupType>
+                <pd:serializable>false</pd:serializable>
+                <pd:over>$ReadExcelCommon/pfx5:sheet/pfx5:row</pd:over>
+                <pd:iterationElementSlot>xrecords</pd:iterationElementSlot>
+                <pd:indexSlot>i</pd:indexSlot>
+                <pd:activityOutputName/>
+                <pd:accumulateOutput>false</pd:accumulateOutput>
+            </config>
+            <pd:inputBindings/>
+            <pd:expanded>true</pd:expanded>
+            <pd:transition>
+                <pd:from>start</pd:from>
+                <pd:to>updateDB</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>queryPlanValue</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>insertResultTable</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>queryPlanValue</pd:from>
+                <pd:to>Calculate KPI Result</pd:to>
+                <pd:xpathDescription>If has plan</pd:xpathDescription>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>$queryPlanValue/resultSet/Record[1]/PLAN_VALUE</pd:xpath>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Calculate KPI Result</pd:from>
+                <pd:to>insertResultTable</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>updateDB</pd:from>
+                <pd:to>queryPlanValue</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:activity name="Calculate KPI Result">
+                <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+                <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+                <pd:description>Calculate KPI Value: Daily</pd:description>
+                <pd:x>947</pd:x>
+                <pd:y>117</pd:y>
+                <config>
+                    <variableName>kpiResults</variableName>
+                </config>
+                <pd:inputBindings>
+                    <KPIs>
+                        <Daily>
+                            <xsl:value-of select="100 * ($queryPlanValue/resultSet/Record[1]/PLAN_VALUE - number($xrecords/pfx5:row/pfx5:cell[5]/pfx5:value)) div $queryPlanValue/resultSet/Record[1]/PLAN_VALUE"/>
+                        </Daily>
+                    </KPIs>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="updateDB">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:description>Update actual value record of detail table</pd:description>
+                <pd:x>679</pd:x>
+                <pd:y>202</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <statement>update OPE_KPI_05_01_DETAILS set ACTUAL_VALUE = ? where CATE_ID = ? and CATE_TYPE = 1  and valid_date = to_date(?,'MM/DD/YYYY')</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>ACTUAL_VALUE</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>CATE_ID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>VALID_DATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput>
+                        <xsl:choose>
+                            <xsl:when test="string(number($xrecords/pfx5:row/pfx5:cell[5]/pfx5:value)) !='NaN'">
+                                <ACTUAL_VALUE>
+                                    <xsl:choose>
+                                        <xsl:when test="exists($xrecords/pfx5:row/pfx5:cell[5]/pfx5:value)">
+                                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[5]/pfx5:value"/>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </ACTUAL_VALUE>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <ACTUAL_VALUE xsi:nil="true"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <CATE_ID>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
+                        </CATE_ID>
+                        <VALID_DATE>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[7]/pfx5:value"/>
+                        </VALID_DATE>
+                    </jdbcUpdateActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="queryPlanValue">
+                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                <pd:x>821</pd:x>
+                <pd:y>203</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <maxRows>100</maxRows>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>select PLAN_VALUE from OPE_KPI_05_01_DETAILS where CATE_ID = ? and CATE_TYPE = 1 and VALID_DATE = to_date(?,'MM/DD/YYYY')</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>CATE_ID</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>VALID_DATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                    <oraObjects/>
+                    <oraTables/>
+                    <QueryOutputCachedSchemaColumns>PLAN_VALUE</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                </config>
+                <pd:inputBindings>
+                    <jdbcQueryActivityInput>
+                        <CATE_ID>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
+                        </CATE_ID>
+                        <VALID_DATE>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[7]/pfx5:value"/>
+                        </VALID_DATE>
+                    </jdbcQueryActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="insertResultTable">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:x>1095</pd:x>
+                <pd:y>111</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>insert into OPE_KPI_05_01_RESULT (CATE_ID, DAILY_KPI_VALUE, CATE_TYPE, VALID_DATE) 
+values (?, ?, 1, to_date(?,'MM/DD/YYYY')) </statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>CATE_ID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>DAILY_KPI_VALUE</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>VALID_DATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput>
+                        <CATE_ID>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
+                        </CATE_ID>
+                        <xsl:choose>
+                            <xsl:when test="string(number($kpiResults/KPIs/Daily)) !='NaN'">
+                                <DAILY_KPI_VALUE>
+                                    <xsl:value-of select="$kpiResults/KPIs/Daily"/>
+                                </DAILY_KPI_VALUE>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <DAILY_KPI_VALUE xsi:nil="true"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <VALID_DATE>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[7]/pfx5:value"/>
+                        </VALID_DATE>
+                    </jdbcUpdateActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+        </pd:group>
+        <pd:activity name="checkResultRecord">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>324</pd:x>
+            <pd:y>210</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>select count(*) from OPE_KPI_05_01_RESULT where VALID_DATE = to_date(?,'MM/DD/YYYY') and CATE_TYPE = 1</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <VALID_DATE>
+                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[7]/pfx5:value"/>
+                    </VALID_DATE>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="deleteExistedRecord">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:x>467</pd:x>
+            <pd:y>102</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>delete OPE_KPI_05_01_RESULT where VALID_DATE = to_date(?,'MM/DD/YYYY') and CATE_TYPE = 1</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <VALID_DATE>
+                        <xsl:value-of select="$ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[7]/pfx5:value"/>
+                    </VALID_DATE>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
     <pd:transition>
         <pd:from>Catch</pd:from>
         <pd:to>HandleException</pd:to>
@@ -510,22 +517,15 @@ values (?, ?, 1, to_date(?,'MM/DD/YYYY')) </statement>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>ReadExcelCommon</pd:from>
-        <pd:to>Assign</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>Assign</pd:from>
-        <pd:to>Product Group</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>Product Group</pd:from>
+        <pd:from>Transaction Group</pd:from>
         <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ReadExcelCommon</pd:from>
+        <pd:to>Transaction Group</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

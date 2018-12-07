@@ -27,11 +27,11 @@
 		</globalVariable>
 		<globalVariable>
 			<name>rowOffset</name>
-			<value>89</value>
+			<value>84</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>Integer</type>
-			<modTime>1544089937036</modTime>
+			<modTime>1544170984171</modTime>
 		</globalVariable>
 	</globalVariables>
 </repository>

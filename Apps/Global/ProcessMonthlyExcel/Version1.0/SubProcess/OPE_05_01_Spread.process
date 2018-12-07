@@ -175,7 +175,7 @@
                         <xsl:value-of select="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/ns1:InputExcel/ns1:FileName"/>
                     </ns1:FileName>
                     <ns1:SheetName>
-                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/Sheetname"/>
+                        <xsl:value-of select="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/ns1:InputExcel/ns1:SheetName"/>
                     </ns1:SheetName>
                     <ns1:rowCount>
                         <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/OPE_05_01_Spread/rowCount"/>

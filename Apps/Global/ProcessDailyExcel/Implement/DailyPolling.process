@@ -37,7 +37,7 @@
     <pd:activity name="MainProcessOperation">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>262</pd:x>
+        <pd:x>261</pd:x>
         <pd:y>65</pd:y>
         <config>
             <processName>/Apps/TemplateProcess/MainProcessOperation.process</processName>
@@ -170,7 +170,7 @@
     <pd:activity name="Remove Origin File">
         <pd:type>com.tibco.plugin.file.FileRemoveActivity</pd:type>
         <pd:resourceType>ae.activities.FileRemoveActivity</pd:resourceType>
-        <pd:x>564</pd:x>
+        <pd:x>563</pd:x>
         <pd:y>68</pd:y>
         <config/>
         <pd:inputBindings>

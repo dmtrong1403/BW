@@ -3,11 +3,11 @@
 	<globalVariables>
 		<globalVariable>
 			<name>Backup_Daily</name>
-			<value>C:\Users\OS\Desktop\Excel_Templates\Backup_Excel\Daily_Actual</value>
+			<value>C:\Users\OS\Desktop\Excel_Templates\Backup_Excel\Daily_Actual\</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>String</type>
-			<modTime>1537774782000</modTime>
+			<modTime>1544154544296</modTime>
 		</globalVariable>
 		<globalVariable>
 			<name>FileName</name>
