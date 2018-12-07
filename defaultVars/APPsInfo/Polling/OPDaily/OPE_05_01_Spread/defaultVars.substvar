@@ -3,11 +3,11 @@
 	<globalVariables>
 		<globalVariable>
 			<name>colCount</name>
-			<value>0</value>
+			<value>7</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>Integer</type>
-			<modTime>1543891031016</modTime>
+			<modTime>1544089936970</modTime>
 		</globalVariable>
 		<globalVariable>
 			<name>colOffset</name>
@@ -19,19 +19,19 @@
 		</globalVariable>
 		<globalVariable>
 			<name>rowCount</name>
-			<value>0</value>
+			<value>5</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>Integer</type>
-			<modTime>1543891031127</modTime>
+			<modTime>1544089937004</modTime>
 		</globalVariable>
 		<globalVariable>
 			<name>rowOffset</name>
-			<value>0</value>
+			<value>89</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>Integer</type>
-			<modTime>1543891031188</modTime>
+			<modTime>1544089937036</modTime>
 		</globalVariable>
 	</globalVariables>
 </repository>
