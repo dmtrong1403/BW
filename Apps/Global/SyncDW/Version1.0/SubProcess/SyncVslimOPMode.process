@@ -9,8 +9,8 @@
     <pd:startY>243</pd:startY>
     <pd:returnBindings/>
     <pd:endName>End</pd:endName>
-    <pd:endX>763</pd:endX>
-    <pd:endY>246</pd:endY>
+    <pd:endX>873</pd:endX>
+    <pd:endY>244</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1471415125027</pd:targetNamespace>
@@ -62,8 +62,8 @@
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>582</pd:x>
-        <pd:y>357</pd:y>
+        <pd:x>695</pd:x>
+        <pd:y>461</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
@@ -73,8 +73,8 @@
     <pd:activity name="handleException">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>770</pd:x>
-        <pd:y>359</pd:y>
+        <pd:x>883</pd:x>
+        <pd:y>463</pd:y>
         <config>
             <processName>/Util/Exception/handleException.process</processName>
         </config>
@@ -125,8 +125,8 @@
         <pd:resourceType>ae.process.group</pd:resourceType>
         <pd:x>293</pd:x>
         <pd:y>125</pd:y>
-        <pd:width>358</pd:width>
-        <pd:height>219</pd:height>
+        <pd:width>484</pd:width>
+        <pd:height>224</pd:height>
         <pd:collapsedWidth>57</pd:collapsedWidth>
         <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>
@@ -152,14 +152,14 @@
         <pd:transition>
             <pd:from>insertToDW_VSLIMS</pd:from>
             <pd:to>end</pd:to>
-            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineType>Default</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
         <pd:transition>
             <pd:from>getValueInVSlimsByDate</pd:from>
             <pd:to>insertToDW_VSLIMS</pd:to>
-            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineType>Default</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
@@ -167,8 +167,8 @@
             <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
             <pd:description>Lay gia tri cua OP mode theo ngay dua vao ID va eachDate</pd:description>
-            <pd:x>379</pd:x>
-            <pd:y>242</pd:y>
+            <pd:x>386</pd:x>
+            <pd:y>244</pd:y>
             <config>
                 <timeout>100</timeout>
                 <commit>false</commit>
@@ -334,8 +334,8 @@ AND SAMPDATE = TO_DATE(?,'MM/DD/YYYY')</statement>
         <pd:activity name="insertToDW_VSLIMS">
             <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:x>518</pd:x>
-            <pd:y>242</pd:y>
+            <pd:x>620</pd:x>
+            <pd:y>181</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>

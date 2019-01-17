@@ -166,9 +166,10 @@ DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         <pd:y>5</pd:y>
         <pd:width>165</pd:width>
         <pd:height>140</pd:height>
-        <pd:collapsedWidth>52</pd:collapsedWidth>
-        <pd:collapsedHeight>69</pd:collapsedHeight>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
         <config>
             <pd:groupType>inputLoop</pd:groupType>
             <pd:serializable>false</pd:serializable>
@@ -200,7 +201,7 @@ DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
             <pd:x>1033</pd:x>
             <pd:y>84</pd:y>
             <config>
-                <processName>/Apps/Global/SyncDW_0201/Version1.0/SubProcess/insert&amp;Calculate_CrdQuality.process</processName>
+                <processName>/Apps/Global/SyncDW_0201/Version1.0/SubProcess/SyncVslimDestination01.process</processName>
             </config>
             <pd:inputBindings>
                 <eachDate>

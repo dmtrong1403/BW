@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+<pd:ProcessDefinition xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns6="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
     <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
     <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
@@ -28,15 +28,19 @@
     <pd:endType>
         <xsd:element name="DATE_UPDATE" type="xsd:string"/>
     </pd:endType>
-    <pd:endX>1244</pd:endX>
-    <pd:endY>201</pd:endY>
+    <pd:endX>1615</pd:endX>
+    <pd:endY>198</pd:endY>
     <pd:errorSchemas/>
-    <pd:processVariables/>
+    <pd:processVariables>
+        <CheckData>
+            <xsd:element name="CountMissingValues" type="xsd:double"/>
+        </CheckData>
+    </pd:processVariables>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
     <pd:group name="updateRows">
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>272</pd:x>
+        <pd:x>641</pd:x>
         <pd:y>115</pd:y>
         <pd:width>166</pd:width>
         <pd:height>164</pd:height>
@@ -72,7 +76,7 @@
         <pd:activity name="UpdateDB">
             <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:x>347</pd:x>
+            <pd:x>716</pd:x>
             <pd:y>206</pd:y>
             <config>
                 <timeout>10</timeout>
@@ -136,8 +140,8 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     <pd:activity name="HandleException">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1243</pd:x>
-        <pd:y>318</pd:y>
+        <pd:x>1614</pd:x>
+        <pd:y>313</pd:y>
         <config>
             <processName>/Util/Exception/handleException.process</processName>
         </config>
@@ -190,8 +194,8 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>1103</pd:x>
-        <pd:y>316</pd:y>
+        <pd:x>1474</pd:x>
+        <pd:y>311</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
@@ -201,8 +205,8 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     <pd:activity name="checkRecordExists">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>532</pd:x>
-        <pd:y>203</pd:y>
+        <pd:x>903</pd:x>
+        <pd:y>200</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -241,8 +245,8 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     <pd:activity name="delRecordExists">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>695</pd:x>
-        <pd:y>110</pd:y>
+        <pd:x>1066</pd:x>
+        <pd:y>107</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -303,8 +307,8 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     <pd:activity name="calculate_0103">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>869</pd:x>
-        <pd:y>203</pd:y>
+        <pd:x>1240</pd:x>
+        <pd:y>200</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -336,8 +340,8 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     <pd:activity name="updStatus0204">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>1062</pd:x>
-        <pd:y>202</pd:y>
+        <pd:x>1433</pd:x>
+        <pd:y>199</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -366,6 +370,42 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="CheckMissingData">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>337</pd:x>
+        <pd:y>205</pd:y>
+        <config>
+            <variableName>CheckData</variableName>
+        </config>
+        <pd:inputBindings>
+            <CountMissingValues>
+                <xsl:value-of select="sum(for $row in $ReadExcelCommon/pfx5:sheet/pfx5:row return if (string(number($row/pfx5:cell[3])) !='NaN') then 0 else 1)"/>
+            </CountMissingValues>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="AlertDataMissing">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>497</pd:x>
+        <pd:y>98</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/AlertDataMissing.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <OPE_KPI_ID>
+                    <xsl:value-of select="1"/>
+                </OPE_KPI_ID>
+                <OPE_KPI_CODE>
+                    <xsl:value-of select="&quot;OPE_KPI_01_03&quot;"/>
+                </OPE_KPI_CODE>
+                <FrequencyType>
+                    <xsl:value-of select="0"/>
+                </FrequencyType>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>Start</pd:from>
         <pd:to>ReadExcelCommon</pd:to>
@@ -375,7 +415,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>ReadExcelCommon</pd:from>
-        <pd:to>updateRows</pd:to>
+        <pd:to>CheckMissingData</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -440,5 +480,28 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = TO_DATE(?, 'MM/DD/YYYY' )</statement>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
         <pd:xpath>$updStatus0204/resultSet/Record/PCK_OPE_KPI.UPDATESTATUSOF02041 = 1</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckMissingData</pd:from>
+        <pd:to>updateRows</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckMissingData</pd:from>
+        <pd:to>AlertDataMissing</pd:to>
+        <pd:xpathDescription>Actual value null</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$CheckData/CountMissingValues &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>AlertDataMissing</pd:from>
+        <pd:to>updateRows</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
     </pd:transition>
 </pd:ProcessDefinition>

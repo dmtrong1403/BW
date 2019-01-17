@@ -29,8 +29,8 @@
         <pd:inputBindings/>
     </pd:starter>
     <pd:endName>End</pd:endName>
-    <pd:endX>717</pd:endX>
-    <pd:endY>62</pd:endY>
+    <pd:endX>856</pd:endX>
+    <pd:endY>66</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1457944554017</pd:targetNamespace>
@@ -56,8 +56,8 @@
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>396</pd:x>
-        <pd:y>178</pd:y>
+        <pd:x>535</pd:x>
+        <pd:y>182</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
@@ -67,8 +67,8 @@
     <pd:activity name="handleException">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>560</pd:x>
-        <pd:y>178</pd:y>
+        <pd:x>699</pd:x>
+        <pd:y>182</pd:y>
         <config>
             <processName>/Util/Exception/handleException.process</processName>
         </config>
@@ -183,6 +183,46 @@
             </ns2:RemoveActivityInputClass>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="LogPollingResults">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>680</pd:x>
+        <pd:y>64</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into FILES_POLLING_RESULTS (FILENAME, FILETYPE, CREATEDDATE) VALUES (?,?,?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>FileName</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>FileType</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CreatedDate</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <FileName>
+                    <xsl:value-of select="$File-Poller/ns2:EventSourceOuputNoContentClass/fileInfo/fullName"/>
+                </FileName>
+                <FileType>
+                    <xsl:value-of select="2"/>
+                </FileType>
+                <CreatedDate>
+                    <xsl:value-of select="current-date()"/>
+                </CreatedDate>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>File Poller</pd:from>
         <pd:to>MainProcessOperation</pd:to>
@@ -220,6 +260,13 @@
     </pd:transition>
     <pd:transition>
         <pd:from>Remove Origin File</pd:from>
+        <pd:to>LogPollingResults</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogPollingResults</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>

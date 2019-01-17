@@ -29,16 +29,16 @@
         <pd:inputBindings/>
     </pd:starter>
     <pd:endName>End</pd:endName>
-    <pd:endX>733</pd:endX>
-    <pd:endY>69</pd:endY>
+    <pd:endX>846</pd:endX>
+    <pd:endY>73</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1457944554017</pd:targetNamespace>
     <pd:activity name="MainProcessOperation">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>261</pd:x>
-        <pd:y>65</pd:y>
+        <pd:x>225</pd:x>
+        <pd:y>66</pd:y>
         <config>
             <processName>/Apps/TemplateProcess/MainProcessOperation.process</processName>
         </config>
@@ -151,8 +151,8 @@
     <pd:activity name="Backup Daily File To Server">
         <pd:type>com.tibco.plugin.file.FileCopyActivity</pd:type>
         <pd:resourceType>ae.activities.FileCopyActivity</pd:resourceType>
-        <pd:x>408</pd:x>
-        <pd:y>73</pd:y>
+        <pd:x>364</pd:x>
+        <pd:y>75</pd:y>
         <config>
             <overwrite>true</overwrite>
         </config>
@@ -170,8 +170,8 @@
     <pd:activity name="Remove Origin File">
         <pd:type>com.tibco.plugin.file.FileRemoveActivity</pd:type>
         <pd:resourceType>ae.activities.FileRemoveActivity</pd:resourceType>
-        <pd:x>563</pd:x>
-        <pd:y>68</pd:y>
+        <pd:x>520</pd:x>
+        <pd:y>70</pd:y>
         <config/>
         <pd:inputBindings>
             <ns2:RemoveActivityInputClass>
@@ -179,6 +179,46 @@
                     <xsl:value-of select="$File-Poller/ns2:EventSourceOuputNoContentClass/fileInfo/fullName"/>
                 </fileName>
             </ns2:RemoveActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LogPollingResults">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>662</pd:x>
+        <pd:y>70</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into FILES_POLLING_RESULTS (FILENAME, FILETYPE, CREATEDDATE) VALUES (?,?,?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>FileName</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>FileType</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CreatedDate</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <FileName>
+                    <xsl:value-of select="$File-Poller/ns2:EventSourceOuputNoContentClass/fileInfo/fullName"/>
+                </FileName>
+                <FileType>
+                    <xsl:value-of select="0"/>
+                </FileType>
+                <CreatedDate>
+                    <xsl:value-of select="current-date()"/>
+                </CreatedDate>
+            </jdbcUpdateActivityInput>
         </pd:inputBindings>
     </pd:activity>
     <pd:transition>
@@ -218,6 +258,13 @@
     </pd:transition>
     <pd:transition>
         <pd:from>Remove Origin File</pd:from>
+        <pd:to>LogPollingResults</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogPollingResults</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>

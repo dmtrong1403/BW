@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/common/apps/appdataenv/1.0" xmlns:ns1="sbv/common/exceptionhandling/exception/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType">
     <pd:name>Apps/Global/SyncDW_0201/Version1.0/SubProcess/SyncVslimCrudeQuality.process</pd:name>
+    <pd:description>Sync vslim data from DWH to temporary table first</pd:description>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="StartDate" type="xsd:date"/>
@@ -9,21 +10,24 @@
     <pd:startY>260</pd:startY>
     <pd:returnBindings/>
     <pd:endName>End</pd:endName>
-    <pd:endX>1275</pd:endX>
+    <pd:endX>1520</pd:endX>
     <pd:endY>278</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables>
         <tempDate>
             <xsd:element name="root" type="xsd:string"/>
         </tempDate>
+        <MissingDataStatus>
+            <xsd:element name="CountNull" type="xsd:double"/>
+        </MissingDataStatus>
     </pd:processVariables>
     <pd:targetNamespace>http://xmlns.example.com/1471415125027</pd:targetNamespace>
     <pd:group name="forAllMode">
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>337</pd:x>
+        <pd:x>338</pd:x>
         <pd:y>48</pd:y>
-        <pd:width>667</pd:width>
+        <pd:width>893</pd:width>
         <pd:height>434</pd:height>
         <pd:collapsedWidth>57</pd:collapsedWidth>
         <pd:collapsedHeight>70</pd:collapsedHeight>
@@ -48,22 +52,22 @@
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
         <pd:transition>
-            <pd:from>NoRecords</pd:from>
+            <pd:from>forAllDays</pd:from>
             <pd:to>end</pd:to>
             <pd:lineType>One Bend</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
         <pd:transition>
-            <pd:from>forAllDays</pd:from>
+            <pd:from>AlertDataMissing</pd:from>
             <pd:to>end</pd:to>
-            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineType>One Bend</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
         <pd:transition>
             <pd:from>getValueInVSlims</pd:from>
-            <pd:to>forAllDays</pd:to>
+            <pd:to>CheckMissingData</pd:to>
             <pd:xpathDescription>existsRecords</pd:xpathDescription>
             <pd:lineType>Multiple Bends</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
@@ -76,6 +80,29 @@
             <pd:lineType>Multiple Bends</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>otherwise</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>NoRecords</pd:from>
+            <pd:to>AlertDataMissing</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckMissingData</pd:from>
+            <pd:to>forAllDays</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckMissingData</pd:from>
+            <pd:to>NoRecords</pd:to>
+            <pd:xpathDescription>Found null</pd:xpathDescription>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$MissingDataStatus/CountNull &gt; 0</pd:xpath>
         </pd:transition>
         <pd:activity name="getValueInVSlims">
             <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
@@ -191,8 +218,8 @@ and UPPER(t.APPRSTS)='RELEASED'  and PROD_ID IS NOT NULL and NUMRES IS NOT NULL<
         <pd:group name="forAllDays">
             <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
             <pd:resourceType>ae.process.group</pd:resourceType>
-            <pd:x>527</pd:x>
-            <pd:y>79</pd:y>
+            <pd:x>682</pd:x>
+            <pd:y>75</pd:y>
             <pd:width>422</pd:width>
             <pd:height>317</pd:height>
             <pd:collapsedWidth>57</pd:collapsedWidth>
@@ -257,8 +284,8 @@ and UPPER(t.APPRSTS)='RELEASED'  and PROD_ID IS NOT NULL and NUMRES IS NOT NULL<
             <pd:activity name="insertToDW_VSLIMS">
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-                <pd:x>777</pd:x>
-                <pd:y>342</pd:y>
+                <pd:x>932</pd:x>
+                <pd:y>336</pd:y>
                 <config>
                     <timeout>10</timeout>
                     <commit>false</commit>
@@ -386,16 +413,16 @@ VALUES (?,?,?,?,?,to_date(?,'MM//DD/YYYY'),?,?)</statement>
             <pd:activity name="Skip">
                 <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
                 <pd:resourceType>ae.activities.null</pd:resourceType>
-                <pd:x>777</pd:x>
-                <pd:y>135</pd:y>
+                <pd:x>932</pd:x>
+                <pd:y>129</pd:y>
                 <config/>
                 <pd:inputBindings/>
             </pd:activity>
             <pd:activity name="queryExistsRecords">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>610</pd:x>
-                <pd:y>246</pd:y>
+                <pd:x>765</pd:x>
+                <pd:y>240</pd:y>
                 <config>
                     <timeout>10</timeout>
                     <commit>false</commit>
@@ -530,8 +557,8 @@ and  SAMP_POINT_STEP = ? and  XEXPNAME = ? and SAMPDATE = TO_DATE(?,'MM/DD/YYYY'
             <pd:activity name="Assign">
                 <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
                 <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-                <pd:x>884</pd:x>
-                <pd:y>342</pd:y>
+                <pd:x>1039</pd:x>
+                <pd:y>336</pd:y>
                 <config>
                     <variableName>tempDate</variableName>
                 </config>
@@ -545,16 +572,52 @@ and  SAMP_POINT_STEP = ? and  XEXPNAME = ? and SAMPDATE = TO_DATE(?,'MM/DD/YYYY'
         <pd:activity name="NoRecords">
             <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
             <pd:resourceType>ae.activities.null</pd:resourceType>
-            <pd:x>549</pd:x>
+            <pd:x>551</pd:x>
             <pd:y>428</pd:y>
             <config/>
             <pd:inputBindings/>
+        </pd:activity>
+        <pd:activity name="AlertDataMissing">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>768</pd:x>
+            <pd:y>428</pd:y>
+            <config>
+                <processName>/Apps/Global/Common/AlertDataMissing.process</processName>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <OPE_KPI_ID>
+                        <xsl:value-of select="2"/>
+                    </OPE_KPI_ID>
+                    <OPE_KPI_CODE>
+                        <xsl:value-of select="&quot;OPE_KPI_02_01&quot;"/>
+                    </OPE_KPI_CODE>
+                    <FrequencyType>
+                        <xsl:value-of select="0"/>
+                    </FrequencyType>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="CheckMissingData">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:x>549</pd:x>
+            <pd:y>242</pd:y>
+            <config>
+                <variableName>MissingDataStatus</variableName>
+            </config>
+            <pd:inputBindings>
+                <CountNull>
+                    <xsl:value-of select="sum(for $record in $getValueInVSlims/resultSet/Record return if (string(number($record/NUMRES)) !='NaN') then 0 else 1)"/>
+                </CountNull>
+            </pd:inputBindings>
         </pd:activity>
     </pd:group>
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>1131</pd:x>
+        <pd:x>1376</pd:x>
         <pd:y>535</pd:y>
         <pd:handler>true</pd:handler>
         <config>
@@ -650,7 +713,7 @@ and  SAMP_POINT_STEP = ? and  XEXPNAME = ? and SAMPDATE = TO_DATE(?,'MM/DD/YYYY'
     <pd:activity name="handleException">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1272</pd:x>
+        <pd:x>1517</pd:x>
         <pd:y>535</pd:y>
         <config>
             <processName>/Util/Exception/handleException.process</processName>
@@ -700,7 +763,7 @@ and  SAMP_POINT_STEP = ? and  XEXPNAME = ? and SAMPDATE = TO_DATE(?,'MM/DD/YYYY'
     <pd:activity name="SetVariable">
         <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
         <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
-        <pd:x>1126</pd:x>
+        <pd:x>1371</pd:x>
         <pd:y>276</pd:y>
         <config>
             <variableConfig>/SharedResource/SharedVariables/SyncDW_0201/listDates.sharedvariable</variableConfig>

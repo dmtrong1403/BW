@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <pd:name>Apps/Global/Common/AlertDataMissing.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="OPE_KPI_ID" type="xsd:int"/>
+                    <xsd:element name="OPE_KPI_CODE" type="xsd:string"/>
+                    <xsd:element name="FrequencyType" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="AlertActive" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>182</pd:startX>
+    <pd:startY>207</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>644</pd:endX>
+    <pd:endY>207</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <EmailContext>
+            <xsd:element name="Context">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="subject" type="xsd:string"/>
+                        <xsd:element name="body" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </EmailContext>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1537936305425</pd:targetNamespace>
+    <pd:activity name="CheckActiveFlag">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>321</pd:x>
+        <pd:y>207</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="GetEmailContext">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>319</pd:x>
+        <pd:y>85</pd:y>
+        <config>
+            <variableName>EmailContext</variableName>
+        </config>
+        <pd:inputBindings>
+            <xsl:choose>
+                <xsl:when test="$Start/root/FrequencyType = 0">
+                    <Context>
+                        <subject>
+                            <xsl:value-of select="concat(&quot;Missing data daily alert for &quot;,$Start/root/OPE_KPI_CODE)"/>
+                        </subject>
+                        <body>
+                            <xsl:value-of select="concat(&quot;Dear KPI Owner,The input data for the &quot;,$Start/root/OPE_KPI_CODE,&quot; is not available for &quot;,current-date(),&quot;.Appreciate your quick action to put the correct data so that this KPI can be displayed.Thank you.&quot;)"/>
+                        </body>
+                    </Context>
+                </xsl:when>
+                <xsl:when test="$Start/root/FrequencyType = 1">
+                    <Context>
+                        <subject>
+                            <xsl:value-of select="concat(&quot;Missing data weekly alert for &quot;,$Start/root/OPE_KPI_CODE)"/>
+                        </subject>
+                        <body>
+                            <xsl:value-of select="concat(&quot;Dear KPI Owner,The input data for the &quot;,$Start/root/OPE_KPI_CODE,&quot; is not available for &quot;,current-date(),&quot;.Appreciate your quick action to put the correct data so that this KPI can be displayed.Thank you.&quot;)"/>
+                        </body>
+                    </Context>
+                </xsl:when>
+                <xsl:otherwise>
+                    <Context>
+                        <subject>
+                            <xsl:value-of select="concat(&quot;Missing data monthly alert for &quot;,$Start/root/OPE_KPI_CODE)"/>
+                        </subject>
+                        <body>
+                            <xsl:value-of select="concat(&quot;Dear KPI Owner,The input data for the &quot;,$Start/root/OPE_KPI_CODE,&quot; is not available for &quot;,current-date(),&quot;.Appreciate your quick action to put the correct data so that this KPI can be displayed.Thank you.&quot;)"/>
+                        </body>
+                    </Context>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LogMissingData">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>505</pd:x>
+        <pd:y>207</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into OPE_KPI_AUDIT_LOG (OPE_KPI_ID, OPE_KPI_CODE, FREQUENCY_TYPE, AUDIT_MESSAGE, UPDATE_DATE) 
+VALUES (?,?,?,?,?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>OPE_KPI_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>OPE_KPI_CODE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>FREQUENCY_TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>AUDIT_MESSAGE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>UPDATE_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <OPE_KPI_ID>
+                    <xsl:value-of select="$Start/root/OPE_KPI_ID"/>
+                </OPE_KPI_ID>
+                <OPE_KPI_CODE>
+                    <xsl:value-of select="$Start/root/OPE_KPI_CODE"/>
+                </OPE_KPI_CODE>
+                <FREQUENCY_TYPE>
+                    <xsl:choose>
+                        <xsl:when test="exists($Start/root/FrequencyType)">
+                            <xsl:value-of select="$Start/root/FrequencyType"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </FREQUENCY_TYPE>
+                <AUDIT_MESSAGE>
+                    <xsl:value-of select="$EmailContext/Context/subject"/>
+                </AUDIT_MESSAGE>
+                <UPDATE_DATE>
+                    <xsl:choose>
+                        <xsl:when test="exists(current-date())">
+                            <xsl:value-of select="current-date()"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </UPDATE_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SendAlert">
+        <pd:type>com.tibco.plugin.mail.MailPubActivity</pd:type>
+        <pd:resourceType>ae.activities.MailActivityResource</pd:resourceType>
+        <pd:x>503</pd:x>
+        <pd:y>85</pd:y>
+        <config>
+            <newMimeSupport>true</newMimeSupport>
+            <inputOutputVersion>5.2.0</inputOutputVersion>
+            <useSsl>true</useSsl>
+            <authenticate>true</authenticate>
+            <host>smtp.gmail.com:587</host>
+            <username>trong.dm@livezone.vn</username>
+            <password>01223937888</password>
+            <ns0:ssl xmlns:ns0="http://www.tibco.com/xmlns/aemeta/services/2002">
+                <ns0:strongCipherSuitesOnly>true</ns0:strongCipherSuitesOnly>
+                <ns0:cert isRef="true">/SharedResource/CA</ns0:cert>
+            </ns0:ssl>
+            <InputHeaders>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </InputHeaders>
+        </config>
+        <pd:inputBindings>
+            <ns:mailActivityInput>
+                <from>
+                    <xsl:value-of select="&quot;trong.dm@livezone.vn&quot;"/>
+                </from>
+                <to>
+                    <xsl:value-of select="&quot;trong.dm@livezone.vn&quot;"/>
+                </to>
+                <cc>
+                    <xsl:value-of select="&quot;thao.nt@livezone.vn, trong.dm.it@gmail.com&quot;"/>
+                </cc>
+                <subject>
+                    <xsl:value-of select="$EmailContext/Context/subject"/>
+                </subject>
+                <sentdate>
+                    <xsl:value-of select="current-date()"/>
+                </sentdate>
+                <pfx:bodyElement>
+                    <bodyText>
+                        <xsl:value-of select="$EmailContext/Context/body"/>
+                    </bodyText>
+                </pfx:bodyElement>
+            </ns:mailActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>GetEmailContext</pd:from>
+        <pd:to>SendAlert</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>CheckActiveFlag</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogMissingData</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendAlert</pd:from>
+        <pd:to>LogMissingData</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckActiveFlag</pd:from>
+        <pd:to>GetEmailContext</pd:to>
+        <pd:xpathDescription>If active</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/AlertActive = '1'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckActiveFlag</pd:from>
+        <pd:to>LogMissingData</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

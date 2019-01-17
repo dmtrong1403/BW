@@ -8,7 +8,7 @@
         <processArchive name="OPE_KPI_02_01_LIMS">
             <resourceType>process.archive.resource</resourceType>
             <authorProperty>Administrator</authorProperty>
-            <processProperty>/Apps/Global/SyncDW_0201/Implement/SourcesSynchronization.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/insert&amp;Calculate_CrdQuality.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/sub_insert&amp;Calculate0201.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/SyncVslimCrudeQuality.process,/Apps/Global/SyncDW_0201/Version1.0/MainProcess.process</processProperty>
+            <processProperty>/Apps/Global/SyncDW_0201/Implement/SourcesSynchronization.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/insert&amp;Calculate_CrdQuality.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/SyncVslimDestination02.process,/Apps/Global/SyncDW_0201/Version1.0/SubProcess/SyncVslimCrudeQuality.process,/Apps/Global/SyncDW_0201/Version1.0/MainProcess.process</processProperty>
         </processArchive>
         <versionProperty>13</versionProperty>
         <authorProperty>Administrator</authorProperty>

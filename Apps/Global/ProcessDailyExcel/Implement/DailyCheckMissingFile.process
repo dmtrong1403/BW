@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="www.tibco.com/plugin/Timer" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType">
+    <pd:name>Apps/Global/ProcessDailyExcel/Implement/DailyCheckMissingFile.process</pd:name>
+    <pd:startName>Timer</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="Timer">
+        <pd:type>com.tibco.plugin.timer.TimerEventSource</pd:type>
+        <pd:resourceType>ae.activities.timer</pd:resourceType>
+        <pd:x>153</pd:x>
+        <pd:y>175</pd:y>
+        <config>
+            <StartTime>1544670000000</StartTime>
+            <Frequency>false</Frequency>
+            <TimeInterval>3</TimeInterval>
+            <FrequencyIndex>Hour</FrequencyIndex>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>575</pd:endX>
+    <pd:endY>175</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1537941797807</pd:targetNamespace>
+    <pd:activity name="CheckMissingFile">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>347</pd:x>
+        <pd:y>74</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/AlertFilesMissing.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <FileType>
+                    <xsl:value-of select="0"/>
+                </FileType>
+                <Date>
+                    <xsl:value-of select="current-date()"/>
+                </Date>
+                <ActiveAlert>
+                    <xsl:value-of select="$_globalVariables/ns:GlobalVariables/APPsInfo/ActiveAlert/MissingFile/Daily"/>
+                </ActiveAlert>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Timer</pd:from>
+        <pd:to>CheckMissingFile</pd:to>
+        <pd:xpathDescription>Before 16.00 PM</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>number($Timer/pfx:TimerOutputSchema/Hour) &lt;= 16</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckMissingFile</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Timer</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

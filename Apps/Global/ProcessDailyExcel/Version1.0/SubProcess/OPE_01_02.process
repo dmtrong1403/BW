@@ -18,26 +18,33 @@
             </xsd:complexType>
         </xsd:element>
     </pd:startType>
-    <pd:startX>49</pd:startX>
-    <pd:startY>204</pd:startY>
+    <pd:startX>47</pd:startX>
+    <pd:startY>206</pd:startY>
     <pd:returnBindings>
         <pfx3:cell/>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
-    <pd:endX>1244</pd:endX>
-    <pd:endY>213</pd:endY>
+    <pd:endX>1478</pd:endX>
+    <pd:endY>209</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables>
         <KPI-Results>
-            <xsd:element name="DailyKPI" type="xsd:double"/>
+            <xsd:element name="KPIs">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="MtdKPI" type="xsd:double" minOccurs="0"/>
+                        <xsd:element name="DailyKPI" type="xsd:double" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
         </KPI-Results>
     </pd:processVariables>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>1103</pd:x>
-        <pd:y>328</pd:y>
+        <pd:x>1337</pd:x>
+        <pd:y>412</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
@@ -47,8 +54,8 @@
     <pd:activity name="HandleException">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1243</pd:x>
-        <pd:y>330</pd:y>
+        <pd:x>1477</pd:x>
+        <pd:y>414</pd:y>
         <config>
             <processName>/Util/Exception/handleException.process</processName>
         </config>
@@ -102,8 +109,8 @@
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
         <pd:description>Query Actual &amp; Design Capacity of Process Units from OPE_KPI_01_03_DETAILS</pd:description>
-        <pd:x>212</pd:x>
-        <pd:y>206</pd:y>
+        <pd:x>156</pd:x>
+        <pd:y>207</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -143,10 +150,10 @@
     <pd:group name="Process Unit Group">
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>328</pd:x>
-        <pd:y>31</pd:y>
-        <pd:width>729</pd:width>
-        <pd:height>338</pd:height>
+        <pd:x>277</pd:x>
+        <pd:y>26</pd:y>
+        <pd:width>1012</pd:width>
+        <pd:height>347</pd:height>
         <pd:collapsedWidth>57</pd:collapsedWidth>
         <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>
@@ -164,7 +171,7 @@
         <pd:expanded>true</pd:expanded>
         <pd:transition>
             <pd:from>start</pd:from>
-            <pd:to>checkRecordExists</pd:to>
+            <pd:to>queryMtdCapacityByUnit</pd:to>
             <pd:lineType>Default</pd:lineType>
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
@@ -207,12 +214,26 @@
             <pd:lineColor>-16777216</pd:lineColor>
             <pd:conditionType>always</pd:conditionType>
         </pd:transition>
+        <pd:transition>
+            <pd:from>GetLastDayOfMonth</pd:from>
+            <pd:to>checkRecordExists</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>queryMtdCapacityByUnit</pd:from>
+            <pd:to>GetLastDayOfMonth</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
         <pd:activity name="checkRecordExists">
             <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
             <pd:description>Check if result record of input date existed</pd:description>
-            <pd:x>425</pd:x>
-            <pd:y>208</pd:y>
+            <pd:x>729</pd:x>
+            <pd:y>207</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>
@@ -260,8 +281,8 @@ and UNIT_ID = ?</statement>
             <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
             <pd:description>Delete result existed record</pd:description>
-            <pd:x>593</pd:x>
-            <pd:y>86</pd:y>
+            <pd:x>855</pd:x>
+            <pd:y>98</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>
@@ -295,29 +316,34 @@ and UNIT_ID = ?</statement>
             <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
             <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
             <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
-            <pd:x>784</pd:x>
-            <pd:y>216</pd:y>
+            <pd:x>993</pd:x>
+            <pd:y>214</pd:y>
             <config>
                 <variableName>KPI-Results</variableName>
             </config>
             <pd:inputBindings>
-                <DailyKPI>
-                    <xsl:value-of select="100 * $record/Record/ACTUAL div $record/Record/DESIGN_CAPACITY"/>
-                </DailyKPI>
+                <KPIs>
+                    <MtdKPI>
+                        <xsl:value-of select="100 * $queryMtdCapacityByUnit/resultSet/Record[1]/SUMACTUAL div $queryMtdCapacityByUnit/resultSet/Record[1]/SUMDESIGN_CAPACITY"/>
+                    </MtdKPI>
+                    <DailyKPI>
+                        <xsl:value-of select="100 * $record/Record/ACTUAL div $record/Record/DESIGN_CAPACITY"/>
+                    </DailyKPI>
+                </KPIs>
             </pd:inputBindings>
         </pd:activity>
         <pd:activity name="insertResultTable">
             <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:x>933</pd:x>
-            <pd:y>209</pd:y>
+            <pd:x>1138</pd:x>
+            <pd:y>208</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>
                 <emptyStrAsNil>false</emptyStrAsNil>
                 <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                <statement>insert into OPE_KPI_01_02_RESULT (UNIT_ID, KPI_DAILY_UNIT, DATE_UPDATE)
- values (?, ?, to_date(?,'MM/DD/YYYY'))</statement>
+                <statement>insert into OPE_KPI_01_02_RESULT (UNIT_ID, KPI_DAILY_UNIT, KPI_MONTHLY_UNIT, KPI_MTD_UNIT, DATE_UPDATE)
+ values (?, ?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
                 <Prepared_Param_DataType>
                     <parameter>
                         <parameterName>UNIT_ID</parameterName>
@@ -325,6 +351,14 @@ and UNIT_ID = ?</statement>
                     </parameter>
                     <parameter>
                         <parameterName>KPI_DAILY_UNIT</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>KPI_MONTHLY_UNIT</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>KPI_MTD_UNIT</parameterName>
                         <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
@@ -346,12 +380,113 @@ and UNIT_ID = ?</statement>
                         </xsl:choose>
                     </UNIT_ID>
                     <KPI_DAILY_UNIT>
-                        <xsl:value-of select="$KPI-Results/DailyKPI"/>
+                        <xsl:value-of select="$KPI-Results/KPIs/DailyKPI"/>
                     </KPI_DAILY_UNIT>
+                    <xsl:choose>
+                        <xsl:when test="substring($Start/root/DATE_UPDATE, 4, 2) = $GetLastDayOfMonth/LastDay">
+                            <KPI_MONTHLY_UNIT>
+                                <xsl:choose>
+                                    <xsl:when test="exists($KPI-Results/KPIs/MtdKPI)">
+                                        <xsl:value-of select="$KPI-Results/KPIs/MtdKPI"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </KPI_MONTHLY_UNIT>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <KPI_MONTHLY_UNIT xsi:nil="true"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <KPI_MTD_UNIT>
+                        <xsl:choose>
+                            <xsl:when test="exists($KPI-Results/KPIs/MtdKPI)">
+                                <xsl:value-of select="$KPI-Results/KPIs/MtdKPI"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </KPI_MTD_UNIT>
                     <DATE_UPDATE>
                         <xsl:value-of select="$Start/root/DATE_UPDATE"/>
                     </DATE_UPDATE>
                 </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="queryMtdCapacityByUnit">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>408</pd:x>
+            <pd:y>208</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>select SUM(ACTUAL), SUM(DESIGN_CAPACITY)
+from OPE_KPI_01_03_DATA 
+where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT_ID = ?</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>startDate</parameterName>
+                        <dataType>DATE</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>endDate</parameterName>
+                        <dataType>VARCHAR</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UNIT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>SUMACTUAL</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>SUMDESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <startDate>
+                        <xsl:value-of select="tib:create-date(tib:substring-after-last($Start/root/DATE_UPDATE,&quot;/&quot;), substring($Start/root/DATE_UPDATE, 1, 2), 01)"/>
+                    </startDate>
+                    <endDate>
+                        <xsl:value-of select="$Start/root/DATE_UPDATE"/>
+                    </endDate>
+                    <UNIT_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($record/Record/UNIT_ID)">
+                                <xsl:value-of select="$record/Record/UNIT_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </UNIT_ID>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="GetLastDayOfMonth">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>597</pd:x>
+            <pd:y>209</pd:y>
+            <config>
+                <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
+            </config>
+            <pd:inputBindings>
+                <InputDate>
+                    <xsl:value-of select="tib:create-date(tib:substring-after-last($Start/root/DATE_UPDATE,&quot;/&quot;), substring($Start/root/DATE_UPDATE, 1, 2), 01)"/>
+                </InputDate>
             </pd:inputBindings>
         </pd:activity>
     </pd:group>

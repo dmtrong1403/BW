@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <pd:name>Apps/Global/Common/AlertFilesMissing.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="FileType" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="Date" type="xsd:date" minOccurs="0"/>
+                    <xsd:element name="ActiveAlert" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>159</pd:startX>
+    <pd:startY>349</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>866</pd:endX>
+    <pd:endY>349</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <EmailContext>
+            <xsd:element name="Context">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="subject" type="xsd:string"/>
+                        <xsd:element name="body" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </EmailContext>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1537936305425</pd:targetNamespace>
+    <pd:activity name="CheckActiveFlag">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>297</pd:x>
+        <pd:y>348</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="GetEmailContext">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>553</pd:x>
+        <pd:y>67</pd:y>
+        <config>
+            <variableName>EmailContext</variableName>
+        </config>
+        <pd:inputBindings>
+            <xsl:choose>
+                <xsl:when test="$SelectByDate/resultSet/Record[1]/FILETYPE = 0">
+                    <Context>
+                        <subject>
+                            <xsl:value-of select="&quot;Daily missing file alert&quot;"/>
+                        </subject>
+                        <body>
+                            <xsl:value-of select="&quot;Dear KPI Owner, the daily template file has not been uploaded; please help to check and re-upload the related file for displaying dashboards. Related KPIs: OPE_KPI 01_02, 01_03, 02_01, 02_04, 02_05, 03_01, 03_02, 03_03, 05_01, 05_02. Thank you.&quot;"/>
+                        </body>
+                    </Context>
+                </xsl:when>
+                <xsl:when test="$SelectByDate/resultSet/Record[1]/FILETYPE = 1">
+                    <Context>
+                        <subject>
+                            <xsl:value-of select="&quot;Weekly missing file alert&quot;"/>
+                        </subject>
+                        <body>
+                            <xsl:value-of select="&quot;Dear KPI Owner, the weekly template file has not been uploaded; please help to check and re-upload the related file for displaying dashboards. Related KPIs: OPE_KPI 01_03, 02_02. Thank you.&quot;"/>
+                        </body>
+                    </Context>
+                </xsl:when>
+                <xsl:otherwise>
+                    <Context>
+                        <subject>
+                            <xsl:value-of select="&quot;Monthly missing file alert&quot;"/>
+                        </subject>
+                        <body>
+                            <xsl:value-of select="&quot;Dear KPI Owner, the weekly template file has not been uploaded; please help to check and re-upload the related file for displaying dashboards. Related KPIs: OPE_KPI 01_02, 01_03, 02_01, 02_02, 02_03, 02_04, 02_05, 03_01, 03_02, 05_01, 05_02. Thank you.&quot;"/>
+                        </body>
+                    </Context>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Join">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>863</pd:x>
+        <pd:y>197</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="SelectByDate">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>298</pd:x>
+        <pd:y>195</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select * from FILES_POLLING_RESULTS where FILETYPE = ? AND CREATEDDATE = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>FileType</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CreatedDate</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>FILES_POLLING_RESULTS_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>FILENAME</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>FILETYPE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>CREATEDDATE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <FileType>
+                    <xsl:choose>
+                        <xsl:when test="exists($Start/root/FileType)">
+                            <xsl:value-of select="$Start/root/FileType"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </FileType>
+                <CreatedDate>
+                    <xsl:choose>
+                        <xsl:when test="exists($Start/root/Date)">
+                            <xsl:value-of select="$Start/root/Date"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </CreatedDate>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SendAlert">
+        <pd:type>com.tibco.plugin.mail.MailPubActivity</pd:type>
+        <pd:resourceType>ae.activities.MailActivityResource</pd:resourceType>
+        <pd:x>862</pd:x>
+        <pd:y>67</pd:y>
+        <config>
+            <newMimeSupport>true</newMimeSupport>
+            <inputOutputVersion>5.2.0</inputOutputVersion>
+            <useSsl>true</useSsl>
+            <authenticate>true</authenticate>
+            <host>smtp.gmail.com:587</host>
+            <username>trong.dm@livezone.vn</username>
+            <password>01223937888</password>
+            <ns0:ssl xmlns:ns0="http://www.tibco.com/xmlns/aemeta/services/2002">
+                <ns0:strongCipherSuitesOnly>true</ns0:strongCipherSuitesOnly>
+                <ns0:cert isRef="true">/SharedResource/CA</ns0:cert>
+            </ns0:ssl>
+            <InputHeaders>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </InputHeaders>
+        </config>
+        <pd:inputBindings>
+            <ns:mailActivityInput>
+                <from>
+                    <xsl:value-of select="&quot;trong.dm@livezone.vn&quot;"/>
+                </from>
+                <to>
+                    <xsl:value-of select="&quot;trong.dm@livezone.vn&quot;"/>
+                </to>
+                <cc>
+                    <xsl:value-of select="&quot;thao.nt@livezone.vn, trong.dm.it@gmail.com&quot;"/>
+                </cc>
+                <subject>
+                    <xsl:value-of select="$EmailContext/Context/subject"/>
+                </subject>
+                <xsl:if test="$Start/root/Date">
+                    <sentdate>
+                        <xsl:value-of select="$Start/root/Date"/>
+                    </sentdate>
+                </xsl:if>
+                <pfx:bodyElement>
+                    <bodyText>
+                        <xsl:value-of select="$EmailContext/Context/body"/>
+                    </bodyText>
+                </pfx:bodyElement>
+            </ns:mailActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Split">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>554</pd:x>
+        <pd:y>195</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>CheckActiveFlag</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SelectByDate</pd:from>
+        <pd:to>Split</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Split</pd:from>
+        <pd:to>GetEmailContext</pd:to>
+        <pd:xpathDescription>No Record Found</pd:xpathDescription>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-3407821</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>count($SelectByDate/resultSet/Record) = 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendAlert</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-3407821</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Join</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetEmailContext</pd:from>
+        <pd:to>SendAlert</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-3407821</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckActiveFlag</pd:from>
+        <pd:to>SelectByDate</pd:to>
+        <pd:xpathDescription>If active</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/ActiveAlert = '1'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckActiveFlag</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
