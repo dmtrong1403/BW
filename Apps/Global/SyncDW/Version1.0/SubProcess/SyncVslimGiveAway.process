@@ -5,7 +5,7 @@
     <pd:startType>
         <xsd:element name="StartDate" type="xsd:date"/>
     </pd:startType>
-    <pd:startX>73</pd:startX>
+    <pd:startX>74</pd:startX>
     <pd:startY>243</pd:startY>
     <pd:returnBindings/>
     <pd:endName>End</pd:endName>

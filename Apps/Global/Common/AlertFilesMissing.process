@@ -6,8 +6,8 @@
         <xsd:element name="root">
             <xsd:complexType>
                 <xsd:sequence>
-                    <xsd:element name="FileType" type="xsd:int" minOccurs="0"/>
-                    <xsd:element name="Date" type="xsd:date" minOccurs="0"/>
+                    <xsd:element name="FileType" type="xsd:int"/>
+                    <xsd:element name="Date" type="xsd:date"/>
                     <xsd:element name="ActiveAlert" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
@@ -161,8 +161,8 @@
     <pd:activity name="SendAlert">
         <pd:type>com.tibco.plugin.mail.MailPubActivity</pd:type>
         <pd:resourceType>ae.activities.MailActivityResource</pd:resourceType>
-        <pd:x>862</pd:x>
-        <pd:y>67</pd:y>
+        <pd:x>865</pd:x>
+        <pd:y>66</pd:y>
         <config>
             <newMimeSupport>true</newMimeSupport>
             <inputOutputVersion>5.2.0</inputOutputVersion>

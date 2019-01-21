@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx6="http://www.tibco.com/schemas/BW/SharedResource/Schema/Apps/AlertSchemas/Schema.xsd" xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <xsd:import namespace="http://www.tibco.com/schemas/BW/SharedResource/Schema/Apps/AlertSchemas/Schema.xsd" schemaLocation="/SharedResource/Schema/Apps/AlertSchemas/AlertStatus.xsd"/>
+    <pd:name>Apps/Global/TargetViolationAlert/OPE_01_02/CheckViolation.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="DataType" type="xsd:string"/>
+                    <xsd:element name="AlertStatus" type="xsd:string"/>
+                    <xsd:element name="TagName" type="xsd:string"/>
+                    <xsd:element name="Date" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>47</pd:startX>
+    <pd:startY>206</pd:startY>
+    <pd:returnBindings>
+        <IsViolatated>
+            <xsl:value-of select="if (exists($checkMonthlyViolation/resultSet/Record)) then $checkMonthlyViolation/resultSet/Record[1]/COUNT else $checkViolation/resultSet/Record[1]/COUNT"/>
+        </IsViolatated>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="IsViolatated" type="xsd:double"/>
+    </pd:endType>
+    <pd:endX>926</pd:endX>
+    <pd:endY>206</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <AlertStatus>
+            <xsd:element name="Status">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Monthly" type="xsd:string"/>
+                        <xsd:element name="Ytd" type="xsd:string"/>
+                        <xsd:element name="Mtd" type="xsd:string"/>
+                        <xsd:element name="Daily" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </AlertStatus>
+        <AlertState ref="pfx6:root"/>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>786</pd:x>
+        <pd:y>390</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="checkMonthlyViolation">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>777</pd:x>
+        <pd:y>87</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select count(*) from OPE_KPI_01_02_ALERT_CONDITION where DATE_UPDATE = ? and TO_NUMBER(ALERT_STATUS) &lt; ? and DATA_TYPE = 'Monthly' and TAGNAME = ?</statement>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>ALERT_STATUS</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TAGNAME</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="if (number(substring($Start/root/Date, 1, 2) = 1)) then tib:create-date(number(tib:substring-after-last($Start/root/Date,&quot;/&quot;)) - 1, 12, $getDayOfLastMonth/LastDay) else tib:create-date(number(tib:substring-after-last($Start/root/Date,&quot;/&quot;)), number(substring($Start/root/Date, 1, 2)) -1, $getDayOfLastMonth/LastDay)"/>
+                </DATE_UPDATE>
+                <ALERT_STATUS>
+                    <xsl:value-of select="number($Start/root/AlertStatus)"/>
+                </ALERT_STATUS>
+                <TAGNAME>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TAGNAME>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="checkRecordExists">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:description>Check if result record of input date existed</pd:description>
+        <pd:x>260</pd:x>
+        <pd:y>206</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select  count(*) from OPE_KPI_01_02_ALERT_CONDITION t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY') 
+and TAGNAME = ? and DATA_TYPE = ?</statement>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TAGNAME</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATA_TYPE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </DATE_UPDATE>
+                <TAGNAME>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TAGNAME>
+                <DATA_TYPE>
+                    <xsl:value-of select="$Start/root/DataType"/>
+                </DATA_TYPE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="checkViolation">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>785</pd:x>
+        <pd:y>206</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select count(*) from OPE_KPI_01_02_ALERT_CONDITION where DATE_UPDATE = TRUNC(TO_DATE(?, 'MM/DD/YYYY' )-1) and TO_NUMBER(ALERT_STATUS) &lt; ? and DATA_TYPE = ? and TAGNAME = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>ALERT_STATUS</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATA_TYPE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TAGNAME</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </DATE_UPDATE>
+                <ALERT_STATUS>
+                    <xsl:value-of select="number($Start/root/AlertStatus)"/>
+                </ALERT_STATUS>
+                <DATA_TYPE>
+                    <xsl:value-of select="$Start/root/DataType"/>
+                </DATA_TYPE>
+                <TAGNAME>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TAGNAME>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="delRecordExists">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:description>Delete result existed record</pd:description>
+        <pd:x>428</pd:x>
+        <pd:y>85</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>delete OPE_KPI_01_02_ALERT_CONDITION t where t.DATE_UPDATE = to_date(?,'MM/DD/YYYY')
+and TAGNAME = ? and DATA_TYPE = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TAGNAME</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATA_TYPE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </DATE_UPDATE>
+                <TAGNAME>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TAGNAME>
+                <DATA_TYPE>
+                    <xsl:value-of select="$Start/root/DataType"/>
+                </DATA_TYPE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="getDayOfLastMonth">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>627</pd:x>
+        <pd:y>85</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
+        </config>
+        <pd:inputBindings>
+            <InputDate>
+                <xsl:value-of select="if (number(substring($Start/root/Date, 1, 2) = 1)) then tib:create-date(number(tib:substring-after-last($Start/root/Date,&quot;/&quot;)) - 1, 12, 01) else tib:create-date(number(tib:substring-after-last($Start/root/Date,&quot;/&quot;)), number(substring($Start/root/Date, 1, 2)) -1, 01)"/>
+            </InputDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="HandleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>926</pd:x>
+        <pd:y>392</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns5:Exception>
+                <pfx4:Metadata>
+                    <pfx4:AppCode>
+                        <xsl:value-of select="&quot;CheckViolation_0102&quot;"/>
+                    </pfx4:AppCode>
+                    <pfx4:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </pfx4:Version>
+                    <pfx4:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext), tib:timestamp())"/>
+                    </pfx4:ID>
+                    <pfx4:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx4:CreateTime>
+                </pfx4:Metadata>
+                <ns5:ExceptionBody>
+                    <xsl:for-each select="$_error">
+                        <ns5:ErrorReport>
+                            <StackTrace>
+                                <xsl:value-of select="ns4:ErrorReport/StackTrace"/>
+                            </StackTrace>
+                            <Msg>
+                                <xsl:value-of select="ns4:ErrorReport/Msg"/>
+                            </Msg>
+                            <FullClass>
+                                <xsl:value-of select="ns4:ErrorReport/FullClass"/>
+                            </FullClass>
+                            <ObjectClass>
+                                <xsl:value-of select="ns4:ErrorReport/Class"/>
+                            </ObjectClass>
+                            <ProcessStack>
+                                <xsl:value-of select="ns4:ErrorReport/ProcessStack"/>
+                            </ProcessStack>
+                            <xsl:if test="ns4:ErrorReport/MsgCode">
+                                <MsgCode>
+                                    <xsl:value-of select="ns4:ErrorReport/MsgCode"/>
+                                </MsgCode>
+                            </xsl:if>
+                            <xsl:copy-of select="ns4:ErrorReport/Data"/>
+                        </ns5:ErrorReport>
+                    </xsl:for-each>
+                </ns5:ExceptionBody>
+            </ns5:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="logStatus">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>627</pd:x>
+        <pd:y>206</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into OPE_KPI_01_02_ALERT_CONDITION (TAGNAME, DATA_TYPE, ALERT_STATUS, DATE_UPDATE)
+ values (?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>TAGNAME</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATA_TYPE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>ALERT_STATUS</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <TAGNAME>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TAGNAME>
+                <DATA_TYPE>
+                    <xsl:value-of select="$Start/root/DataType"/>
+                </DATA_TYPE>
+                <ALERT_STATUS>
+                    <xsl:value-of select="$Start/root/AlertStatus"/>
+                </ALERT_STATUS>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </DATE_UPDATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>checkRecordExists</pd:from>
+        <pd:to>delRecordExists</pd:to>
+        <pd:xpathDescription>if existed</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$checkRecordExists/resultSet/Record/COUNT &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>HandleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>HandleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>delRecordExists</pd:from>
+        <pd:to>logStatus</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkRecordExists</pd:from>
+        <pd:to>logStatus</pd:to>
+        <pd:xpathDescription>else</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>checkRecordExists</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>logStatus</pd:from>
+        <pd:to>checkViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkViolation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>logStatus</pd:from>
+        <pd:to>getDayOfLastMonth</pd:to>
+        <pd:xpathDescription>Monthly</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/DataType = 'Monthly'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getDayOfLastMonth</pd:from>
+        <pd:to>checkMonthlyViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkMonthlyViolation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

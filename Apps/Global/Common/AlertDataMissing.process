@@ -8,7 +8,7 @@
                 <xsd:sequence>
                     <xsd:element name="OPE_KPI_ID" type="xsd:int"/>
                     <xsd:element name="OPE_KPI_CODE" type="xsd:string"/>
-                    <xsd:element name="FrequencyType" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="FrequencyType" type="xsd:int"/>
                     <xsd:element name="AlertActive" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
@@ -18,8 +18,8 @@
     <pd:startY>207</pd:startY>
     <pd:returnBindings/>
     <pd:endName>End</pd:endName>
-    <pd:endX>644</pd:endX>
-    <pd:endY>207</pd:endY>
+    <pd:endX>702</pd:endX>
+    <pd:endY>208</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables>
         <EmailContext>
@@ -37,16 +37,16 @@
     <pd:activity name="CheckActiveFlag">
         <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
         <pd:resourceType>ae.activities.null</pd:resourceType>
-        <pd:x>321</pd:x>
-        <pd:y>207</pd:y>
+        <pd:x>532</pd:x>
+        <pd:y>208</pd:y>
         <config/>
         <pd:inputBindings/>
     </pd:activity>
     <pd:activity name="GetEmailContext">
         <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
         <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-        <pd:x>319</pd:x>
-        <pd:y>85</pd:y>
+        <pd:x>283</pd:x>
+        <pd:y>208</pd:y>
         <config>
             <variableName>EmailContext</variableName>
         </config>
@@ -88,8 +88,8 @@
     <pd:activity name="LogMissingData">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>505</pd:x>
-        <pd:y>207</pd:y>
+        <pd:x>387</pd:x>
+        <pd:y>208</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -116,7 +116,7 @@ VALUES (?,?,?,?,?)</statement>
                 </parameter>
                 <parameter>
                     <parameterName>UPDATE_DATE</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <dataType>DATE</dataType>
                 </parameter>
             </Prepared_Param_DataType>
         </config>
@@ -157,8 +157,8 @@ VALUES (?,?,?,?,?)</statement>
     <pd:activity name="SendAlert">
         <pd:type>com.tibco.plugin.mail.MailPubActivity</pd:type>
         <pd:resourceType>ae.activities.MailActivityResource</pd:resourceType>
-        <pd:x>503</pd:x>
-        <pd:y>85</pd:y>
+        <pd:x>700</pd:x>
+        <pd:y>91</pd:y>
         <config>
             <newMimeSupport>true</newMimeSupport>
             <inputOutputVersion>5.2.0</inputOutputVersion>
@@ -206,22 +206,53 @@ VALUES (?,?,?,?,?)</statement>
             </ns:mailActivityInput>
         </pd:inputBindings>
     </pd:activity>
-    <pd:transition>
-        <pd:from>GetEmailContext</pd:from>
-        <pd:to>SendAlert</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
+    <pd:activity name="SkipError">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>808</pd:x>
+        <pd:y>208</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
     <pd:transition>
         <pd:from>Start</pd:from>
-        <pd:to>CheckActiveFlag</pd:to>
+        <pd:to>GetEmailContext</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>LogMissingData</pd:from>
+        <pd:to>CheckActiveFlag</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckActiveFlag</pd:from>
+        <pd:to>SendAlert</pd:to>
+        <pd:xpathDescription>If active</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/AlertActive = '1'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckActiveFlag</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendAlert</pd:from>
+        <pd:to>SkipError</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SkipError</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -229,25 +260,16 @@ VALUES (?,?,?,?,?)</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>SendAlert</pd:from>
-        <pd:to>LogMissingData</pd:to>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>CheckActiveFlag</pd:from>
-        <pd:to>GetEmailContext</pd:to>
-        <pd:xpathDescription>If active</pd:xpathDescription>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>$Start/root/AlertActive = '1'</pd:xpath>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>CheckActiveFlag</pd:from>
+        <pd:from>GetEmailContext</pd:from>
         <pd:to>LogMissingData</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>otherwise</pd:conditionType>
+        <pd:conditionType>always</pd:conditionType>
     </pd:transition>
 </pd:ProcessDefinition>

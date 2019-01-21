@@ -10,6 +10,14 @@
 			<modTime>1547457080908</modTime>
 		</globalVariable>
 		<globalVariable>
+			<name>OPE_01_02</name>
+			<value>1</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1547889114061</modTime>
+		</globalVariable>
+		<globalVariable>
 			<name>OPE_01_03</name>
 			<value>1</value>
 			<deploymentSettable>true</deploymentSettable>

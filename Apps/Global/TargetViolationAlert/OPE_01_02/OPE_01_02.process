@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx6="http://www.tibco.com/schemas/BW/SharedResource/Schema/Apps/AlertSchemas/Schema.xsd" xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <xsd:import namespace="http://www.tibco.com/schemas/BW/SharedResource/Schema/Apps/AlertSchemas/Schema.xsd" schemaLocation="/SharedResource/Schema/Apps/AlertSchemas/AlertStatus.xsd"/>
+    <pd:name>Apps/Global/TargetViolationAlert/OPE_01_02/OPE_01_02.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="YtdResult" type="xsd:double"/>
+                    <xsd:element name="MtdResult" type="xsd:double"/>
+                    <xsd:element name="DailyResult" type="xsd:double"/>
+                    <xsd:element name="TagName" type="xsd:string"/>
+                    <xsd:element name="Date" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>47</pd:startX>
+    <pd:startY>206</pd:startY>
+    <pd:returnBindings>
+        <IsViolated>
+            <xsl:value-of select="if(string(number($CheckMonthlyViolation/IsViolatated)) !='NaN') then number($CheckMonthlyViolation/IsViolatated) + number($CheckDailyViolation/IsViolatated) + number($CheckMtdViolation/IsViolatated) + number($CheckYtdViolation/IsViolatated) else number($CheckDailyViolation/IsViolatated) + number($CheckMtdViolation/IsViolatated) + number($CheckYtdViolation/IsViolatated)"/>
+        </IsViolated>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="IsViolated" type="xsd:double"/>
+    </pd:endType>
+    <pd:endX>1127</pd:endX>
+    <pd:endY>210</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <AlertStatus>
+            <xsd:element name="Status">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Monthly" type="xsd:string"/>
+                        <xsd:element name="Ytd" type="xsd:string"/>
+                        <xsd:element name="Mtd" type="xsd:string"/>
+                        <xsd:element name="Daily" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </AlertStatus>
+        <AlertState ref="pfx6:root"/>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>987</pd:x>
+        <pd:y>420</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="CheckDailyViolation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>571</pd:x>
+        <pd:y>207</pd:y>
+        <config>
+            <processName>/Apps/Global/TargetViolationAlert/OPE_01_02/CheckViolation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <DataType>
+                    <xsl:value-of select="'Daily'"/>
+                </DataType>
+                <AlertStatus>
+                    <xsl:value-of select="$AlertStatus/Status/Daily"/>
+                </AlertStatus>
+                <TagName>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TagName>
+                <Date>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </Date>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CheckMonthlyViolation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>991</pd:x>
+        <pd:y>95</pd:y>
+        <config>
+            <processName>/Apps/Global/TargetViolationAlert/OPE_01_02/CheckViolation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <DataType>
+                    <xsl:value-of select="'Monthly'"/>
+                </DataType>
+                <AlertStatus>
+                    <xsl:value-of select="$AlertStatus/Status/Monthly"/>
+                </AlertStatus>
+                <TagName>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TagName>
+                <Date>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </Date>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CheckMtdViolation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>720</pd:x>
+        <pd:y>208</pd:y>
+        <config>
+            <processName>/Apps/Global/TargetViolationAlert/OPE_01_02/CheckViolation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <DataType>
+                    <xsl:value-of select="'MTD'"/>
+                </DataType>
+                <AlertStatus>
+                    <xsl:value-of select="$AlertStatus/Status/Mtd"/>
+                </AlertStatus>
+                <TagName>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TagName>
+                <Date>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </Date>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CheckYtdViolation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>861</pd:x>
+        <pd:y>208</pd:y>
+        <config>
+            <processName>/Apps/Global/TargetViolationAlert/OPE_01_02/CheckViolation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <DataType>
+                    <xsl:value-of select="'YTD'"/>
+                </DataType>
+                <AlertStatus>
+                    <xsl:value-of select="$AlertStatus/Status/Ytd"/>
+                </AlertStatus>
+                <TagName>
+                    <xsl:value-of select="$Start/root/TagName"/>
+                </TagName>
+                <Date>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </Date>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="getAlertStatus">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>277</pd:x>
+        <pd:y>209</pd:y>
+        <config>
+            <variableName>AlertStatus</variableName>
+        </config>
+        <pd:inputBindings>
+            <Status>
+                <Monthly>
+                    <xsl:value-of select="if($Start/root/MtdResult >= $queryLimits/resultSet/Record[1]/LOW_GREEN and $Start/root/MtdResult &lt;= $queryLimits/resultSet/Record[1]/HIGH_GREEN) then 0 else&#xA;if($Start/root/MtdResult &lt; $queryLimits/resultSet/Record[1]/LOW_RED or $Start/root/MtdResult > $queryLimits/resultSet/Record[1]/HIGH_RED) then 2 else 1"/>
+                </Monthly>
+                <Ytd>
+                    <xsl:value-of select="if($Start/root/YtdResult >= $queryLimits/resultSet/Record[1]/LOW_GREEN and $Start/root/YtdResult &lt;= $queryLimits/resultSet/Record[1]/HIGH_GREEN) then 0 else&#xA;if($Start/root/YtdResult &lt; $queryLimits/resultSet/Record[1]/LOW_RED or $Start/root/YtdResult > $queryLimits/resultSet/Record[1]/HIGH_RED) then 2 else 1"/>
+                </Ytd>
+                <Mtd>
+                    <xsl:value-of select="if($Start/root/MtdResult >= $queryLimits/resultSet/Record[1]/LOW_GREEN and $Start/root/MtdResult &lt;= $queryLimits/resultSet/Record[1]/HIGH_GREEN) then 0 else&#xA;if($Start/root/MtdResult &lt; $queryLimits/resultSet/Record[1]/LOW_RED or $Start/root/MtdResult > $queryLimits/resultSet/Record[1]/HIGH_RED) then 2 else 1"/>
+                </Mtd>
+                <Daily>
+                    <xsl:value-of select="if($Start/root/DailyResult >= $queryLimits/resultSet/Record[1]/LOW_GREEN and $Start/root/DailyResult &lt;= $queryLimits/resultSet/Record[1]/HIGH_GREEN) then 0 else&#xA;if($Start/root/DailyResult &lt; $queryLimits/resultSet/Record[1]/LOW_RED or $Start/root/DailyResult > $queryLimits/resultSet/Record[1]/HIGH_RED) then 2 else 1"/>
+                </Daily>
+            </Status>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetLastDayOfMonth">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>417</pd:x>
+        <pd:y>208</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
+        </config>
+        <pd:inputBindings>
+            <InputDate>
+                <xsl:value-of select="tib:create-date(tib:substring-after-last($Start/root/Date,&quot;/&quot;), substring($Start/root/Date, 1, 2), 01)"/>
+            </InputDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="HandleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1127</pd:x>
+        <pd:y>422</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns5:Exception>
+                <pfx4:Metadata>
+                    <pfx4:AppCode>
+                        <xsl:value-of select="&quot;DEV_ProcessDailyExcel 01_03&quot;"/>
+                    </pfx4:AppCode>
+                    <pfx4:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </pfx4:Version>
+                    <pfx4:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext), tib:timestamp())"/>
+                    </pfx4:ID>
+                    <pfx4:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx4:CreateTime>
+                </pfx4:Metadata>
+                <ns5:ExceptionBody>
+                    <xsl:for-each select="$_error">
+                        <ns5:ErrorReport>
+                            <StackTrace>
+                                <xsl:value-of select="ns4:ErrorReport/StackTrace"/>
+                            </StackTrace>
+                            <Msg>
+                                <xsl:value-of select="ns4:ErrorReport/Msg"/>
+                            </Msg>
+                            <FullClass>
+                                <xsl:value-of select="ns4:ErrorReport/FullClass"/>
+                            </FullClass>
+                            <ObjectClass>
+                                <xsl:value-of select="ns4:ErrorReport/Class"/>
+                            </ObjectClass>
+                            <ProcessStack>
+                                <xsl:value-of select="ns4:ErrorReport/ProcessStack"/>
+                            </ProcessStack>
+                            <xsl:if test="ns4:ErrorReport/MsgCode">
+                                <MsgCode>
+                                    <xsl:value-of select="ns4:ErrorReport/MsgCode"/>
+                                </MsgCode>
+                            </xsl:if>
+                            <xsl:copy-of select="ns4:ErrorReport/Data"/>
+                        </ns5:ErrorReport>
+                    </xsl:for-each>
+                </ns5:ExceptionBody>
+            </ns5:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="queryLimits">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:description/>
+        <pd:x>156</pd:x>
+        <pd:y>207</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select LOW_GREEN, HIGH_GREEN, LOW_RED, HIGH_RED from OPE_KPI_ALERT_CONDITION where STATUS = 1 and KPI_ID = 'OPE_KPI_01_02'</statement>
+            <Prepared_Param_DataType/>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>LOW_GREEN</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>HIGH_GREEN</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>LOW_RED</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>HIGH_RED</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>HandleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>HandleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>queryLimits</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryLimits</pd:from>
+        <pd:to>getAlertStatus</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getAlertStatus</pd:from>
+        <pd:to>GetLastDayOfMonth</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetLastDayOfMonth</pd:from>
+        <pd:to>CheckDailyViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckDailyViolation</pd:from>
+        <pd:to>CheckMtdViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckMtdViolation</pd:from>
+        <pd:to>CheckYtdViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckYtdViolation</pd:from>
+        <pd:to>CheckMonthlyViolation</pd:to>
+        <pd:xpathDescription>LastDateOfMonth</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>substring($Start/root/Date, 4, 2) = $GetLastDayOfMonth/LastDay</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckMonthlyViolation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckYtdViolation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
