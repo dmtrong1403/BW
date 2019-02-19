@@ -24,8 +24,8 @@
     <pd:group name="forAllTagnames">
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>547</pd:x>
-        <pd:y>63</pd:y>
+        <pd:x>549</pd:x>
+        <pd:y>61</pd:y>
         <pd:width>861</pd:width>
         <pd:height>362</pd:height>
         <pd:collapsedWidth>57</pd:collapsedWidth>
@@ -153,7 +153,7 @@ string($calculate0102/KPI-Result/Daily) !='NaN'</pd:xpath>
             <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
             <pd:description>Lay gia tri cua Unit theo ngay dua vao ID va eachDate</pd:description>
             <pd:x>644</pd:x>
-            <pd:y>252</pd:y>
+            <pd:y>253</pd:y>
             <config>
                 <timeout>100</timeout>
                 <commit>false</commit>
@@ -347,8 +347,8 @@ string($calculate0102/KPI-Result/Daily) !='NaN'</pd:xpath>
         <pd:activity name="updateDetailsTable">
             <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:x>908</pd:x>
-            <pd:y>145</pd:y>
+            <pd:x>909</pd:x>
+            <pd:y>143</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>
@@ -356,7 +356,7 @@ string($calculate0102/KPI-Result/Daily) !='NaN'</pd:xpath>
                 <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
                 <statement>UPDATE OPE_KPI_01_03_DATA
 SET ACTUAL = TO_NUMBER(?), ACTUAL_DESIGN_PERCENTAGE = TO_NUMBER(?) * 100 / DESIGN_CAPACITY
-WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
+WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
                 <Prepared_Param_DataType>
                     <parameter>
                         <parameterName>ACTUAL</parameterName>
@@ -367,8 +367,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
                         <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
-                        <parameterName>TAGNAME</parameterName>
-                        <dataType>VARCHAR</dataType>
+                        <parameterName>UNIT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
                         <parameterName>DATE</parameterName>
@@ -391,16 +391,9 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
                     <PARA_ACTUAL>
                         <xsl:value-of select="$getValueInErsByDate/resultSet/Record[1]/RECVOLFLOWRATE div 24"/>
                     </PARA_ACTUAL>
-                    <TAGNAME>
-                        <xsl:choose>
-                            <xsl:when test="exists($getValueInErsByDate/resultSet/Record[1]/NAME)">
-                                <xsl:value-of select="$getValueInErsByDate/resultSet/Record[1]/NAME"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </TAGNAME>
+                    <UNIT_ID>
+                        <xsl:value-of select="$oRecords/Record/UNIT_ID"/>
+                    </UNIT_ID>
                     <DATE>
                         <xsl:value-of select="$Start/StartDate"/>
                     </DATE>
@@ -411,8 +404,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
             <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
             <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
             <pd:description/>
-            <pd:x>781</pd:x>
-            <pd:y>362</pd:y>
+            <pd:x>782</pd:x>
+            <pd:y>360</pd:y>
             <config>
                 <variableName>isMissingData</variableName>
             </config>
@@ -425,8 +418,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
         <pd:activity name="TrueFlagTargetViolation">
             <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
             <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-            <pd:x>1183</pd:x>
-            <pd:y>271</pd:y>
+            <pd:x>1185</pd:x>
+            <pd:y>280</pd:y>
             <config>
                 <variableName>isTargetViolated</variableName>
             </config>
@@ -439,8 +432,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
         <pd:activity name="ValidateRecord">
             <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
             <pd:resourceType>ae.activities.null</pd:resourceType>
-            <pd:x>780</pd:x>
-            <pd:y>145</pd:y>
+            <pd:x>782</pd:x>
+            <pd:y>142</pd:y>
             <config/>
             <pd:inputBindings/>
         </pd:activity>
@@ -448,7 +441,7 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
             <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
             <pd:resourceType>ae.process.subprocess</pd:resourceType>
             <pd:x>1042</pd:x>
-            <pd:y>145</pd:y>
+            <pd:y>142</pd:y>
             <config>
                 <processName>/Apps/Global/KPI_Calculatation/OPE_01_02.process</processName>
             </config>
@@ -457,9 +450,9 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
                     <Actual>
                         <xsl:value-of select="$getValueInErsByDate/resultSet/Record[1]/RECVOLFLOWRATE div 24"/>
                     </Actual>
-                    <TagName>
-                        <xsl:value-of select="$oRecords/Record/TAGNAME"/>
-                    </TagName>
+                    <UnitID>
+                        <xsl:value-of select="$oRecords/Record/UNIT_ID"/>
+                    </UnitID>
                     <Date>
                         <xsl:value-of select="tib:format-date('MM/dd/yyyy', $Start/StartDate)"/>
                     </Date>
@@ -469,8 +462,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
         <pd:activity name="checkTargetViolation">
             <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
             <pd:resourceType>ae.process.subprocess</pd:resourceType>
-            <pd:x>1181</pd:x>
-            <pd:y>144</pd:y>
+            <pd:x>1183</pd:x>
+            <pd:y>143</pd:y>
             <config>
                 <processName>/Apps/Global/TargetViolationAlert/OPE_01_02/OPE_01_02.process</processName>
             </config>
@@ -485,9 +478,9 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
                     <DailyResult>
                         <xsl:value-of select="$calculate0102/KPI-Result/Daily"/>
                     </DailyResult>
-                    <TagName>
-                        <xsl:value-of select="$oRecords/Record/TAGNAME"/>
-                    </TagName>
+                    <UnitID>
+                        <xsl:value-of select="$oRecords/Record/UNIT_ID"/>
+                    </UnitID>
                     <Date>
                         <xsl:value-of select="tib:format-date('MM/dd/yyyy', $Start/StartDate)"/>
                     </Date>
@@ -498,19 +491,19 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
             <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
             <pd:x>842</pd:x>
-            <pd:y>283</pd:y>
+            <pd:y>281</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>
                 <emptyStrAsNil>false</emptyStrAsNil>
                 <statement>UPDATE OPE_KPI_01_03_DATA
 SET ACTUAL = NULL, ACTUAL_DESIGN_PERCENTAGE = NULL
-WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
+WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
                 <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
                 <Prepared_Param_DataType>
                     <parameter>
-                        <parameterName>TAGNAME</parameterName>
-                        <dataType>VARCHAR</dataType>
+                        <parameterName>UNIT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
                         <parameterName>DATE_UPDATE</parameterName>
@@ -520,16 +513,9 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
             </config>
             <pd:inputBindings>
                 <jdbcUpdateActivityInput>
-                    <TAGNAME>
-                        <xsl:choose>
-                            <xsl:when test="exists($oRecords/Record/TAGNAME)">
-                                <xsl:value-of select="$oRecords/Record/TAGNAME"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </TAGNAME>
+                    <UNIT_ID>
+                        <xsl:value-of select="$oRecords/Record/UNIT_ID"/>
+                    </UNIT_ID>
                     <DATE_UPDATE>
                         <xsl:value-of select="$Start/StartDate"/>
                     </DATE_UPDATE>
@@ -584,10 +570,14 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>SELECT TAGNAME FROM OPE_KPI_01_03_CATEGORY</statement>
+            <statement>SELECT UNIT_ID, TAGNAME FROM OPE_KPI_01_03_CATEGORY</statement>
             <Prepared_Param_DataType/>
             <oraObjects/>
             <oraTables/>
+            <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
             <QueryOutputCachedSchemaColumns>TAGNAME</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
@@ -667,7 +657,7 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
         <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
         <pd:resourceType>ae.activities.null</pd:resourceType>
         <pd:x>1884</pd:x>
-        <pd:y>57</pd:y>
+        <pd:y>58</pd:y>
         <config/>
         <pd:inputBindings/>
     </pd:activity>
@@ -714,8 +704,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
     <pd:activity name="checkExistedResult">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>156</pd:x>
-        <pd:y>244</pd:y>
+        <pd:x>157</pd:x>
+        <pd:y>241</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
