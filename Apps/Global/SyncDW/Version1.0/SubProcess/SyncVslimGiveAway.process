@@ -74,7 +74,7 @@ from OPE_KPI_PI_TAG_CATEGORY where GROUP_KPI = ?</statement>
     <pd:activity name="handleException">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>769</pd:x>
+        <pd:x>770</pd:x>
         <pd:y>431</pd:y>
         <config>
             <processName>/Util/Exception/handleException.process</processName>

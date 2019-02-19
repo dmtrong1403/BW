@@ -45,8 +45,8 @@
     <pd:activity name="getListOPMode">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>501</pd:x>
-        <pd:y>257</pd:y>
+        <pd:x>502</pd:x>
+        <pd:y>256</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>

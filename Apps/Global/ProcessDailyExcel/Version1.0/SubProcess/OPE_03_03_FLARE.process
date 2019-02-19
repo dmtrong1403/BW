@@ -52,7 +52,7 @@
     <pd:group name="Transaction">
         <pd:type>com.tibco.pe.core.TransactionGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>436</pd:x>
+        <pd:x>437</pd:x>
         <pd:y>1</pd:y>
         <pd:width>1992</pd:width>
         <pd:height>432</pd:height>
@@ -126,7 +126,7 @@
         <pd:group name="Flare_Unit_Loop">
             <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
             <pd:resourceType>ae.process.group</pd:resourceType>
-            <pd:x>443</pd:x>
+            <pd:x>445</pd:x>
             <pd:y>47</pd:y>
             <pd:width>1595</pd:width>
             <pd:height>366</pd:height>
@@ -312,7 +312,7 @@
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
                 <pd:description>if record exists then update actual value</pd:description>
-                <pd:x>702</pd:x>
+                <pd:x>703</pd:x>
                 <pd:y>111</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -362,7 +362,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' )</statement>
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
                 <pd:description>insert new Result Record to Result table</pd:description>
-                <pd:x>1296</pd:x>
+                <pd:x>1297</pd:x>
                 <pd:y>237</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -425,7 +425,7 @@ values (?,?,?,?,?,TO_DATE(?,'MM/dd/YYYY'))</statement>
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
                 <pd:description>If record does not exists then Insert new record to DB</pd:description>
-                <pd:x>701</pd:x>
+                <pd:x>702</pd:x>
                 <pd:y>332</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -481,7 +481,7 @@ values (?,?,TO_NUMBER(?),TO_NUMBER(?),TO_DATE(?,'MM/dd/YYYY'))</statement>
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
                 <pd:description>If exists then Delete to calculate &amp; insert new record</pd:description>
-                <pd:x>1107</pd:x>
+                <pd:x>1108</pd:x>
                 <pd:y>117</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -516,7 +516,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and TYPE_ID = 1</
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
                 <pd:description>query DB check record exists or not ?</pd:description>
-                <pd:x>528</pd:x>
+                <pd:x>529</pd:x>
                 <pd:y>238</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -563,7 +563,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and TYPE_ID = 1</
             <pd:activity name="Join">
                 <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
                 <pd:resourceType>ae.activities.null</pd:resourceType>
-                <pd:x>797</pd:x>
+                <pd:x>798</pd:x>
                 <pd:y>235</pd:y>
                 <config/>
                 <pd:inputBindings/>
@@ -572,7 +572,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and TYPE_ID = 1</
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
                 <pd:description>Check Result Record of table KPI Result exists or not ?</pd:description>
-                <pd:x>1031</pd:x>
+                <pd:x>1032</pd:x>
                 <pd:y>235</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -614,7 +614,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and TYPE_ID = 1</
             <pd:activity name="queryDailyTarget">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>896</pd:x>
+                <pd:x>897</pd:x>
                 <pd:y>234</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -656,7 +656,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' )</statement>
             <pd:activity name="queryMTD">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>895</pd:x>
+                <pd:x>896</pd:x>
                 <pd:y>330</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -709,7 +709,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  &gt;= trunc(TO_DATE(?, 'MM/DD/YYYY' ),'month'
             <pd:activity name="queryYTD">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>1030</pd:x>
+                <pd:x>1031</pd:x>
                 <pd:y>332</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -762,7 +762,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  &gt;= trunc(TO_DATE(?, 'MM/DD/YYYY' ),'year')
             <pd:activity name="calculateVariance">
                 <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
                 <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-                <pd:x>1184</pd:x>
+                <pd:x>1185</pd:x>
                 <pd:y>237</pd:y>
                 <config>
                     <variableName>Variance</variableName>
@@ -784,7 +784,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  &gt;= trunc(TO_DATE(?, 'MM/DD/YYYY' ),'year')
             <pd:activity name="InsertAlert">
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-                <pd:x>1601</pd:x>
+                <pd:x>1602</pd:x>
                 <pd:y>237</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -853,7 +853,7 @@ values (?,?,?,?,TO_DATE(?,'MM/dd/YYYY'))</statement>
             <pd:activity name="checkAlertRecordsExists">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>1430</pd:x>
+                <pd:x>1431</pd:x>
                 <pd:y>237</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -893,7 +893,7 @@ values (?,?,?,?,TO_DATE(?,'MM/dd/YYYY'))</statement>
             <pd:activity name="delAlertRecords">
                 <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-                <pd:x>1513</pd:x>
+                <pd:x>1514</pd:x>
                 <pd:y>116</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -927,7 +927,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and DATA_TYPE = '
             <pd:activity name="queryYesterdayAlert">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>1691</pd:x>
+                <pd:x>1692</pd:x>
                 <pd:y>343</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -988,7 +988,7 @@ WHERE DATA_TYPE = 'Daily' AND DATE_UPDATE  = TRUNC(TO_DATE(?, 'MM/DD/YYYY' )-1) 
             <pd:activity name="queryTodayAlert">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>1785</pd:x>
+                <pd:x>1786</pd:x>
                 <pd:y>237</pd:y>
                 <config>
                     <timeout>10</timeout>
@@ -1049,7 +1049,7 @@ WHERE DATA_TYPE = 'Daily' AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and UNIT_
             <pd:activity name="AlertCondition">
                 <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
                 <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-                <pd:x>1898</pd:x>
+                <pd:x>1899</pd:x>
                 <pd:y>117</pd:y>
                 <config>
                     <variableName>MailContent</variableName>
@@ -1066,7 +1066,7 @@ WHERE DATA_TYPE = 'Daily' AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and UNIT_
         <pd:activity name="Split">
             <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
             <pd:resourceType>ae.activities.null</pd:resourceType>
-            <pd:x>2132</pd:x>
+            <pd:x>2133</pd:x>
             <pd:y>215</pd:y>
             <config/>
             <pd:inputBindings/>
@@ -1074,7 +1074,7 @@ WHERE DATA_TYPE = 'Daily' AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and UNIT_
         <pd:activity name="SendMail">
             <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
             <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
-            <pd:x>2388</pd:x>
+            <pd:x>2389</pd:x>
             <pd:y>73</pd:y>
             <config>
                 <encoding>text</encoding>
@@ -1095,7 +1095,7 @@ WHERE DATA_TYPE = 'Daily' AND DATE_UPDATE  = TO_DATE(?, 'MM/DD/YYYY' ) and UNIT_
         <pd:activity name="OnOff SendMail">
             <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
             <pd:resourceType>ae.activities.null</pd:resourceType>
-            <pd:x>2133</pd:x>
+            <pd:x>2134</pd:x>
             <pd:y>83</pd:y>
             <config/>
             <pd:inputBindings/>

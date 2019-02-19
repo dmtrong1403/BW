@@ -16,7 +16,7 @@
         <pd:y>146</pd:y>
         <config>
             <StartTime>1476831600000</StartTime>
-            <Frequency>false</Frequency>
+            <Frequency>true</Frequency>
             <TimeInterval>1</TimeInterval>
             <FrequencyIndex>Day</FrequencyIndex>
         </config>
@@ -31,8 +31,8 @@
     <pd:activity name="MainProcessOperation">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>240</pd:x>
-        <pd:y>148</pd:y>
+        <pd:x>239</pd:x>
+        <pd:y>145</pd:y>
         <config>
             <processName>/Apps/TemplateProcess/MainProcessOperation.process</processName>
         </config>

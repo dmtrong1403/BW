@@ -533,8 +533,8 @@ and  SAMP_POINT_STEP = ? and  XEXPNAME = ? and SAMPDATE = TO_DATE(?,'MM/DD/YYYY'
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>926</pd:x>
-        <pd:y>519</pd:y>
+        <pd:x>927</pd:x>
+        <pd:y>518</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
@@ -629,8 +629,8 @@ and  SAMP_POINT_STEP = ? and  XEXPNAME = ? and SAMPDATE = TO_DATE(?,'MM/DD/YYYY'
     <pd:activity name="handleException">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1067</pd:x>
-        <pd:y>519</pd:y>
+        <pd:x>1069</pd:x>
+        <pd:y>518</pd:y>
         <config>
             <processName>/Util/Exception/handleException.process</processName>
         </config>

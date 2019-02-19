@@ -146,7 +146,7 @@
     <pd:group name="loopAllHistoryDates">
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>624</pd:x>
+        <pd:x>627</pd:x>
         <pd:y>84</pd:y>
         <pd:width>767</pd:width>
         <pd:height>381</pd:height>
@@ -189,8 +189,8 @@
         <pd:activity name="delExistsRecords">
             <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-            <pd:x>704</pd:x>
-            <pd:y>280</pd:y>
+            <pd:x>706</pd:x>
+            <pd:y>279</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>
@@ -216,7 +216,7 @@ and GROUP_KPI = 'OPE_KPI_04_01'</statement>
         <pd:group name="AllCategory">
             <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
             <pd:resourceType>ae.process.group</pd:resourceType>
-            <pd:x>784</pd:x>
+            <pd:x>786</pd:x>
             <pd:y>127</pd:y>
             <pd:width>548</pd:width>
             <pd:height>297</pd:height>
@@ -268,8 +268,8 @@ and GROUP_KPI = 'OPE_KPI_04_01'</statement>
             <pd:activity name="getValueInVSlimsByDate">
                 <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
                 <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-                <pd:x>896</pd:x>
-                <pd:y>327</pd:y>
+                <pd:x>898</pd:x>
+                <pd:y>326</pd:y>
                 <config>
                     <timeout>100</timeout>
                     <commit>false</commit>
@@ -430,8 +430,8 @@ AND NUMRES is not null
             <pd:group name="loopAllRecords">
                 <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
                 <pd:resourceType>ae.process.group</pd:resourceType>
-                <pd:x>994</pd:x>
-                <pd:y>161</pd:y>
+                <pd:x>996</pd:x>
+                <pd:y>160</pd:y>
                 <pd:width>226</pd:width>
                 <pd:height>140</pd:height>
                 <pd:collapsedWidth>57</pd:collapsedWidth>
@@ -466,8 +466,8 @@ AND NUMRES is not null
                 <pd:activity name="insertToDW_VSLIMS">
                     <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
                     <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-                    <pd:x>1106</pd:x>
-                    <pd:y>234</pd:y>
+                    <pd:x>1108</pd:x>
+                    <pd:y>233</pd:y>
                     <config>
                         <timeout>10</timeout>
                         <commit>false</commit>

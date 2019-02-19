@@ -26,5 +26,13 @@
 			<constraint></constraint>
 			<modTime>1547457080796</modTime>
 		</globalVariable>
+		<globalVariable>
+			<name>OPE_03_03</name>
+			<value>0</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1548232219441</modTime>
+		</globalVariable>
 	</globalVariables>
 </repository>

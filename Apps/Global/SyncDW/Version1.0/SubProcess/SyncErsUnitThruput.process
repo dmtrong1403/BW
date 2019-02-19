@@ -152,8 +152,8 @@ string($calculate0102/KPI-Result/Daily) !='NaN'</pd:xpath>
             <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
             <pd:description>Lay gia tri cua Unit theo ngay dua vao ID va eachDate</pd:description>
-            <pd:x>643</pd:x>
-            <pd:y>253</pd:y>
+            <pd:x>644</pd:x>
+            <pd:y>252</pd:y>
             <config>
                 <timeout>100</timeout>
                 <commit>false</commit>
@@ -425,8 +425,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
         <pd:activity name="TrueFlagTargetViolation">
             <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
             <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
-            <pd:x>1184</pd:x>
-            <pd:y>272</pd:y>
+            <pd:x>1183</pd:x>
+            <pd:y>271</pd:y>
             <config>
                 <variableName>isTargetViolated</variableName>
             </config>
@@ -469,8 +469,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
         <pd:activity name="checkTargetViolation">
             <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
             <pd:resourceType>ae.process.subprocess</pd:resourceType>
-            <pd:x>1182</pd:x>
-            <pd:y>145</pd:y>
+            <pd:x>1181</pd:x>
+            <pd:y>144</pd:y>
             <config>
                 <processName>/Apps/Global/TargetViolationAlert/OPE_01_02/OPE_01_02.process</processName>
             </config>
@@ -667,7 +667,7 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
         <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
         <pd:resourceType>ae.activities.null</pd:resourceType>
         <pd:x>1884</pd:x>
-        <pd:y>58</pd:y>
+        <pd:y>57</pd:y>
         <config/>
         <pd:inputBindings/>
     </pd:activity>
@@ -714,8 +714,8 @@ WHERE TAGNAME = ? AND DATE_UPDATE = ?</statement>
     <pd:activity name="checkExistedResult">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>157</pd:x>
-        <pd:y>243</pd:y>
+        <pd:x>156</pd:x>
+        <pd:y>244</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>

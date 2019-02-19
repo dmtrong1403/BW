@@ -55,8 +55,8 @@
     <pd:activity name="CheckDailyViolation">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>536</pd:x>
-        <pd:y>208</pd:y>
+        <pd:x>538</pd:x>
+        <pd:y>209</pd:y>
         <config>
             <processName>/Apps/Global/TargetViolationAlert/OPE_01_02/CheckViolation.process</processName>
         </config>

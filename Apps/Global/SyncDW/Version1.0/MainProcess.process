@@ -26,8 +26,8 @@
     <pd:activity name="SyncVslimOPMode">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>344</pd:x>
-        <pd:y>83</pd:y>
+        <pd:x>248</pd:x>
+        <pd:y>329</pd:y>
         <config>
             <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/SyncVslimOPMode.process</processName>
         </config>
@@ -43,11 +43,28 @@
     <pd:activity name="SyncVslimGiveAway">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>496</pd:x>
-        <pd:y>84</pd:y>
+        <pd:x>457</pd:x>
+        <pd:y>329</pd:y>
         <config>
             <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/SyncVslimGiveAway.process</processName>
         </config>
+        <pd:inputBindings>
+            <StartDate>
+                <xsl:value-of select="$Start/root/pfx:AppDataEnvelope/pfx:AppData/ns1:BlendingRecipe[1]/ns1:Date"/>
+            </StartDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SyncERS_SLOP">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>331</pd:x>
+        <pd:y>84</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/03_03_SLOP/Sync_Ers_SLOP.process</processName>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx:AppDataEnvelope/pfx:AppData/*" element="ns1:BlendingRecipe"/>
+        </pd:coercions>
         <pd:inputBindings>
             <StartDate>
                 <xsl:value-of select="$Start/root/pfx:AppDataEnvelope/pfx:AppData/ns1:BlendingRecipe[1]/ns1:Date"/>
@@ -62,15 +79,15 @@
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>SyncVslimGiveAway</pd:from>
-        <pd:to>End</pd:to>
+        <pd:from>Start</pd:from>
+        <pd:to>SyncERS_SLOP</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Start</pd:from>
-        <pd:to>SyncVslimOPMode</pd:to>
+        <pd:from>SyncERS_SLOP</pd:from>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

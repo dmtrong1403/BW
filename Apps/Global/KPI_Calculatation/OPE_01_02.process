@@ -67,8 +67,8 @@
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
         <pd:description>Query Actual &amp; Design Capacity of Process Units from OPE_KPI_01_03_DETAILS</pd:description>
-        <pd:x>156</pd:x>
-        <pd:y>207</pd:y>
+        <pd:x>157</pd:x>
+        <pd:y>206</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -108,8 +108,8 @@
         <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
         <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
         <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
-        <pd:x>781</pd:x>
-        <pd:y>216</pd:y>
+        <pd:x>782</pd:x>
+        <pd:y>217</pd:y>
         <config>
             <variableName>KPI-Results</variableName>
         </config>
@@ -266,7 +266,7 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGN
     <pd:activity name="GetLastDayOfMonth">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>619</pd:x>
+        <pd:x>620</pd:x>
         <pd:y>208</pd:y>
         <config>
             <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>

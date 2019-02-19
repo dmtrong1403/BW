@@ -25,5 +25,13 @@
 			<type>String</type>
 			<modTime>1547457080942</modTime>
 		</globalVariable>
+		<globalVariable>
+			<name>OPE_03_03</name>
+			<value>1</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1548661796566</modTime>
+		</globalVariable>
 	</globalVariables>
 </repository>
