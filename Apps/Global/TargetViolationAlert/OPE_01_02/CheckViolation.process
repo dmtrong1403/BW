@@ -15,7 +15,7 @@
                 <xsd:sequence>
                     <xsd:element name="DataType" type="xsd:string"/>
                     <xsd:element name="AlertStatus" type="xsd:string"/>
-                    <xsd:element name="TagName" type="xsd:string"/>
+                    <xsd:element name="UnitID" type="xsd:double"/>
                     <xsd:element name="Date" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
@@ -54,15 +54,15 @@
     <pd:activity name="checkMonthlyViolation">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>344</pd:x>
-        <pd:y>86</pd:y>
+        <pd:x>356</pd:x>
+        <pd:y>85</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select count(*) from OPE_KPI_01_02_ALERT_CONDITION where DATE_UPDATE = ? and TO_NUMBER(ALERT_STATUS) &lt; ? and DATA_TYPE = 'Monthly' and TAGNAME = ?</statement>
+            <statement>select count(*) from OPE_KPI_01_02_ALERT_CONDITION where DATE_UPDATE = ? and TO_NUMBER(ALERT_STATUS) &lt; ? and DATA_TYPE = 'Monthly' and UNIT_ID = ?</statement>
             <oraObjects/>
             <oraTables/>
             <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
@@ -79,8 +79,8 @@
                     <dataType>VARCHAR</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>TAGNAME</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
             </Prepared_Param_DataType>
         </config>
@@ -92,9 +92,9 @@
                 <ALERT_STATUS>
                     <xsl:value-of select="number($Start/root/AlertStatus)"/>
                 </ALERT_STATUS>
-                <TAGNAME>
-                    <xsl:value-of select="$Start/root/TagName"/>
-                </TAGNAME>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
@@ -109,7 +109,13 @@
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select count(*) from OPE_KPI_01_02_ALERT_CONDITION where DATE_UPDATE = TRUNC(TO_DATE(?, 'MM/DD/YYYY' )-1) and TO_NUMBER(ALERT_STATUS) &lt; ? and DATA_TYPE = ? and TAGNAME = ?</statement>
+            <statement>select count(*) from OPE_KPI_01_02_ALERT_CONDITION where DATE_UPDATE = TRUNC(TO_DATE(?, 'MM/DD/YYYY' )-1) and TO_NUMBER(ALERT_STATUS) &lt; ? and DATA_TYPE = ? and UNIT_ID = ?</statement>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>DATE_UPDATE</parameterName>
@@ -124,16 +130,10 @@
                     <dataType>VARCHAR</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>TAGNAME</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
             </Prepared_Param_DataType>
-            <oraObjects/>
-            <oraTables/>
-            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
         </config>
         <pd:inputBindings>
             <jdbcQueryActivityInput>
@@ -146,9 +146,9 @@
                 <DATA_TYPE>
                     <xsl:value-of select="$Start/root/DataType"/>
                 </DATA_TYPE>
-                <TAGNAME>
-                    <xsl:value-of select="$Start/root/TagName"/>
-                </TAGNAME>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
@@ -176,12 +176,12 @@
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>insert into OPE_KPI_01_02_ALERT_CONDITION (TAGNAME, DATA_TYPE, ALERT_STATUS, DATE_UPDATE)
+            <statement>insert into OPE_KPI_01_02_ALERT_CONDITION (UNIT_ID, DATA_TYPE, ALERT_STATUS, DATE_UPDATE)
  values (?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
             <Prepared_Param_DataType>
                 <parameter>
-                    <parameterName>TAGNAME</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
                 <parameter>
                     <parameterName>DATA_TYPE</parameterName>
@@ -199,9 +199,9 @@
         </config>
         <pd:inputBindings>
             <jdbcUpdateActivityInput>
-                <TAGNAME>
-                    <xsl:value-of select="$Start/root/TagName"/>
-                </TAGNAME>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
                 <DATA_TYPE>
                     <xsl:value-of select="$Start/root/DataType"/>
                 </DATA_TYPE>

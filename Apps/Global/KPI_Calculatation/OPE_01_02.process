@@ -13,7 +13,7 @@
             <xsd:complexType>
                 <xsd:sequence>
                     <xsd:element name="Actual" type="xsd:double"/>
-                    <xsd:element name="TagName" type="xsd:string"/>
+                    <xsd:element name="UnitID" type="xsd:double"/>
                     <xsd:element name="Date" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
@@ -75,15 +75,15 @@
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select DESIGN_CAPACITY from OPE_KPI_01_03_DATA where DATE_UPDATE = to_date(?,'MM/DD/YYYY')  and TAGNAME = ?</statement>
+            <statement>select DESIGN_CAPACITY from OPE_KPI_01_03_DATA where DATE_UPDATE = to_date(?,'MM/DD/YYYY')  and UNIT_ID = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>DATE_UPDATE</parameterName>
                     <dataType>VARCHAR</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>TAGNAME</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
             </Prepared_Param_DataType>
             <oraObjects/>
@@ -98,9 +98,9 @@
                 <DATE_UPDATE>
                     <xsl:value-of select="$Start/root/Date"/>
                 </DATE_UPDATE>
-                <TAGNAME>
-                    <xsl:value-of select="$Start/root/TagName"/>
-                </TAGNAME>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
@@ -137,12 +137,12 @@
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>insert into OPE_KPI_01_02_RESULT (TAGNAME, KPI_DAILY_UNIT, KPI_MONTHLY_UNIT, KPI_MTD_UNIT, KPI_YTD_UNIT, DATE_UPDATE)
+            <statement>insert into OPE_KPI_01_02_RESULT (UNIT_ID, KPI_DAILY_UNIT, KPI_MONTHLY_UNIT, KPI_MTD_UNIT, KPI_YTD_UNIT, DATE_UPDATE)
  values (?, ?, ?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
             <Prepared_Param_DataType>
                 <parameter>
-                    <parameterName>TAGNAME</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
                 <parameter>
                     <parameterName>KPI_DAILY_UNIT</parameterName>
@@ -168,9 +168,9 @@
         </config>
         <pd:inputBindings>
             <jdbcUpdateActivityInput>
-                <TAGNAME>
-                    <xsl:value-of select="$Start/root/TagName"/>
-                </TAGNAME>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
                 <KPI_DAILY_UNIT>
                     <xsl:value-of select="$KPI-Results/KPIs/DailyKPI"/>
                 </KPI_DAILY_UNIT>
@@ -223,17 +223,7 @@
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
             <statement>select SUM(ACTUAL), SUM(DESIGN_CAPACITY)
 from OPE_KPI_01_03_DATA 
-where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGNAME = ?</statement>
-            <oraObjects/>
-            <oraTables/>
-            <QueryOutputCachedSchemaColumns>SUMACTUAL</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-            <QueryOutputCachedSchemaColumns>SUMDESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT_ID = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>startDate</parameterName>
@@ -244,10 +234,20 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGN
                     <dataType>VARCHAR</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>TAGNAME</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
             </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>SUMACTUAL</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>SUMDESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
         </config>
         <pd:inputBindings>
             <jdbcQueryActivityInput>
@@ -257,9 +257,9 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGN
                 <endDate>
                     <xsl:value-of select="$Start/root/Date"/>
                 </endDate>
-                <TAGNAME>
-                    <xsl:value-of select="$Start/root/TagName"/>
-                </TAGNAME>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
@@ -280,7 +280,7 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGN
     <pd:activity name="queryYtdCapacity">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>452</pd:x>
+        <pd:x>451</pd:x>
         <pd:y>207</pd:y>
         <config>
             <timeout>10</timeout>
@@ -290,17 +290,7 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGN
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
             <statement>select AVG(ACTUAL), AVG(DESIGN_CAPACITY)
 from OPE_KPI_01_03_DATA 
-where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGNAME = ?</statement>
-            <oraObjects/>
-            <oraTables/>
-            <QueryOutputCachedSchemaColumns>AVGACTUAL</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-            <QueryOutputCachedSchemaColumns>AVGDESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT_ID = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>startDate</parameterName>
@@ -311,10 +301,20 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGN
                     <dataType>VARCHAR</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>TAGNAME</parameterName>
-                    <dataType>VARCHAR</dataType>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
             </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>AVGACTUAL</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>AVGDESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
         </config>
         <pd:inputBindings>
             <jdbcQueryActivityInput>
@@ -324,9 +324,9 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and TAGN
                 <endDate>
                     <xsl:value-of select="$Start/root/Date"/>
                 </endDate>
-                <TAGNAME>
-                    <xsl:value-of select="$Start/root/TagName"/>
-                </TAGNAME>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
