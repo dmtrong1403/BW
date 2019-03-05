@@ -6,14 +6,14 @@
     <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
     <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
-    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_PRICE.process</pd:name>
+    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_PRICE.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="root">
             <xsd:complexType>
                 <xsd:sequence>
                     <xsd:element name="Plan" type="xsd:string"/>
-                    <xsd:element name="CateID" type="xsd:string"/>
+                    <xsd:element name="ProductID" type="xsd:string"/>
                     <xsd:element name="validDate" type="xsd:date"/>
                     <xsd:element name="inputDate" type="xsd:date"/>
                     <xsd:element name="i" type="xsd:int"/>
@@ -21,22 +21,59 @@
             </xsd:complexType>
         </xsd:element>
     </pd:startType>
-    <pd:startX>51</pd:startX>
-    <pd:startY>495</pd:startY>
+    <pd:startX>34</pd:startX>
+    <pd:startY>468</pd:startY>
     <pd:returnBindings>
         <pfx3:cell/>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
-    <pd:endX>833</pd:endX>
-    <pd:endY>495</pd:endY>
+    <pd:endX>1091</pd:endX>
+    <pd:endY>468</pd:endY>
     <pd:errorSchemas/>
-    <pd:processVariables/>
+    <pd:processVariables>
+        <TYPE>
+            <xsd:element name="TYPE" type="xsd:int"/>
+        </TYPE>
+    </pd:processVariables>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="checkCrudeCategory">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>435</pd:x>
+        <pd:y>469</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select count(*) from OPE_KPI_CRUDE where CRUDE_ID = ? and IS_ACTIVE = 1</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>CRUDE_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <CRUDE_ID>
+                    <xsl:value-of select="$Start/root/ProductID"/>
+                </CRUDE_ID>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:activity name="checkProductCategory">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>213</pd:x>
-        <pd:y>495</pd:y>
+        <pd:x>146</pd:x>
+        <pd:y>468</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -60,7 +97,7 @@
         <pd:inputBindings>
             <jdbcQueryActivityInput>
                 <FINISHED_PRODUCT_ID>
-                    <xsl:value-of select="$Start/root/CateID"/>
+                    <xsl:value-of select="$Start/root/ProductID"/>
                 </FINISHED_PRODUCT_ID>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
@@ -69,19 +106,19 @@
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
         <pd:description>Check if detail record existed</pd:description>
-        <pd:x>343</pd:x>
-        <pd:y>258</pd:y>
+        <pd:x>555</pd:x>
+        <pd:y>164</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>SELECT count(*) FROM OPE_KPI_05_01_DETAILS
-WHERE CATE_ID = ? AND VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
+            <statement>SELECT count(*) FROM OPE_KPI_05_02_DETAILS
+WHERE PRODUCT_ID = ? AND GET_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
             <Prepared_Param_DataType>
                 <parameter>
-                    <parameterName>CATE_ID</parameterName>
+                    <parameterName>PRODUCT_ID</parameterName>
                     <dataType>NUMERIC</dataType>
                 </parameter>
                 <parameter>
@@ -98,9 +135,9 @@ WHERE CATE_ID = ? AND VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
         </config>
         <pd:inputBindings>
             <jdbcQueryActivityInput>
-                <CATE_ID>
-                    <xsl:value-of select="$Start/root/CateID"/>
-                </CATE_ID>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/root/ProductID"/>
+                </PRODUCT_ID>
                 <VALID_DATE>
                     <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Start/root/inputDate, 0, 0, ($Start/root/i - 1)))"/>
                 </VALID_DATE>
@@ -111,27 +148,50 @@ WHERE CATE_ID = ? AND VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
         <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
         <pd:resourceType>ae.activities.null</pd:resourceType>
         <pd:description>Compare with the valid date</pd:description>
-        <pd:x>491</pd:x>
-        <pd:y>258</pd:y>
+        <pd:x>746</pd:x>
+        <pd:y>164</pd:y>
         <config/>
         <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="getPrdType">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>434</pd:x>
+        <pd:y>165</pd:y>
+        <config>
+            <variableName>TYPE</variableName>
+        </config>
+        <pd:inputBindings>
+            <xsl:choose>
+                <xsl:when test="$checkProductCategory/resultSet/Record[1]/COUNT > 0">
+                    <TYPE>
+                        <xsl:value-of select="1"/>
+                    </TYPE>
+                </xsl:when>
+                <xsl:otherwise>
+                    <TYPE>
+                        <xsl:value-of select="0"/>
+                    </TYPE>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pd:inputBindings>
     </pd:activity>
     <pd:activity name="InsertDB">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
         <pd:description>Insert new record</pd:description>
-        <pd:x>492</pd:x>
-        <pd:y>129</pd:y>
+        <pd:x>747</pd:x>
+        <pd:y>35</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>insert into OPE_KPI_05_01_DETAILS( CATE_ID, PLAN_VALUE, VALID_DATE ,CATE_TYPE)
-values (?,?,TO_DATE(?,'MM/DD/YYYY'),0)</statement>
+            <statement>insert into OPE_KPI_05_01_DETAILS( PRODUCT_ID, PROD_PRICE, GET_DATE, TYPE)
+values (?,?,TO_DATE(?,'MM/DD/YYYY'), ?)</statement>
             <Prepared_Param_DataType>
                 <parameter>
-                    <parameterName>CATE_ID</parameterName>
+                    <parameterName>PRODUCT_ID</parameterName>
                     <dataType>NUMERIC</dataType>
                 </parameter>
                 <parameter>
@@ -142,13 +202,17 @@ values (?,?,TO_DATE(?,'MM/DD/YYYY'),0)</statement>
                     <parameterName>VALID_DATE</parameterName>
                     <dataType>VARCHAR</dataType>
                 </parameter>
+                <parameter>
+                    <parameterName>TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
             </Prepared_Param_DataType>
         </config>
         <pd:inputBindings>
             <jdbcUpdateActivityInput>
-                <CATE_ID>
-                    <xsl:value-of select="$Start/root/CateID"/>
-                </CATE_ID>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/root/ProductID"/>
+                </PRODUCT_ID>
                 <xsl:choose>
                     <xsl:when test="string(number($Start/root/Plan)) !='NaN'">
                         <PLAN_VALUE>
@@ -169,22 +233,17 @@ values (?,?,TO_DATE(?,'MM/DD/YYYY'),0)</statement>
                 <VALID_DATE>
                     <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Start/root/inputDate, 0, 0, ($Start/root/i - 1)))"/>
                 </VALID_DATE>
+                <TYPE>
+                    <xsl:value-of select="$TYPE/TYPE"/>
+                </TYPE>
             </jdbcUpdateActivityInput>
         </pd:inputBindings>
-    </pd:activity>
-    <pd:activity name="IsProduct">
-        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
-        <pd:resourceType>ae.activities.null</pd:resourceType>
-        <pd:x>341</pd:x>
-        <pd:y>495</pd:y>
-        <config/>
-        <pd:inputBindings/>
     </pd:activity>
     <pd:activity name="Null">
         <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
         <pd:resourceType>ae.activities.null</pd:resourceType>
-        <pd:x>706</pd:x>
-        <pd:y>255</pd:y>
+        <pd:x>961</pd:x>
+        <pd:y>161</pd:y>
         <config/>
         <pd:inputBindings/>
     </pd:activity>
@@ -192,28 +251,32 @@ values (?,?,TO_DATE(?,'MM/DD/YYYY'),0)</statement>
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
         <pd:description>Update record if input date is still valid</pd:description>
-        <pd:x>494</pd:x>
-        <pd:y>390</pd:y>
+        <pd:x>749</pd:x>
+        <pd:y>296</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>update OPE_KPI_05_01_DETAILS 
-set PLAN_VALUE = ?
-where CATE_ID = ? and CATE_TYPE = 0 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</statement>
+            <statement>update OPE_KPI_05_02_DETAILS 
+set PROD_PRICE = ?
+where PRODUCT_ID = ? and GET_DATE = TO_DATE(?,'MM/DD/YYYY') and TYPE = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>PLAN_VALUE</parameterName>
                     <dataType>NUMERIC</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>CATE_ID</parameterName>
+                    <parameterName>PROD_ID</parameterName>
                     <dataType>NUMERIC</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>VALID_DATE</parameterName>
+                    <parameterName>GET_DATE</parameterName>
                     <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
                 </parameter>
             </Prepared_Param_DataType>
         </config>
@@ -236,12 +299,15 @@ where CATE_ID = ? and CATE_TYPE = 0 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
                         <PLAN_VALUE xsi:nil="true"/>
                     </xsl:otherwise>
                 </xsl:choose>
-                <CATE_ID>
-                    <xsl:value-of select="$Start/root/CateID"/>
-                </CATE_ID>
-                <VALID_DATE>
+                <PROD_ID>
+                    <xsl:value-of select="$Start/root/ProductID"/>
+                </PROD_ID>
+                <GET_DATE>
                     <xsl:value-of select="tib:format-date('MM/dd/yyyy', tib:add-to-date($Start/root/inputDate, 0, 0, ($Start/root/i - 1)))"/>
-                </VALID_DATE>
+                </GET_DATE>
+                <TYPE>
+                    <xsl:value-of select="$TYPE/TYPE"/>
+                </TYPE>
             </jdbcUpdateActivityInput>
         </pd:inputBindings>
     </pd:activity>
@@ -299,34 +365,49 @@ where CATE_ID = ? and CATE_TYPE = 0 and VALID_DATE = TO_DATE(?,'MM/DD/YYYY')</st
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>checkProductCategory</pd:from>
-        <pd:to>IsProduct</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>IsProduct</pd:from>
-        <pd:to>checkRecordExists</pd:to>
-        <pd:xpathDescription>True</pd:xpathDescription>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>$checkProductCategory/resultSet/Record[1]/COUNT &gt; 0</pd:xpath>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>IsProduct</pd:from>
-        <pd:to>End</pd:to>
-        <pd:xpathDescription>False</pd:xpathDescription>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>otherwise</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
         <pd:from>Null</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>One Bend</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkProductCategory</pd:from>
+        <pd:to>getPrdType</pd:to>
+        <pd:xpathDescription>Product</pd:xpathDescription>
+        <pd:lineType>Curved</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$checkProductCategory/resultSet/Record[1]/COUNT &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getPrdType</pd:from>
+        <pd:to>checkRecordExists</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkProductCategory</pd:from>
+        <pd:to>checkCrudeCategory</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkCrudeCategory</pd:from>
+        <pd:to>getPrdType</pd:to>
+        <pd:xpathDescription>Crude</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$checkCrudeCategory/resultSet/Record[1]/COUNT &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkCrudeCategory</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
     </pd:transition>
 </pd:ProcessDefinition>

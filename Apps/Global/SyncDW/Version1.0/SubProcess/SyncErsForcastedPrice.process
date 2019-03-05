@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/common/apps/appdataenv/1.0" xmlns:ns1="sbv/common/exceptionhandling/exception/1.0" xmlns:ns4="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType">
-    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/SyncErsUnitThruput.process</pd:name>
+    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/SyncErsForcastedPrice.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="StartDate" type="xsd:date"/>
     </pd:startType>
-    <pd:startX>34</pd:startX>
-    <pd:startY>242</pd:startY>
+    <pd:startX>33</pd:startX>
+    <pd:startY>241</pd:startY>
     <pd:returnBindings/>
     <pd:endName>End</pd:endName>
     <pd:endX>2188</pd:endX>
@@ -330,8 +330,8 @@ string($calculate0102/KPI-Result/Daily) !='NaN'</pd:xpath>
                 <jdbcQueryActivityInput>
                     <NAME>
                         <xsl:choose>
-                            <xsl:when test="exists($oRecords/Record/ERS_THROUGHPUT_TAGNAME)">
-                                <xsl:value-of select="$oRecords/Record/ERS_THROUGHPUT_TAGNAME"/>
+                            <xsl:when test="exists($oRecords/Record/TAGNAME)">
+                                <xsl:value-of select="$oRecords/Record/TAGNAME"/>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:attribute name="xsi:nil">true</xsl:attribute>
@@ -354,20 +354,20 @@ string($calculate0102/KPI-Result/Daily) !='NaN'</pd:xpath>
                 <commit>false</commit>
                 <emptyStrAsNil>false</emptyStrAsNil>
                 <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-                <statement>UPDATE OPE_KPI_01_03_DATA
-SET ACTUAL = TO_NUMBER(?), ACTUAL_DESIGN_PERCENTAGE = TO_NUMBER(?) * 100 / DESIGN_CAPACITY
-WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
+                <statement>UPDATE OPE_KPI_05_01_DETAILS
+SET ACTUAL_VALUE = TO_NUMBER(?)
+WHERE CATE_ID = ? AND CATE_TYPE = ? AND VALID_DATE = ?</statement>
                 <Prepared_Param_DataType>
                     <parameter>
                         <parameterName>ACTUAL</parameterName>
                         <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
-                        <parameterName>PARA_ACTUAL</parameterName>
+                        <parameterName>CATE_ID</parameterName>
                         <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
-                        <parameterName>UNIT_ID</parameterName>
+                        <parameterName>CATE_TYPE</parameterName>
                         <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
@@ -388,12 +388,26 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
                             </xsl:otherwise>
                         </xsl:choose>
                     </ACTUAL>
-                    <PARA_ACTUAL>
-                        <xsl:value-of select="$getValueInErsByDate/resultSet/Record[1]/RECVOLFLOWRATE div 24"/>
-                    </PARA_ACTUAL>
-                    <UNIT_ID>
-                        <xsl:value-of select="$oRecords/Record/UNIT_ID"/>
-                    </UNIT_ID>
+                    <CATE_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($oRecords/Record/CATE_ID)">
+                                <xsl:value-of select="$oRecords/Record/CATE_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </CATE_ID>
+                    <CATE_TYPE>
+                        <xsl:choose>
+                            <xsl:when test="exists($oRecords/Record/CATE_TYPE)">
+                                <xsl:value-of select="$oRecords/Record/CATE_TYPE"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </CATE_TYPE>
                     <DATE>
                         <xsl:value-of select="$Start/StartDate"/>
                     </DATE>
@@ -496,29 +510,50 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
                 <timeout>10</timeout>
                 <commit>false</commit>
                 <emptyStrAsNil>false</emptyStrAsNil>
-                <statement>UPDATE OPE_KPI_01_03_DATA
-SET ACTUAL = NULL, ACTUAL_DESIGN_PERCENTAGE = NULL
-WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
+                <statement>UPDATE OPE_KPI_05_01_DETAILS
+SET ACTUAL_VALUE = NULL
+WHERE CATE_ID = ? AND CATE_TYPE = ? AND VALID_DATE = ?</statement>
                 <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
                 <Prepared_Param_DataType>
                     <parameter>
-                        <parameterName>UNIT_ID</parameterName>
+                        <parameterName>CATE_ID</parameterName>
                         <dataType>NUMERIC</dataType>
                     </parameter>
                     <parameter>
-                        <parameterName>DATE_UPDATE</parameterName>
+                        <parameterName>CATE_TYPE</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
                         <dataType>DATE</dataType>
                     </parameter>
                 </Prepared_Param_DataType>
             </config>
             <pd:inputBindings>
                 <jdbcUpdateActivityInput>
-                    <UNIT_ID>
-                        <xsl:value-of select="$oRecords/Record/UNIT_ID"/>
-                    </UNIT_ID>
-                    <DATE_UPDATE>
+                    <CATE_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($oRecords/Record/CATE_ID)">
+                                <xsl:value-of select="$oRecords/Record/CATE_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </CATE_ID>
+                    <CATE_TYPE>
+                        <xsl:choose>
+                            <xsl:when test="exists($oRecords/Record/CATE_TYPE)">
+                                <xsl:value-of select="$oRecords/Record/CATE_TYPE"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </CATE_TYPE>
+                    <VALID_DATE>
                         <xsl:value-of select="$Start/StartDate"/>
-                    </DATE_UPDATE>
+                    </VALID_DATE>
                 </jdbcUpdateActivityInput>
             </pd:inputBindings>
         </pd:activity>
@@ -570,15 +605,19 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>SELECT UNIT_ID, ERS_THROUGHPUT_TAGNAME FROM OPE_KPI_PROCESS_UNIT</statement>
+            <statement>SELECT CATE_ID, CATE_TYPE, TAGNAME FROM OPE_KPI_05_01_CATEGORY</statement>
             <Prepared_Param_DataType/>
             <oraObjects/>
             <oraTables/>
-            <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaColumns>CATE_ID</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-            <QueryOutputCachedSchemaColumns>ERS_THROUGHPUT_TAGNAME</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaColumns>CATE_TYPE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>TAGNAME</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
@@ -712,7 +751,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select  count(*) from OPE_KPI_01_02_RESULT t where t.DATE_UPDATE = ?</statement>
+            <statement>select  count(*) from OPE_KPI_05_01_RESULT t where t.VALID_DATE = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>DATE_UPDATE</parameterName>
@@ -744,7 +783,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>delete OPE_KPI_01_02_RESULT t where t.DATE_UPDATE = ?</statement>
+            <statement>delete OPE_KPI_05_01_RESULT t where t.VALID_DATE = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>DATE_UPDATE</parameterName>
@@ -770,7 +809,7 @@ WHERE UNIT_ID = ? AND DATE_UPDATE = ?</statement>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>delete OPE_KPI_01_02_ALERT_CONDITION t where t.DATE_UPDATE = ?</statement>
+            <statement>delete OPE_KPI_05_01_ALERT_CONDITION t where t.VALID_DATE = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>DATE_UPDATE</parameterName>

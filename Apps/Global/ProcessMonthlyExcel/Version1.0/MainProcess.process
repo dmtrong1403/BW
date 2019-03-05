@@ -100,54 +100,30 @@
             <xsl:copy-of select="$Start/root"/>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="OPE_05_01_Price">
-        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
-        <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>818</pd:x>
-        <pd:y>88</pd:y>
-        <config>
-            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Price.process</processName>
-        </config>
-        <pd:inputBindings>
-            <root>
-                <xsl:copy-of select="$Start/root/pfx4:AppDataEnvelope"/>
-                <inputDate>
-                    <xsl:value-of select="$OPE_05_02_MONTHLY_PLAN_PRICE/inputDate"/>
-                </inputDate>
-            </root>
-        </pd:inputBindings>
-    </pd:activity>
-    <pd:activity name="OPE_05_01_Spread">
+    <pd:activity name="OPE_05_01_SPREAD">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
         <pd:x>597</pd:x>
         <pd:y>88</pd:y>
         <config>
-            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Spread.process</processName>
+            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_SPREAD.process</processName>
         </config>
         <pd:inputBindings>
             <xsl:copy-of select="$Start/root"/>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="OPE_05_02_MONTHLY_PLAN_PRICE">
+    <pd:activity name="OPE_PRODUCT_PRICE">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
         <pd:x>399</pd:x>
         <pd:y>88</pd:y>
         <config>
-            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_MONTHLY_PLAN_PRICE.process</processName>
+            <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_PRODUCT_PRICE.process</processName>
         </config>
         <pd:inputBindings>
             <xsl:copy-of select="$Start/root"/>
         </pd:inputBindings>
     </pd:activity>
-    <pd:transition>
-        <pd:from>OPE_05_01_Spread</pd:from>
-        <pd:to>OPE_05_01_Price</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
     <pd:transition>
         <pd:from>OPE_02_02</pd:from>
         <pd:to>OPE_02_03</pd:to>
@@ -177,15 +153,8 @@
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>OPE_05_01_Price</pd:from>
-        <pd:to>End</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>OPE_05_02_MONTHLY_PLAN_PRICE</pd:from>
-        <pd:to>OPE_05_01_Spread</pd:to>
+        <pd:from>OPE_PRODUCT_PRICE</pd:from>
+        <pd:to>OPE_05_01_SPREAD</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -206,7 +175,14 @@
     </pd:transition>
     <pd:transition>
         <pd:from>GetValidDate</pd:from>
-        <pd:to>OPE_05_02_MONTHLY_PLAN_PRICE</pd:to>
+        <pd:to>OPE_PRODUCT_PRICE</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>OPE_05_01_SPREAD</pd:from>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
