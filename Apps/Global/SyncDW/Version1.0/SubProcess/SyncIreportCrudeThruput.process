@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/common/apps/appdataenv/1.0" xmlns:ns1="sbv/common/exceptionhandling/exception/1.0" xmlns:ns4="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType">
+    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/SyncIreportCrudeThruput.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="StartDate" type="xsd:date"/>
+    </pd:startType>
+    <pd:startX>33</pd:startX>
+    <pd:startY>241</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1844</pd:endX>
+    <pd:endY>249</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <isMissingData>
+            <xsd:element name="isMissingData" type="xsd:boolean"/>
+        </isMissingData>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1471415125027</pd:targetNamespace>
+    <pd:group name="forAllCrudes">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>656</pd:x>
+        <pd:y>54</pd:y>
+        <pd:width>476</pd:width>
+        <pd:height>362</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$getListCrude/resultSet/Record</pd:over>
+            <pd:iterationElementSlot>oRecords</pd:iterationElementSlot>
+            <pd:indexSlot>o</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>getValueInIreportByDate</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>updateActualValue</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>One Bend</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>TrueFlagMissingData</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>One Bend</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getValueInIreportByDate</pd:from>
+            <pd:to>isValidData</pd:to>
+            <pd:xpathDescription>Record Existed</pd:xpathDescription>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>exists($getValueInIreportByDate/resultSet/Record)</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getValueInIreportByDate</pd:from>
+            <pd:to>TrueFlagMissingData</pd:to>
+            <pd:xpathDescription/>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>otherwise</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>isValidData</pd:from>
+            <pd:to>TrueFlagMissingData</pd:to>
+            <pd:xpathDescription>InvalidData</pd:xpathDescription>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>otherwise</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>isValidData</pd:from>
+            <pd:to>updateActualValue</pd:to>
+            <pd:xpathDescription>ValidData</pd:xpathDescription>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>string(number($getValueInIreportByDate/resultSet/Record[1]/FEED_TO_CDU )) !='NaN'</pd:xpath>
+        </pd:transition>
+        <pd:activity name="getValueInIreportByDate">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:description/>
+            <pd:x>749</pd:x>
+            <pd:y>246</pd:y>
+            <config>
+                <timeout>100</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>SELECT * FROM V_CRUDE_THROUGHPUT_QUALITY where CRUDE_ID = ? and STARTDATETIME = ?</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>CRUDE_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>STARTDATETIME</parameterName>
+                        <dataType>DATE</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>CRUDE_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>CRUDE_TYPE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>FEED_TO_CDU</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UOM</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>STARTDATETIME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <CRUDE_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($oRecords/Record/CRUDE_ID)">
+                                <xsl:value-of select="$oRecords/Record/CRUDE_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </CRUDE_ID>
+                    <STARTDATETIME>
+                        <xsl:value-of select="$Start/StartDate"/>
+                    </STARTDATETIME>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="TrueFlagMissingData">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:description/>
+            <pd:x>887</pd:x>
+            <pd:y>350</pd:y>
+            <config>
+                <variableName>isMissingData</variableName>
+            </config>
+            <pd:inputBindings>
+                <isMissingData>
+                    <xsl:value-of select="true()"/>
+                </isMissingData>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="isValidData">
+            <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+            <pd:resourceType>ae.activities.null</pd:resourceType>
+            <pd:x>887</pd:x>
+            <pd:y>145</pd:y>
+            <config/>
+            <pd:inputBindings/>
+        </pd:activity>
+        <pd:activity name="updateActualValue">
+            <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+            <pd:x>1031</pd:x>
+            <pd:y>144</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>update OPE_KPI_02_01_DETAILS set ACTUAL_QTY_CRUDE = ?,  ACTUAL_RATIO = ? where CRUDE_ID = ? and VALID_DATE = ?</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>ACTUAL_QTY_CRUDE</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>ACTUAL_RATIO</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>CRUDE_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>VALID_DATE</parameterName>
+                        <dataType>DATE</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+            </config>
+            <pd:inputBindings>
+                <jdbcUpdateActivityInput>
+                    <ACTUAL_QTY_CRUDE>
+                        <xsl:value-of select="$getValueInIreportByDate/resultSet/Record[1]/FEED_TO_CDU"/>
+                    </ACTUAL_QTY_CRUDE>
+                    <ACTUAL_RATIO>
+                        <xsl:value-of select="100 * $getValueInIreportByDate/resultSet/Record[1]/FEED_TO_CDU div $queryCDUFeed/resultSet/Record[1]/SUMFEED_TO_CDU"/>
+                    </ACTUAL_RATIO>
+                    <CRUDE_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($oRecords/Record/CRUDE_ID)">
+                                <xsl:value-of select="$oRecords/Record/CRUDE_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </CRUDE_ID>
+                    <VALID_DATE>
+                        <xsl:value-of select="$Start/StartDate"/>
+                    </VALID_DATE>
+                </jdbcUpdateActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="AlertMissingData">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1517</pd:x>
+        <pd:y>124</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/AlertDataMissing.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <OPE_KPI_ID>
+                    <xsl:value-of select="13"/>
+                </OPE_KPI_ID>
+                <OPE_KPI_CODE>
+                    <xsl:value-of select="&quot;OPE_KPI_02_01&quot;"/>
+                </OPE_KPI_CODE>
+                <FrequencyType>
+                    <xsl:value-of select="1"/>
+                </FrequencyType>
+                <AlertActive>
+                    <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/ActiveAlert/MissingData/OPE_05_01"/>
+                </AlertActive>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="AlertTargetViotation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1700</pd:x>
+        <pd:y>125</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/AlertTargetViolation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <isAlertActive>
+                <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/ActiveAlert/TargetViolation/OPE_05_01"/>
+            </isAlertActive>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1659</pd:x>
+        <pd:y>375</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="checkExistedResult">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>279</pd:x>
+        <pd:y>242</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select count(*) from OPE_KPI_02_01_RESULT where VALID_DATE = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/StartDate"/>
+                </VALID_DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="deleteExistedLog">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>453</pd:x>
+        <pd:y>99</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>delete OPE_KPI_02_01_ALERT_CONDITION where VALID_DATE = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/StartDate"/>
+                </VALID_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="deleteExistedResult">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>279</pd:x>
+        <pd:y>101</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>delete OPE_KPI_02_01_RESULT where VALID_DATE = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/StartDate"/>
+                </VALID_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="getListCrude">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>455</pd:x>
+        <pd:y>242</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>SELECT CRUDE_ID FROM OPE_KPI_CRUDE</statement>
+            <Prepared_Param_DataType/>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>CRUDE_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1847</pd:x>
+        <pd:y>377</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns1:Exception>
+                <ns2:Metadata>
+                    <ns2:AppCode>
+                        <xsl:value-of select="&quot;SyncDW&quot;"/>
+                    </ns2:AppCode>
+                    <ns2:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </ns2:Version>
+                    <ns2:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns:ProcessContext), tib:timestamp())"/>
+                    </ns2:ID>
+                    <ns2:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </ns2:CreateTime>
+                </ns2:Metadata>
+                <ns1:ExceptionBody>
+                    <ns1:ErrorReport>
+                        <StackTrace>
+                            <xsl:value-of select="$_error/ns:ErrorReport/StackTrace"/>
+                        </StackTrace>
+                        <Msg>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Msg"/>
+                        </Msg>
+                        <FullClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/FullClass"/>
+                        </FullClass>
+                        <ObjectClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Class"/>
+                        </ObjectClass>
+                        <ProcessStack>
+                            <xsl:value-of select="$_error/ns:ErrorReport/ProcessStack"/>
+                        </ProcessStack>
+                        <MsgCode>
+                            <xsl:value-of select="$_error/ns:ErrorReport/MsgCode"/>
+                        </MsgCode>
+                        <xsl:copy-of select="$_error/ns:ErrorReport/Data"/>
+                    </ns1:ErrorReport>
+                </ns1:ExceptionBody>
+            </ns1:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="initFlagMissingData">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>148</pd:x>
+        <pd:y>241</pd:y>
+        <config>
+            <variableName>isMissingData</variableName>
+        </config>
+        <pd:inputBindings>
+            <isMissingData>
+                <xsl:value-of select="false()"/>
+            </isMissingData>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="isMissingData">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>1517</pd:x>
+        <pd:y>248</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="isTargetViolated">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>1700</pd:x>
+        <pd:y>249</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="queryCDUFeed">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>581</pd:x>
+        <pd:y>244</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>SELECT SUM(FEED_TO_CDU) FROM V_CRUDE_THROUGHPUT_QUALITY where STARTDATETIME = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>STARTDATETIME</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>SUMFEED_TO_CDU</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <STARTDATETIME>
+                    <xsl:value-of select="$Start/StartDate"/>
+                </STARTDATETIME>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CalculateKPI">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1218</pd:x>
+        <pd:y>245</pd:y>
+        <config>
+            <processName>/Apps/Global/KPI_Calculatation/OPE_02_01.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Actual>
+                    <xsl:value-of select="$queryCDUFeed/resultSet/Record[1]/SUMFEED_TO_CDU"/>
+                </Actual>
+                <Date>
+                    <xsl:value-of select="tib:format-date('MM/dd/yyyy', $Start/StartDate)"/>
+                </Date>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CheckViolation">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1371</pd:x>
+        <pd:y>247</pd:y>
+        <config>
+            <processName>/Apps/Global/TargetViolationAlert/OPE_02_01/CrudeThruput.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <MtdResult>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Mtd/ancestor-or-self::*/namespace::node()"/>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Mtd/@*"/>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Mtd/node()"/>
+                </MtdResult>
+                <SubstituteResult>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Substitute/ancestor-or-self::*/namespace::node()"/>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Substitute/@*"/>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Substitute/node()"/>
+                </SubstituteResult>
+                <DailyResult>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Daily/ancestor-or-self::*/namespace::node()"/>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Daily/@*"/>
+                    <xsl:copy-of select="$CalculateKPI/KPI-Result/Daily/node()"/>
+                </DailyResult>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getListCrude</pd:from>
+        <pd:to>queryCDUFeed</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>initFlagMissingData</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>forAllCrudes</pd:from>
+        <pd:to>CalculateKPI</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>isMissingData</pd:from>
+        <pd:to>AlertMissingData</pd:to>
+        <pd:xpathDescription>True</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$isMissingData/isMissingData = 'true'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>AlertMissingData</pd:from>
+        <pd:to>isTargetViolated</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>isMissingData</pd:from>
+        <pd:to>isTargetViolated</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>isTargetViolated</pd:from>
+        <pd:to>AlertTargetViotation</pd:to>
+        <pd:xpathDescription>True</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$isTargetViolated/isTargetViolated = 'true'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>isTargetViolated</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>AlertTargetViotation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkExistedResult</pd:from>
+        <pd:to>deleteExistedResult</pd:to>
+        <pd:xpathDescription>ExistedResult</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$checkExistedResult/resultSet/Record[1]/COUNT &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>deleteExistedResult</pd:from>
+        <pd:to>deleteExistedLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>deleteExistedLog</pd:from>
+        <pd:to>getListCrude</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkExistedResult</pd:from>
+        <pd:to>getListCrude</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryCDUFeed</pd:from>
+        <pd:to>forAllCrudes</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CalculateKPI</pd:from>
+        <pd:to>CheckViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckViolation</pd:from>
+        <pd:to>isMissingData</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>initFlagMissingData</pd:from>
+        <pd:to>checkExistedResult</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

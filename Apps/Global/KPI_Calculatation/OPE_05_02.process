@@ -6,16 +6,14 @@
     <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
     <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
-    <pd:name>Apps/Global/KPI_Calculatation/OPE_05_01.process</pd:name>
+    <pd:name>Apps/Global/KPI_Calculatation/OPE_05_02.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="root">
             <xsd:complexType>
                 <xsd:sequence>
                     <xsd:element name="Actual" type="xsd:double"/>
-                    <xsd:element name="CateID" type="xsd:double"/>
                     <xsd:element name="Date" type="xsd:string"/>
-                    <xsd:element name="CateType" type="xsd:double"/>
                 </xsd:sequence>
             </xsd:complexType>
         </xsd:element>
@@ -24,7 +22,7 @@
     <pd:startY>201</pd:startY>
     <pd:returnBindings>
         <xsl:choose>
-            <xsl:when test="$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0">
+            <xsl:when test="$queryPlanGrossMargin/resultSet/Record[1]/PLAN_GROSS_MARGIN_BBL !=0">
                 <DailyKPI>
                     <Value>
                         <xsl:value-of select="$KPI-Results/DailyKPI"/>
@@ -57,8 +55,8 @@
             </xsd:complexType>
         </xsd:element>
     </pd:endType>
-    <pd:endX>627</pd:endX>
-    <pd:endY>202</pd:endY>
+    <pd:endX>693</pd:endX>
+    <pd:endY>204</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables>
         <KPI-Results>
@@ -70,59 +68,47 @@
         <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
         <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
         <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
-        <pd:x>316</pd:x>
-        <pd:y>97</pd:y>
+        <pd:x>382</pd:x>
+        <pd:y>99</pd:y>
         <config>
             <variableName>KPI-Results</variableName>
         </config>
         <pd:inputBindings>
             <DailyKPI>
-                <xsl:value-of select="100 * ($queryPlanPrice/resultSet/Record[1]/PLAN_VALUE - $Start/root/Actual) div $queryPlanPrice/resultSet/Record[1]/PLAN_VALUE"/>
+                <xsl:value-of select="100 * ($Start/root/Actual - $queryPlanGrossMargin/resultSet/Record[1]/PLAN_GROSS_MARGIN_BBL) div $queryPlanGrossMargin/resultSet/Record[1]/PLAN_GROSS_MARGIN_BBL"/>
             </DailyKPI>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="insertResultTable">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>470</pd:x>
-        <pd:y>202</pd:y>
+        <pd:x>536</pd:x>
+        <pd:y>204</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>insert into OPE_KPI_05_01_RESULT (CATE_ID, DAILY_KPI_VALUE, VALID_DATE, PROCESS_MESSAGE, CATE_TYPE)
- values (?, ?, to_date(?,'MM/DD/YYYY'), ?, ?)</statement>
+            <statement>update OPE_KPI_05_02_RESULT set KPI_GROSS_MARGIN_USD_BBL = ?, PROCESS_MESSAGE = ? where VALID_DATE = to_date(?,'MM/DD/YYYY') </statement>
             <Prepared_Param_DataType>
-                <parameter>
-                    <parameterName>CATE_ID</parameterName>
-                    <dataType>NUMERIC</dataType>
-                </parameter>
                 <parameter>
                     <parameterName>DAILY_KPI_VALUE</parameterName>
                     <dataType>NUMERIC</dataType>
-                </parameter>
-                <parameter>
-                    <parameterName>VALID_DATE</parameterName>
-                    <dataType>VARCHAR</dataType>
                 </parameter>
                 <parameter>
                     <parameterName>PROCESS_MASSAGE</parameterName>
                     <dataType>VARCHAR</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>CATE_TYPE</parameterName>
-                    <dataType>NUMERIC</dataType>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
                 </parameter>
             </Prepared_Param_DataType>
         </config>
         <pd:inputBindings>
             <jdbcUpdateActivityInput>
-                <CATE_ID>
-                    <xsl:value-of select="$Start/root/CateID"/>
-                </CATE_ID>
                 <xsl:choose>
-                    <xsl:when test="$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0">
+                    <xsl:when test="$queryPlanGrossMargin/resultSet/Record[1]/PLAN_GROSS_MARGIN_BBL !=0">
                         <DAILY_KPI_VALUE>
                             <xsl:value-of select="$KPI-Results/DailyKPI"/>
                         </DAILY_KPI_VALUE>
@@ -131,11 +117,8 @@
                         <DAILY_KPI_VALUE xsi:nil="true"/>
                     </xsl:otherwise>
                 </xsl:choose>
-                <VALID_DATE>
-                    <xsl:value-of select="$Start/root/Date"/>
-                </VALID_DATE>
                 <xsl:choose>
-                    <xsl:when test="$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0">
+                    <xsl:when test="$queryPlanGrossMargin/resultSet/Record[1]/PLAN_GROSS_MARGIN_BBL !=0">
                         <PROCESS_MASSAGE>
                             <xsl:value-of select="&quot;VALID INPUTS&quot;"/>
                         </PROCESS_MASSAGE>
@@ -146,17 +129,17 @@
                         </PROCESS_MASSAGE>
                     </xsl:otherwise>
                 </xsl:choose>
-                <CATE_TYPE>
-                    <xsl:value-of select="$Start/root/CateType"/>
-                </CATE_TYPE>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
             </jdbcUpdateActivityInput>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="queryPlanPrice">
+    <pd:activity name="queryPlanGrossMargin">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
         <pd:description/>
-        <pd:x>152</pd:x>
+        <pd:x>195</pd:x>
         <pd:y>201</pd:y>
         <config>
             <timeout>10</timeout>
@@ -164,20 +147,16 @@
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select PLAN_VALUE from OPE_KPI_05_01_DETAILS where VALID_DATE = to_date(?,'MM/DD/YYYY')  and CATE_ID = ?</statement>
+            <statement>select PLAN_GROSS_MARGIN_BBL from OPE_KPI_05_02_RESULT where VALID_DATE = to_date(?,'MM/DD/YYYY')</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>VALID_DATE</parameterName>
                     <dataType>VARCHAR</dataType>
                 </parameter>
-                <parameter>
-                    <parameterName>CATE_ID</parameterName>
-                    <dataType>NUMERIC</dataType>
-                </parameter>
             </Prepared_Param_DataType>
             <oraObjects/>
             <oraTables/>
-            <QueryOutputCachedSchemaColumns>PLAN_VALUE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaColumns>PLAN_GROSS_MARGIN_BBL</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
@@ -187,9 +166,6 @@
                 <VALID_DATE>
                     <xsl:value-of select="$Start/root/Date"/>
                 </VALID_DATE>
-                <CATE_ID>
-                    <xsl:value-of select="$Start/root/CateID"/>
-                </CATE_ID>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
@@ -203,7 +179,7 @@
     </pd:transition>
     <pd:transition>
         <pd:from>Start</pd:from>
-        <pd:to>queryPlanPrice</pd:to>
+        <pd:to>queryPlanGrossMargin</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -216,16 +192,16 @@
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>queryPlanPrice</pd:from>
+        <pd:from>queryPlanGrossMargin</pd:from>
         <pd:to>Calculate KPI Result</pd:to>
         <pd:xpathDescription>ValidPlan</pd:xpathDescription>
         <pd:lineType>Multiple Bends</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0</pd:xpath>
+        <pd:xpath>$queryPlanGrossMargin/resultSet/Record[1]/PLAN_GROSS_MARGIN_BBL !=0</pd:xpath>
     </pd:transition>
     <pd:transition>
-        <pd:from>queryPlanPrice</pd:from>
+        <pd:from>queryPlanGrossMargin</pd:from>
         <pd:to>insertResultTable</pd:to>
         <pd:xpathDescription>InvalidPlan</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx6="http://www.tibco.com/schemas/BW/SharedResource/Schema/Apps/AlertSchemas/Schema.xsd" xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <xsd:import namespace="http://www.tibco.com/schemas/BW/SharedResource/Schema/Apps/AlertSchemas/Schema.xsd" schemaLocation="/SharedResource/Schema/Apps/AlertSchemas/AlertStatus.xsd"/>
+    <pd:name>Apps/Global/TargetViolationAlert/OPE_02_01/CrudeQuality.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="MtdResult">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Value" type="xsd:double"/>
+                                <xsd:element name="isValid" type="xsd:boolean"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="SubstituteResult">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Value" type="xsd:double"/>
+                                <xsd:element name="isValid" type="xsd:boolean"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="DailyResult">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Value" type="xsd:double"/>
+                                <xsd:element name="IsValid" type="xsd:boolean"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>47</pd:startX>
+    <pd:startY>208</pd:startY>
+    <pd:returnBindings>
+        <IsViolated>
+            <xsl:value-of select="$checkThruputViolation/resultSet/Record[1]/COUNT"/>
+        </IsViolated>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="IsViolated" type="xsd:double"/>
+    </pd:endType>
+    <pd:endX>877</pd:endX>
+    <pd:endY>187</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <SubstituteStatus>
+            <xsd:element name="SubstituteStatus" type="xsd:double"/>
+        </SubstituteStatus>
+        <ThruputStatus>
+            <xsd:element name="ThruputStatus">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Daily" type="xsd:double"/>
+                        <xsd:element name="Mtd" type="xsd:double"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </ThruputStatus>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="checkSubstituteViolation">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>687</pd:x>
+        <pd:y>300</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="checkThruputViolation">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>678</pd:x>
+        <pd:y>96</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select count(*) from OPE_KPI_05_01_ALERT_CONDITION where VALID_DATE = TRUNC(TO_DATE(?, 'MM/DD/YYYY' )-1) and STATUS &lt; ? and CATE_ID = ? and CATE_TYPE = ?</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>STATUS</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CATE_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CATE_TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
+                <xsl:choose>
+                    <xsl:when test="$Start/root/DailyResult/IsValid = &quot;true&quot;">
+                        <STATUS>
+                            <xsl:value-of select="$ThruputStatus/Status/Daily"/>
+                        </STATUS>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <STATUS>
+                            <xsl:value-of select="3"/>
+                        </STATUS>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <CATE_ID>
+                    <xsl:value-of select="$Start/root/CateID"/>
+                </CATE_ID>
+                <CATE_TYPE>
+                    <xsl:value-of select="$Start/root/CateType"/>
+                </CATE_TYPE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="getSubstituteStatus">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>388</pd:x>
+        <pd:y>300</pd:y>
+        <config>
+            <variableName>SubstituteStatus</variableName>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="getThruputStatus">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>378</pd:x>
+        <pd:y>94</pd:y>
+        <config>
+            <variableName>ThruputStatus</variableName>
+        </config>
+        <pd:inputBindings>
+            <Status>
+                <Daily>
+                    <xsl:value-of select="if($Start/root/DailyResult/Value >= $queryThruputLimits/resultSet/Record[1]/LOW_GREEN and $Start/root/DailyResult/Value &lt;= $queryThruputLimits/resultSet/Record[1]/HIGH_GREEN) then 0 else&#xA;if($Start/root/DailyResult/Value &lt; $queryThruputLimits/resultSet/Record[1]/LOW_RED or $Start/root/DailyResult/Value > $queryThruputLimits/resultSet/Record[1]/HIGH_RED) then 2 else 1"/>
+                </Daily>
+                <Mtd>
+                    <xsl:value-of select="if($Start/root/MtdResult/Value >= $queryThruputLimits/resultSet/Record[1]/LOW_GREEN and $Start/root/MtdResult/Value &lt;= $queryThruputLimits/resultSet/Record[1]/HIGH_GREEN) then 0 else&#xA;if($Start/root/MtdResult/Value &lt; $queryThruputLimits/resultSet/Record[1]/LOW_RED or $Start/root/MtdResult/Value > $queryThruputLimits/resultSet/Record[1]/HIGH_RED) then 2 else 1"/>
+                </Mtd>
+            </Status>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="logSubstituteStatus">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>538</pd:x>
+        <pd:y>300</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="logThruputStatus">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>520</pd:x>
+        <pd:y>96</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>insert into OPE_KPI_05_01_ALERT_CONDITION (CATE_ID, CATE_TYPE, STATUS, VALID_DATE, PROCESS_MESSAGE)
+ values (?, ?, ?, to_date(?,'MM/DD/YYYY'),?)</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>CATE_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CATE_TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>STATUS</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>PROCESS_MESSAGE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <CATE_ID>
+                    <xsl:value-of select="$Start/root/CateID"/>
+                </CATE_ID>
+                <CATE_TYPE>
+                    <xsl:value-of select="$Start/root/CateType"/>
+                </CATE_TYPE>
+                <xsl:choose>
+                    <xsl:when test="$Start/root/DailyResult/IsValid = &quot;true&quot;">
+                        <STATUS>
+                            <xsl:value-of select="$ThruputStatus/Status/Daily"/>
+                        </STATUS>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <STATUS xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
+                <xsl:choose>
+                    <xsl:when test="$Start/root/DailyResult/IsValid = &quot;true&quot;">
+                        <PROCESS_MESSAGE>
+                            <xsl:value-of select="&quot;VALID INPUTS&quot;"/>
+                        </PROCESS_MESSAGE>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <PROCESS_MESSAGE>
+                            <xsl:value-of select="&quot;INVALID INPUTS&quot;"/>
+                        </PROCESS_MESSAGE>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="querySubstituteLimits">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>235</pd:x>
+        <pd:y>300</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select LOW_GREEN, HIGH_GREEN, LOW_RED, HIGH_RED from OPE_KPI_ALERT_CONDITION where STATUS = 1 and KPI_ID = 'OPE_KPI_02_01'</statement>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="queryThruputLimits">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:description/>
+        <pd:x>235</pd:x>
+        <pd:y>96</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select LOW_GREEN, HIGH_GREEN, LOW_RED, HIGH_RED from OPE_KPI_ALERT_CONDITION where STATUS = 1 and KPI_ID = 'OPE_KPI_02_01'</statement>
+            <Prepared_Param_DataType/>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>LOW_GREEN</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>HIGH_GREEN</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>LOW_RED</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>HIGH_RED</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>queryThruputLimits</pd:from>
+        <pd:to>getThruputStatus</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>queryThruputLimits</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getThruputStatus</pd:from>
+        <pd:to>logThruputStatus</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>logThruputStatus</pd:from>
+        <pd:to>checkThruputViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkThruputViolation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>querySubstituteLimits</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>querySubstituteLimits</pd:from>
+        <pd:to>getSubstituteStatus</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getSubstituteStatus</pd:from>
+        <pd:to>logSubstituteStatus</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>logSubstituteStatus</pd:from>
+        <pd:to>checkSubstituteViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkSubstituteViolation</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

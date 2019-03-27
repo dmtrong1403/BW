@@ -7,15 +7,16 @@
     <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
     <xsd:import namespace="http://www.tibco.com/schemas/BW/SharedResource/Schema/Apps/AlertSchemas/Schema.xsd" schemaLocation="/SharedResource/Schema/Apps/AlertSchemas/AlertStatus.xsd"/>
-    <pd:name>Apps/Global/TargetViolationAlert/OPE_01_02/CheckViolation.process</pd:name>
+    <pd:name>Apps/Global/TargetViolationAlert/UnitThruput/SubProcess_0102.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="root">
             <xsd:complexType>
                 <xsd:sequence>
-                    <xsd:element name="DataType" type="xsd:string"/>
-                    <xsd:element name="AlertStatus" type="xsd:string"/>
+                    <xsd:element name="DataType" type="xsd:double"/>
+                    <xsd:element name="AlertStatus" type="xsd:double"/>
                     <xsd:element name="UnitID" type="xsd:double"/>
+                    <xsd:element name="isValid" type="xsd:boolean"/>
                     <xsd:element name="Date" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
@@ -169,15 +170,15 @@
     <pd:activity name="logStatus">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>194</pd:x>
-        <pd:y>206</pd:y>
+        <pd:x>192</pd:x>
+        <pd:y>205</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>insert into OPE_KPI_01_02_ALERT_CONDITION (UNIT_ID, DATA_TYPE, ALERT_STATUS, DATE_UPDATE)
- values (?, ?, ?, to_date(?,'MM/DD/YYYY'))</statement>
+            <statement>insert into OPE_KPI_01_02_ALERT_CONDITION (UNIT_ID, DATA_TYPE, ALERT_STATUS, DATE_UPDATE, PROCESS_MESSAGE)
+ values (?, ?, ?, to_date(?,'MM/DD/YYYY'), ?)</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>UNIT_ID</parameterName>
@@ -195,6 +196,10 @@
                     <parameterName>DATE_UPDATE</parameterName>
                     <dataType>VARCHAR</dataType>
                 </parameter>
+                <parameter>
+                    <parameterName>PROCESS_MESSAGE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
             </Prepared_Param_DataType>
         </config>
         <pd:inputBindings>
@@ -205,12 +210,31 @@
                 <DATA_TYPE>
                     <xsl:value-of select="$Start/root/DataType"/>
                 </DATA_TYPE>
-                <ALERT_STATUS>
-                    <xsl:value-of select="$Start/root/AlertStatus"/>
-                </ALERT_STATUS>
+                <xsl:choose>
+                    <xsl:when test="$Start/root/isValid = 'true'">
+                        <ALERT_STATUS>
+                            <xsl:value-of select="$Start/root/AlertStatus"/>
+                        </ALERT_STATUS>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <ALERT_STATUS xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <DATE_UPDATE>
                     <xsl:value-of select="$Start/root/Date"/>
                 </DATE_UPDATE>
+                <xsl:choose>
+                    <xsl:when test="$Start/root/isValid = 'true'">
+                        <PROCESS_MESSAGE>
+                            <xsl:value-of select="&quot;VALID INPUTS&quot;"/>
+                        </PROCESS_MESSAGE>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <PROCESS_MESSAGE>
+                            <xsl:value-of select="&quot;INVALID INPUTS&quot;"/>
+                        </PROCESS_MESSAGE>
+                    </xsl:otherwise>
+                </xsl:choose>
             </jdbcUpdateActivityInput>
         </pd:inputBindings>
     </pd:activity>

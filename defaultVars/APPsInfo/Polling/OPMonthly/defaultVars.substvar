@@ -3,19 +3,19 @@
 	<globalVariables>
 		<globalVariable>
 			<name>Backup_Monthly</name>
-			<value>C:\Users\OS\Desktop\Excel_Templates\Backup_Excel\Monthly_Plan</value>
+			<value>C:\Users\MSI\Desktop\Excel_Templates\Backup_Excel\Monthly_Plan</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>String</type>
-			<modTime>1551768207970</modTime>
+			<modTime>1551930618260</modTime>
 		</globalVariable>
 		<globalVariable>
 			<name>FileName</name>
-			<value>C:\Users\OS\Desktop\Excel_Templates\Monthly_Plan\OPE_KPI_Monthly_Plan*</value>
+			<value>C:\Users\MSI\Desktop\Excel_Templates\Monthly_Plan\OPE_KPI_Monthly_Plan*</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>String</type>
-			<modTime>1551771208951</modTime>
+			<modTime>1551930618331</modTime>
 		</globalVariable>
 		<globalVariable>
 			<name>Interval</name>

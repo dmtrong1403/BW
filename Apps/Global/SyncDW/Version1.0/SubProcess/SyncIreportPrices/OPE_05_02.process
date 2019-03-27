@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/common/apps/appdataenv/1.0" xmlns:ns1="sbv/common/exceptionhandling/exception/1.0" xmlns:ns4="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType">
+    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/SyncIreportProductPrice/OPE_05_02.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="Record">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="PRODUCT_ID" type="xsd:string"/>
+                    <xsd:element name="ACTUAL_VALUE" type="xsd:string"/>
+                    <xsd:element name="VALID_DATE" type="xsd:string"/>
+                    <xsd:element name="TYPE" type="xsd:double"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>48</pd:startX>
+    <pd:startY>215</pd:startY>
+    <pd:returnBindings>
+        <EmailAlert>
+            <isValidData>
+                <xsl:value-of select="$isValidData/isValidData"/>
+            </isValidData>
+            <isTargetViolated>
+                <xsl:value-of select="$isTargetViolated/isTargetViolated"/>
+            </isTargetViolated>
+        </EmailAlert>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="EmailAlert">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="isValidData" type="xsd:boolean"/>
+                    <xsd:element name="isTargetViolated" type="xsd:boolean"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>926</pd:endX>
+    <pd:endY>212</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <isTargetViolated>
+            <xsd:element name="isTargetViolated" type="xsd:boolean"/>
+        </isTargetViolated>
+        <isValidData>
+            <xsd:element name="isValidData" type="xsd:boolean"/>
+        </isValidData>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1471415125027</pd:targetNamespace>
+    <pd:activity name="setNULL">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>461</pd:x>
+        <pd:y>376</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>UPDATE OPE_KPI_05_02_DETAILS
+SET PROD_PRICE = NULL
+WHERE PRODUCT_ID = ? AND TYPE = ? AND GET_DATE = to_date(?,'MM/DD/YYYY')</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>PRODUCT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/Record/PRODUCT_ID"/>
+                </PRODUCT_ID>
+                <TYPE>
+                    <xsl:value-of select="$Start/Record/TYPE"/>
+                </TYPE>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/Record/VALID_DATE"/>
+                </VALID_DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="TrueFlagInvalidData">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:description/>
+        <pd:x>697</pd:x>
+        <pd:y>374</pd:y>
+        <config>
+            <variableName>isValidData</variableName>
+        </config>
+        <pd:inputBindings>
+            <isValidData>
+                <xsl:value-of select="true()"/>
+            </isValidData>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="updateDetailsTable">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>693</pd:x>
+        <pd:y>213</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>UPDATE OPE_KPI_05_02_DETAILS
+SET PROD_PRICE = TO_NUMBER(?)
+WHERE PRODUCT_ID = ? AND TYPE = ? AND GET_DATE = to_date(?,'MM/DD/YYYY')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>PROD_PRICE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>PRODUCT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <PROD_PRICE>
+                    <xsl:value-of select="$Start/Record/ACTUAL_VALUE"/>
+                </PROD_PRICE>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/Record/PRODUCT_ID"/>
+                </PRODUCT_ID>
+                <TYPE>
+                    <xsl:value-of select="$Start/Record/TYPE"/>
+                </TYPE>
+                <DATE>
+                    <xsl:value-of select="$Start/Record/VALID_DATE"/>
+                </DATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ValidateRecord">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>454</pd:x>
+        <pd:y>213</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="initFlagTargetViolation">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>319</pd:x>
+        <pd:y>212</pd:y>
+        <config>
+            <variableName>isTargetViolated</variableName>
+        </config>
+        <pd:inputBindings>
+            <isTargetViolated>
+                <xsl:value-of select="false()"/>
+            </isTargetViolated>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="initFlagInvalidData">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>180</pd:x>
+        <pd:y>214</pd:y>
+        <config>
+            <variableName>isValidData</variableName>
+        </config>
+        <pd:inputBindings>
+            <isValidData>
+                <xsl:value-of select="false()"/>
+            </isValidData>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>ValidateRecord</pd:from>
+        <pd:to>updateDetailsTable</pd:to>
+        <pd:xpathDescription>ValidInput</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>string(number($Start/Record/ACTUAL_VALUE)) !='NaN'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ValidateRecord</pd:from>
+        <pd:to>setNULL</pd:to>
+        <pd:xpathDescription>InvalidInput</pd:xpathDescription>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>setNULL</pd:from>
+        <pd:to>TrueFlagInvalidData</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>TrueFlagInvalidData</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>initFlagInvalidData</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>updateDetailsTable</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>initFlagInvalidData</pd:from>
+        <pd:to>initFlagTargetViolation</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>initFlagTargetViolation</pd:from>
+        <pd:to>ValidateRecord</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
