@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/pe/DeployedVarsType" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:ns11="sbv/common/exceptionhandling/exception/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/common/apps/appdataenv/1.0" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/03_01/Sync_Ers_Energy_Consumption.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="StartDate" type="xsd:date"/>
+    </pd:startType>
+    <pd:startX>51</pd:startX>
+    <pd:startY>132</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>2364</pd:endX>
+    <pd:endY>237</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <DwhMissingData>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="countMissing" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </DwhMissingData>
+        <KpiViolation>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="countViolated" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </KpiViolation>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1547716694789</pd:targetNamespace>
+    <pd:group name="Fuel_TYPE_Loop">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>274</pd:x>
+        <pd:y>15</pd:y>
+        <pd:width>1014</pd:width>
+        <pd:height>438</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$query_Fuel_TYPE/resultSet/Record/ENERGY_CONSUMPTION_ID</pd:over>
+            <pd:iterationElementSlot>iRecords</pd:iterationElementSlot>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>queryTagName</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>tagname_loop</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>queryTagName</pd:from>
+            <pd:to>tagname_loop</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:group name="tagname_loop">
+            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+            <pd:resourceType>ae.process.group</pd:resourceType>
+            <pd:x>480</pd:x>
+            <pd:y>45</pd:y>
+            <pd:width>767</pd:width>
+            <pd:height>367</pd:height>
+            <pd:collapsedWidth>57</pd:collapsedWidth>
+            <pd:collapsedHeight>70</pd:collapsedHeight>
+            <pd:groupVariables/>
+            <pd:joinToggle>inherit</pd:joinToggle>
+            <config>
+                <pd:groupType>inputLoop</pd:groupType>
+                <pd:serializable>false</pd:serializable>
+                <pd:over>$queryTagName/resultSet/Record</pd:over>
+                <pd:iterationElementSlot>xRecords</pd:iterationElementSlot>
+                <pd:indexSlot>x</pd:indexSlot>
+                <pd:activityOutputName/>
+                <pd:accumulateOutput>false</pd:accumulateOutput>
+            </config>
+            <pd:inputBindings/>
+            <pd:expanded>true</pd:expanded>
+            <pd:transition>
+                <pd:from>start</pd:from>
+                <pd:to>queryDWH</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>join</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>updateDetailTable</pd:from>
+                <pd:to>join</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>insert2DetailTable</pd:from>
+                <pd:to>join</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>queryDWH</pd:from>
+                <pd:to>noRecordsOnDWH</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>checkRecordExists</pd:from>
+                <pd:to>insert2DetailTable</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>checkRecordExists</pd:from>
+                <pd:to>updateDetailTable</pd:to>
+                <pd:xpathDescription>exists</pd:xpathDescription>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>$checkRecordExists/resultSet/Record/COUNT &gt; 0</pd:xpath>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>queryDWH</pd:from>
+                <pd:to>data validation</pd:to>
+                <pd:xpathDescription>dwh have data</pd:xpathDescription>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>exists($queryDWH/resultSet/Record)</pd:xpath>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>data validation</pd:from>
+                <pd:to>checkRecordExists</pd:to>
+                <pd:xpathDescription>valid</pd:xpathDescription>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>sum(for $record in $queryDWH/resultSet/Record return if (string(number($record/FUEL_VALUE)) !='NaN') then 0 else 1) = 0</pd:xpath>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>data validation</pd:from>
+                <pd:to>noRecordsOnDWH</pd:to>
+                <pd:xpathDescription>invalid</pd:xpathDescription>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>activeMissingDataAlert</pd:from>
+                <pd:to>join</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>noRecordsOnDWH</pd:from>
+                <pd:to>activeMissingDataAlert</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:activity name="insert2DetailTable">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:x>842</pd:x>
+                <pd:y>234</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>insert into OPE_KPI_03_01_DETAILS(FUEL_TAGNAME,VALUE,DATE_UPDATE,FUEL_TYPE_ID,FUEL_TYPE_NAME)
+values (?,TO_NUMBER(?),to_date(?,'YYYY/MM/DD'),?,?)</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>FUEL_TAGNAME</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>ACTUAL</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>DATE_UPDATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>FUEL_TYPE_ID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>FUEL_TYPE_NAME</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput>
+                        <FUEL_TAGNAME>
+                            <xsl:choose>
+                                <xsl:when test="exists($xRecords/Record/ERS_TAGNAME)">
+                                    <xsl:value-of select="$xRecords/Record/ERS_TAGNAME"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </FUEL_TAGNAME>
+                        <ACTUAL>
+                            <xsl:choose>
+                                <xsl:when test="exists($queryDWH/resultSet/Record[1]/FUEL_VALUE)">
+                                    <xsl:value-of select="$queryDWH/resultSet/Record[1]/FUEL_VALUE"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </ACTUAL>
+                        <DATE_UPDATE>
+                            <xsl:value-of select="$Start/StartDate"/>
+                        </DATE_UPDATE>
+                        <FUEL_TYPE_ID>
+                            <xsl:value-of select="$iRecords/ENERGY_CONSUMPTION_ID"/>
+                        </FUEL_TYPE_ID>
+                        <FUEL_TYPE_NAME>
+                            <xsl:choose>
+                                <xsl:when test="exists($xRecords/Record/ENERGY_CONSUMPTION_NAME)">
+                                    <xsl:value-of select="$xRecords/Record/ENERGY_CONSUMPTION_NAME"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </FUEL_TYPE_NAME>
+                    </jdbcUpdateActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="join">
+                <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+                <pd:resourceType>ae.activities.null</pd:resourceType>
+                <pd:x>1059</pd:x>
+                <pd:y>234</pd:y>
+                <config/>
+                <pd:inputBindings/>
+            </pd:activity>
+            <pd:activity name="noRecordsOnDWH">
+                <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+                <pd:resourceType>ae.activities.null</pd:resourceType>
+                <pd:x>717</pd:x>
+                <pd:y>331</pd:y>
+                <config/>
+                <pd:inputBindings/>
+            </pd:activity>
+            <pd:activity name="queryDWH">
+                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                <pd:x>549</pd:x>
+                <pd:y>236</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <maxRows>100</maxRows>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>SELECT * FROM IREPORT.V_ERS_ENERGY_CONSUMPTION WHERE FUEL_NAME = ? AND STARTDATETIME = to_date(?,'YYYY/MM/DD')</statement>
+                    <oraObjects/>
+                    <oraTables/>
+                    <QueryOutputCachedSchemaColumns>ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>FUEL_NAME</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>FUEL_VALUE</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>FUEL_UOM</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>STARTDATETIME</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>FUEL_TYPE_ID</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <QueryOutputCachedSchemaColumns>PLANT_LEVEL</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>FUEL_NAME</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>STARTDATETIME</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                </config>
+                <pd:inputBindings>
+                    <jdbcQueryActivityInput>
+                        <FUEL_NAME>
+                            <xsl:choose>
+                                <xsl:when test="exists($xRecords/Record/ERS_TAGNAME)">
+                                    <xsl:value-of select="$xRecords/Record/ERS_TAGNAME"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </FUEL_NAME>
+                        <STARTDATETIME>
+                            <xsl:value-of select="$Start/StartDate"/>
+                        </STARTDATETIME>
+                    </jdbcQueryActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="updateDetailTable">
+                <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+                <pd:x>1056</pd:x>
+                <pd:y>108</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <statement>UPDATE OPE_KPI_03_01_DETAILS
+SET VALUE = TO_NUMBER(?)
+WHERE FUEL_TAGNAME = ? AND DATE_UPDATE  = to_date(?,'YYYY/MM/DD') and FUEL_TYPE_ID = ?</statement>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>VALUE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>FUEL_TAGNAME</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>DATE_UPDATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>FUEL_TYPE_ID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                </config>
+                <pd:inputBindings>
+                    <jdbcUpdateActivityInput>
+                        <VALUE>
+                            <xsl:choose>
+                                <xsl:when test="exists($queryDWH/resultSet/Record[1]/FUEL_VALUE)">
+                                    <xsl:value-of select="$queryDWH/resultSet/Record[1]/FUEL_VALUE"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </VALUE>
+                        <FUEL_TAGNAME>
+                            <xsl:choose>
+                                <xsl:when test="exists($xRecords/Record/ERS_TAGNAME)">
+                                    <xsl:value-of select="$xRecords/Record/ERS_TAGNAME"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </FUEL_TAGNAME>
+                        <DATE_UPDATE>
+                            <xsl:value-of select="$Start/StartDate"/>
+                        </DATE_UPDATE>
+                        <FUEL_TYPE_ID>
+                            <xsl:value-of select="$iRecords/ENERGY_CONSUMPTION_ID"/>
+                        </FUEL_TYPE_ID>
+                    </jdbcUpdateActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="activeMissingDataAlert">
+                <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+                <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+                <pd:x>1059</pd:x>
+                <pd:y>333</pd:y>
+                <config>
+                    <variableName>DwhMissingData</variableName>
+                </config>
+                <pd:inputBindings>
+                    <root>
+                        <countMissing>
+                            <xsl:value-of select="$DwhMissingData/root/countMissing + 1"/>
+                        </countMissing>
+                    </root>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="checkRecordExists">
+                <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+                <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+                <pd:x>844</pd:x>
+                <pd:y>108</pd:y>
+                <config>
+                    <timeout>10</timeout>
+                    <commit>false</commit>
+                    <maxRows>100</maxRows>
+                    <emptyStrAsNil>false</emptyStrAsNil>
+                    <statement>select count(*) from OPE_KPI_03_01_DETAILS t where t.DATE_UPDATE = to_date(?,'YYYY/MM/DD') and FUEL_TAGNAME = ? and FUEL_TYPE_ID = ?</statement>
+                    <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                    <Prepared_Param_DataType>
+                        <parameter>
+                            <parameterName>DATE_UPDATE</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>FUEL_TAGNAME</parameterName>
+                            <dataType>VARCHAR</dataType>
+                        </parameter>
+                        <parameter>
+                            <parameterName>FUEL_TYPE_ID</parameterName>
+                            <dataType>NUMERIC</dataType>
+                        </parameter>
+                    </Prepared_Param_DataType>
+                    <oraObjects/>
+                    <oraTables/>
+                    <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+                    <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                    <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                    <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                </config>
+                <pd:inputBindings>
+                    <jdbcQueryActivityInput>
+                        <DATE_UPDATE>
+                            <xsl:value-of select="$Start/StartDate"/>
+                        </DATE_UPDATE>
+                        <FUEL_TAGNAME>
+                            <xsl:value-of select="$xRecords/ERS_TAGNAME"/>
+                        </FUEL_TAGNAME>
+                        <FUEL_TYPE_ID>
+                            <xsl:value-of select="$iRecords/ENERGY_CONSUMPTION_ID"/>
+                        </FUEL_TYPE_ID>
+                    </jdbcQueryActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="data validation">
+                <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+                <pd:resourceType>ae.activities.null</pd:resourceType>
+                <pd:x>714</pd:x>
+                <pd:y>106</pd:y>
+                <config/>
+                <pd:inputBindings/>
+            </pd:activity>
+        </pd:group>
+        <pd:activity name="queryTagName">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:x>383</pd:x>
+            <pd:y>241</pd:y>
+            <config>
+                <timeout>10</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <statement>select  * from OPE_KPI_ENERGY_CONSUMPTION where is_active = 1 and ENERGY_CONSUMPTION_ID = ?</statement>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>ENERGY_CONSUMPTION_I</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>OPE_KPI_ENERGY_CONSUMPTION_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>ENERGY_CONSUMPTION_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>ENERGY_CONSUMPTION_NAME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UOM</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>CREATED_DATE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>IS_ACTIVE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>ERS_TAGNAME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <ENERGY_CONSUMPTION_I>
+                        <xsl:value-of select="$iRecords/ENERGY_CONSUMPTION_ID"/>
+                    </ENERGY_CONSUMPTION_I>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="Alert or not">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>1982</pd:x>
+        <pd:y>242</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="AlertMissData">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>2180</pd:x>
+        <pd:y>361</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/AlertDataMissing.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <OPE_KPI_ID>
+                    <xsl:value-of select="31"/>
+                </OPE_KPI_ID>
+                <OPE_KPI_CODE>
+                    <xsl:value-of select="&quot;OPE_KPI_03_01&quot;"/>
+                </OPE_KPI_CODE>
+                <FrequencyType>
+                    <xsl:value-of select="0"/>
+                </FrequencyType>
+                <AlertActive>
+                    <xsl:value-of select="$_globalVariables/pfx:GlobalVariables/APPsInfo/ActiveAlert/MissingData/OPE_03_01"/>
+                </AlertActive>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="calculateKPI">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1657</pd:x>
+        <pd:y>142</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/03_01/calculate_KPI.process</processName>
+            <processNameXPath/>
+            <spawn>false</spawn>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <DATE>
+                    <xsl:value-of select="$Start/StartDate"/>
+                </DATE>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>2529</pd:x>
+        <pd:y>338</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="checkViolated">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1773</pd:x>
+        <pd:y>142</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/03_01/check_Violation.process</processName>
+        </config>
+        <pd:inputBindings>
+            <KPI_Result>
+                <KPI_Daily>
+                    <xsl:value-of select="$calculateKPI/KPI_Result/KPI_Daily"/>
+                </KPI_Daily>
+                <KPI_MTD>
+                    <xsl:value-of select="$calculateKPI/KPI_Result/KPI_MTD"/>
+                </KPI_MTD>
+                <DATE>
+                    <xsl:value-of select="$Start/StartDate"/>
+                </DATE>
+                <countViolated>
+                    <xsl:value-of select="$KpiViolation/root/countViolated"/>
+                </countViolated>
+            </KPI_Result>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="get_CDU">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1367</pd:x>
+        <pd:y>239</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/03_01/get_CDU.process</processName>
+        </config>
+        <pd:inputBindings>
+            <Date>
+                <DateTime>
+                    <xsl:value-of select="$Start/StartDate"/>
+                </DateTime>
+            </Date>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>2526</pd:x>
+        <pd:y>237</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns11:Exception>
+                <ns2:Metadata>
+                    <ns2:AppCode>
+                        <xsl:value-of select="&quot;SyncDW&quot;"/>
+                    </ns2:AppCode>
+                    <ns2:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </ns2:Version>
+                    <ns2:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns:ProcessContext), tib:timestamp())"/>
+                    </ns2:ID>
+                    <ns2:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </ns2:CreateTime>
+                </ns2:Metadata>
+                <ns11:ExceptionBody>
+                    <ns11:ErrorReport>
+                        <StackTrace>
+                            <xsl:value-of select="$_error/ns:ErrorReport/StackTrace"/>
+                        </StackTrace>
+                        <Msg>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Msg"/>
+                        </Msg>
+                        <FullClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/FullClass"/>
+                        </FullClass>
+                        <ObjectClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Class"/>
+                        </ObjectClass>
+                        <ProcessStack>
+                            <xsl:value-of select="$_error/ns:ErrorReport/ProcessStack"/>
+                        </ProcessStack>
+                        <xsl:if test="$_error/ns:ErrorReport/MsgCode">
+                            <MsgCode>
+                                <xsl:value-of select="$_error/ns:ErrorReport/MsgCode"/>
+                            </MsgCode>
+                        </xsl:if>
+                        <xsl:copy-of select="$_error/ns:ErrorReport/Data"/>
+                    </ns11:ErrorReport>
+                </ns11:ExceptionBody>
+            </ns11:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="no data">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>1709</pd:x>
+        <pd:y>296</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Null">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>1480</pd:x>
+        <pd:y>241</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="query_Fuel_TYPE">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>175</pd:x>
+        <pd:y>242</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select  ENERGY_CONSUMPTION_ID  from OPE_KPI_ENERGY_CONSUMPTION where is_active = 1 and ENERGY_CONSUMPTION_ID in (1,2,3)</statement>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>OPE_KPI_ENERGY_CONSUMPTION_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ENERGY_CONSUMPTION_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ENERGY_CONSUMPTION_NAME</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>UOM</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>CREATED_DATE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>IS_ACTIVE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ERS_TAGNAME</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="rsMissingAlert">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>53</pd:x>
+        <pd:y>250</pd:y>
+        <config>
+            <variableName>DwhMissingData</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <countMissing>
+                    <xsl:value-of select="0"/>
+                </countMissing>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="rsViolationAlert">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>53</pd:x>
+        <pd:y>376</pd:y>
+        <config>
+            <variableName>KpiViolation</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <countViolated>
+                    <xsl:value-of select="0"/>
+                </countViolated>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SendMail">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>2359</pd:x>
+        <pd:y>51</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+            <append>false</append>
+        </config>
+        <pd:inputBindings>
+            <ns1:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="&quot;C:\Users\Admin\Desktop\alert.txt&quot;"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="concat('Dear KPI Owner, This Alert is to draw your attention to KPI 03_01 Energy Consumption  which has violated the target, on ',current-date(),' . Please keep track and take appropriate corrective action to meet the set target. Thank you.')"/>
+                </textContent>
+            </ns1:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SendMail Active">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>2094</pd:x>
+        <pd:y>50</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>calculateKPI</pd:from>
+        <pd:to>checkViolated</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:description>countDWHAlert &gt; 0 or KPI violation</pd:description>
+        <pd:from>Alert or not</pd:from>
+        <pd:to>SendMail Active</pd:to>
+        <pd:xpathDescription>kpi violation ?</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$checkViolated/countViolated &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendMail Active</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>Off</pd:xpathDescription>
+        <pd:lineType>Curved</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$_globalVariables/pfx:GlobalVariables/APPsInfo/ActiveAlert/TargetViolation/OPE_03_01 = 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Straight</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Alert or not</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Alert or not</pd:from>
+        <pd:to>AlertMissData</pd:to>
+        <pd:xpathDescription>dwh missing data</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$DwhMissingData/root/countMissing &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>AlertMissData</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>rsMissingAlert</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendMail Active</pd:from>
+        <pd:to>SendMail</pd:to>
+        <pd:xpathDescription>On</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$_globalVariables/pfx:GlobalVariables/APPsInfo/ActiveAlert/TargetViolation/OPE_03_01 = 1</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendMail</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>rsMissingAlert</pd:from>
+        <pd:to>rsViolationAlert</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>no data</pd:from>
+        <pd:to>Alert or not</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkViolated</pd:from>
+        <pd:to>Alert or not</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>rsViolationAlert</pd:from>
+        <pd:to>query_Fuel_TYPE</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>get_CDU</pd:from>
+        <pd:to>Null</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Null</pd:from>
+        <pd:to>calculateKPI</pd:to>
+        <pd:xpathDescription>dwh had data</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Null</pd:from>
+        <pd:to>no data</pd:to>
+        <pd:xpathDescription>no data</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$DwhMissingData/root/countMissing &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>query_Fuel_TYPE</pd:from>
+        <pd:to>Fuel_TYPE_Loop</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Fuel_TYPE_Loop</pd:from>
+        <pd:to>get_CDU</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

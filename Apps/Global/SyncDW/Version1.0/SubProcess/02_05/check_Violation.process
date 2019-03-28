@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/apps/appdataenv/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="sbv/common/exceptionhandling/exception/1.0">
+    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/02_05/check_Violation.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="KPI_Result">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="KPI_MTD" type="xsd:double"/>
+                    <xsd:element name="KPI_YTD" type="xsd:double"/>
+                    <xsd:element name="PRODUCT_ID" type="xsd:string"/>
+                    <xsd:element name="DATE" type="xsd:string"/>
+                    <xsd:element name="countViolated" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>39</pd:startX>
+    <pd:startY>262</pd:startY>
+    <pd:returnBindings>
+        <xsl:choose>
+            <xsl:when test="string(number($countViolated/countViolated_i))  !='NaN'">
+                <countViolated>
+                    <xsl:value-of select="$countViolated/countViolated_i"/>
+                </countViolated>
+            </xsl:when>
+            <xsl:otherwise>
+                <countViolated>
+                    <xsl:value-of select="0"/>
+                </countViolated>
+            </xsl:otherwise>
+        </xsl:choose>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="countViolated" type="xsd:int"/>
+    </pd:endType>
+    <pd:endX>1167</pd:endX>
+    <pd:endY>264</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <countViolated>
+            <xsd:element name="countViolated_i" type="xsd:int"/>
+        </countViolated>
+        <AlertStatus>
+            <xsd:element name="AlertStatus">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="MTD_Status" type="xsd:int"/>
+                        <xsd:element name="YTD_Status" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </AlertStatus>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1548141096910</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1285</pd:x>
+        <pd:y>375</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="checkExistsAlertRecord">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>393</pd:x>
+        <pd:y>262</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select count(*) from OPE_KPI_02_05_ALERT_CONDITION t where t.DATE_UPDATE = to_date(?,'YYYY/MM/DD') and t.PRODUCT_ID = ?</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>PRODUCT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/KPI_Result/DATE"/>
+                </DATE_UPDATE>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/KPI_Result/PRODUCT_ID"/>
+                </PRODUCT_ID>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="countKPIAlert">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>1030</pd:x>
+        <pd:y>262</pd:y>
+        <config>
+            <variableName>countViolated</variableName>
+        </config>
+        <pd:inputBindings>
+            <countViolated_i>
+                <xsl:value-of select="$Start/KPI_Result/countViolated + 1"/>
+            </countViolated_i>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="delExistsRecord">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>390</pd:x>
+        <pd:y>143</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>DELETE FROM OPE_KPI_03_03_ALERT_CONDITION
+WHERE UNIT_ID = ? AND DATE_UPDATE  = to_date(?,'YYYY/MM/DD')</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>UNIT_ID</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/KPIVariance/UNIT_ID"/>
+                </UNIT_ID>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/KPIVariance/DATE"/>
+                </DATE_UPDATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="getAlertStatus">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>277</pd:x>
+        <pd:y>261</pd:y>
+        <config>
+            <variableName>AlertStatus</variableName>
+        </config>
+        <pd:inputBindings>
+            <AlertStatus>
+                <xsl:choose>
+                    <xsl:when test="string(number($Start/KPI_Result/KPI_MTD))  !='NaN'">
+                        <MTD_Status>
+                            <xsl:value-of select="if($Start/KPI_Result/KPI_MTD >= $queryAlertCondition/resultSet/Record/LOW_GREEN and $Start/KPI_Result/KPI_MTD &lt;=$queryAlertCondition/resultSet/Record/HIGH_GREEN) then 0 &#xA;else if($Start/KPI_Result/KPI_MTD > $queryAlertCondition/resultSet/Record/LOW_RED or $Start/KPI_Result/KPI_MTD &lt; $queryAlertCondition/resultSet/Record/HIGH_RED)  then 2 &#xA;else 1"/>
+                        </MTD_Status>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <MTD_Status>
+                            <xsl:value-of select="4"/>
+                        </MTD_Status>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="string(number($Start/KPI_Result/KPI_YTD))  !='NaN'">
+                        <YTD_Status>
+                            <xsl:value-of select="if($Start/KPI_Result/KPI_YTD >= $queryAlertCondition/resultSet/Record/LOW_GREEN and $Start/KPI_Result/KPI_YTD &lt;=$queryAlertCondition/resultSet/Record/HIGH_GREEN) then 0 &#xA;else if($Start/KPI_Result/KPI_YTD > $queryAlertCondition/resultSet/Record/LOW_RED or $Start/KPI_Result/KPI_YTD &lt; $queryAlertCondition/resultSet/Record/HIGH_RED)  then 2 &#xA;else 1"/>
+                        </YTD_Status>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <YTD_Status>
+                            <xsl:value-of select="4"/>
+                        </YTD_Status>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </AlertStatus>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1285</pd:x>
+        <pd:y>262</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns1:Exception>
+                <ns2:Metadata>
+                    <ns2:AppCode>
+                        <xsl:value-of select="&quot;SyncDW&quot;"/>
+                    </ns2:AppCode>
+                    <ns2:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </ns2:Version>
+                    <ns2:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns:ProcessContext), tib:timestamp())"/>
+                    </ns2:ID>
+                    <ns2:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </ns2:CreateTime>
+                </ns2:Metadata>
+                <ns1:ExceptionBody>
+                    <ns1:ErrorReport>
+                        <StackTrace>
+                            <xsl:value-of select="$_error/ns:ErrorReport/StackTrace"/>
+                        </StackTrace>
+                        <Msg>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Msg"/>
+                        </Msg>
+                        <FullClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/FullClass"/>
+                        </FullClass>
+                        <ObjectClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Class"/>
+                        </ObjectClass>
+                        <ProcessStack>
+                            <xsl:value-of select="$_error/ns:ErrorReport/ProcessStack"/>
+                        </ProcessStack>
+                        <xsl:if test="$_error/ns:ErrorReport/MsgCode">
+                            <MsgCode>
+                                <xsl:value-of select="$_error/ns:ErrorReport/MsgCode"/>
+                            </MsgCode>
+                        </xsl:if>
+                        <xsl:copy-of select="$_error/ns:ErrorReport/Data"/>
+                    </ns1:ErrorReport>
+                </ns1:ExceptionBody>
+            </ns1:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="insertMTDAlert">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>721</pd:x>
+        <pd:y>143</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into OPE_KPI_02_05_ALERT_CONDITION(PRODUCT_ID,DATA_TYPE,ALERT_STATUS,DATE_UPDATE)
+values (?,?,?,TO_DATE(?,'YYYY/MM/DD'))</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>PRODUCT_ID</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATA_TYPE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>ALERT_STATUS</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/KPI_Result/PRODUCT_ID"/>
+                </PRODUCT_ID>
+                <DATA_TYPE>
+                    <xsl:value-of select="&quot;MTD&quot;"/>
+                </DATA_TYPE>
+                <ALERT_STATUS>
+                    <xsl:value-of select="$AlertStatus/AlertStatus/MTD_Status"/>
+                </ALERT_STATUS>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/KPI_Result/DATE"/>
+                </DATE_UPDATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="insertYTDAlert">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>722</pd:x>
+        <pd:y>382</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into OPE_KPI_02_05_ALERT_CONDITION(PRODUCT_ID,DATA_TYPE,ALERT_STATUS,DATE_UPDATE)
+values (?,?,?,TO_DATE(?,'YYYY/MM/DD'))</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>PRODUCT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATA_TYPE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>ALERT_STATUS</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/KPI_Result/PRODUCT_ID"/>
+                </PRODUCT_ID>
+                <DATA_TYPE>
+                    <xsl:value-of select="&quot;YTD&quot;"/>
+                </DATA_TYPE>
+                <ALERT_STATUS>
+                    <xsl:value-of select="$AlertStatus/AlertStatus/YTD_Status"/>
+                </ALERT_STATUS>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/KPI_Result/DATE"/>
+                </DATE_UPDATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Join">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>519</pd:x>
+        <pd:y>262</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="queryAlertCondition">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>162</pd:x>
+        <pd:y>262</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select LOW_GREEN, HIGH_GREEN, LOW_RED, HIGH_RED 
+from OPE_KPI_ALERT_CONDITION where STATUS = 1 and KPI_ID = 'OPE_KPI_02_05'</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>LOW_GREEN</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>HIGH_GREEN</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>LOW_RED</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>HIGH_RED</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="queryYesterdayAlert_MTD">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>865</pd:x>
+        <pd:y>143</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select * from OPE_KPI_02_05_ALERT_CONDITION 
+WHERE DATA_TYPE = 'MTD' AND DATE_UPDATE  = TRUNC(TO_DATE(?, 'YYYY/MM/DD' )-1) and PRODUCT_ID = ?</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>UNIT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>DATA_TYPE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ALERT_STATUS</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>DATE_UPDATE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>OPE_KPI_03_03_ALERT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>PRODUCT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/KPI_Result/DATE"/>
+                </DATE_UPDATE>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/KPI_Result/PRODUCT_ID"/>
+                </PRODUCT_ID>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="queryYesterdayAlert_YTD">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>865</pd:x>
+        <pd:y>382</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select * from OPE_KPI_02_05_ALERT_CONDITION 
+WHERE DATA_TYPE = 'YTD' AND DATE_UPDATE  = TRUNC(TO_DATE(?, 'YYYY/MM/DD' )-1) and PRODUCT_ID = ?</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>UNIT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>UNIT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>DATA_TYPE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ALERT_STATUS</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>DATE_UPDATE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>OPE_KPI_03_03_ALERT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>PRODUCT_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/KPI_Result/DATE"/>
+                </DATE_UPDATE>
+                <PRODUCT_ID>
+                    <xsl:value-of select="$Start/KPI_Result/PRODUCT_ID"/>
+                </PRODUCT_ID>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>insertMTDAlert</pd:from>
+        <pd:to>queryYesterdayAlert_MTD</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>insertYTDAlert</pd:from>
+        <pd:to>queryYesterdayAlert_YTD</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>countKPIAlert</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>violated</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-65536</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getAlertStatus</pd:from>
+        <pd:to>checkExistsAlertRecord</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkExistsAlertRecord</pd:from>
+        <pd:to>delExistsRecord</pd:to>
+        <pd:xpathDescription>exists</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$checkExistsAlertRecord/resultSet/Record/COUNT &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkExistsAlertRecord</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>delExistsRecord</pd:from>
+        <pd:to>Join</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryAlertCondition</pd:from>
+        <pd:to>getAlertStatus</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Join</pd:from>
+        <pd:to>insertMTDAlert</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryYesterdayAlert_MTD</pd:from>
+        <pd:to>countKPIAlert</pd:to>
+        <pd:xpathDescription>compare</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$AlertStatus/AlertStatus/MTD_Status &gt; 0
+and
+$AlertStatus/AlertStatus/MTD_Status !=4 
+and
+$queryYesterdayAlert_MTD/resultSet/Record/ALERT_STATUS &lt; $AlertStatus/AlertStatus/MTD_Status</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Join</pd:from>
+        <pd:to>insertYTDAlert</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryYesterdayAlert_YTD</pd:from>
+        <pd:to>countKPIAlert</pd:to>
+        <pd:xpathDescription>compare</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$AlertStatus/AlertStatus/YTD_Status &gt; 0 and 
+$AlertStatus/AlertStatus/YTD_Status !=4 and
+$queryYesterdayAlert_YTD/resultSet/Record/ALERT_STATUS &lt; $AlertStatus/AlertStatus/YTD_Status</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryYesterdayAlert_MTD</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>no violated</pd:xpathDescription>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$AlertStatus/AlertStatus/MTD_Status = 0 or 
+$AlertStatus/AlertStatus/MTD_Status =4</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryYesterdayAlert_YTD</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>no violated</pd:xpathDescription>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$AlertStatus/AlertStatus/YTD_Status = 0 or 
+$AlertStatus/AlertStatus/YTD_Status =4</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>queryAlertCondition</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

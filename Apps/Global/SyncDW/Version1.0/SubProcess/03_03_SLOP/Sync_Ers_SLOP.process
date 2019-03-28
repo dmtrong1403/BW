@@ -260,8 +260,8 @@
         <pd:activity name="queryTagName">
             <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
             <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-            <pd:x>375</pd:x>
-            <pd:y>237</pd:y>
+            <pd:x>378</pd:x>
+            <pd:y>244</pd:y>
             <config>
                 <timeout>10</timeout>
                 <commit>false</commit>

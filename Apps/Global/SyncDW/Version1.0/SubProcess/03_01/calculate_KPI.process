@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/03_01/calculate_KPI.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="DATE" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>82</pd:startX>
+    <pd:startY>233</pd:startY>
+    <pd:returnBindings>
+        <KPI_Result>
+            <KPI_Daily>
+                <xsl:value-of select="$KPIResult/root/KPI_Daily"/>
+            </KPI_Daily>
+            <KPI_MTD>
+                <xsl:value-of select="$KPIResult/root/KPI_MTD"/>
+            </KPI_MTD>
+        </KPI_Result>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="KPI_Result">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="KPI_Daily" type="xsd:double"/>
+                    <xsd:element name="KPI_MTD" type="xsd:double"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>1063</pd:endX>
+    <pd:endY>198</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <KPIResult>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="KPI_Daily" type="xsd:string"/>
+                        <xsd:element name="KPI_MTD" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </KPIResult>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1548141096910</pd:targetNamespace>
+    <pd:activity name="calculateResult">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>574</pd:x>
+        <pd:y>192</pd:y>
+        <config>
+            <variableName>KPIResult</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <KPI_Daily>
+                    <xsl:value-of select="$Daily_Consumption/resultSet/Record[1]/DAILY_CONSUMPTION div $Daily_CDU/resultSet/Record[1]/DAILY_CDU"/>
+                </KPI_Daily>
+                <KPI_MTD>
+                    <xsl:value-of select="$MTD_Consumption/resultSet/Record[1]/MTD_CONSUMPTION div $MTD_Planned/resultSet/Record[1]/MTD_PLANNED"/>
+                </KPI_MTD>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="checkExistsResult">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>758</pd:x>
+        <pd:y>194</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select count(*)
+from OPE_KPI_03_01_RESULT
+WHERE DATE_UPDATE  = to_date(?,'YYYY/MM/DD')</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>COUNT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </DATE_UPDATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="delExistsResult">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>756</pd:x>
+        <pd:y>86</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>DELETE FROM OPE_KPI_03_01_RESULT 
+WHERE DATE_GET  = to_date(?,'YYYY/MM/DD')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </DATE_UPDATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="insertResult">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>941</pd:x>
+        <pd:y>197</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into OPE_KPI_03_01_RESULT(PLANT_LEVEL,KPI_DAILY_VALUE,KPI_MTD_VALUE,DATE_UPDATE)
+values (?,?,?,to_date(?,'YYYY/MM/DD'))</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>PLANT_LEVEL</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>KPI_DAILY_VALUE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>KPI_MTD_VALUE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE_UPDATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <PLANT_LEVEL>
+                    <xsl:value-of select="'Refinery'"/>
+                </PLANT_LEVEL>
+                <KPI_DAILY_VALUE>
+                    <xsl:value-of select="$KPIResult/root/KPI_Daily"/>
+                </KPI_DAILY_VALUE>
+                <KPI_MTD_VALUE>
+                    <xsl:value-of select="$KPIResult/root/KPI_MTD"/>
+                </KPI_MTD_VALUE>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </DATE_UPDATE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Daily_Consumption">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>255</pd:x>
+        <pd:y>90</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select sum(VALUE) as Daily_Consumption
+from OPE_KPI_03_01_DETAILS 
+WHERE FUEL_TYPE_ID in (1,2,3) AND DATE_UPDATE  = to_date(?,'YYYY/MM/DD')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>DAILY_CONSUMPTION</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE>
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Daily_CDU">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>424</pd:x>
+        <pd:y>92</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select sum(VALUE) as Daily_CDU
+from OPE_KPI_03_01_DETAILS 
+WHERE FUEL_TYPE_ID = 4  AND DATE_UPDATE  = to_date(?,'YYYY/MM/DD')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>DAILY_CDU</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <DATE>
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="MTD_Consumption">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>258</pd:x>
+        <pd:y>298</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>select sum(VALUE) as MTD_Consumption
+from OPE_KPI_03_01_DETAILS 
+WHERE FUEL_TYPE_ID in (1,2,3) AND DATE_UPDATE   &gt;= trunc(to_date(?,'YYYY/MM/DD'),'month')  and DATE_UPDATE  &lt;= to_date(?,'YYYY/MM/DD')</statement>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>1stDayOfMonth</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>MTD_CONSUMPTION</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <xsl:element xmlns:ns0="http://www.tibco.com/bw/xslt/custom-functions" namespace="" name="1stDayOfMonth" ns0:malformed="true">
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </xsl:element>
+                <DATE>
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="MTD_Planned">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>429</pd:x>
+        <pd:y>298</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select sum(VALUE) as MTD_Planned
+from OPE_KPI_03_01_DETAILS 
+WHERE FUEL_TYPE_ID = 5 AND DATE_UPDATE   &gt;= trunc(to_date(?,'YYYY/MM/DD'),'month')  and DATE_UPDATE  &lt;= to_date(?,'YYYY/MM/DD')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>1stDayOfMonth</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>MTD_PLANNED</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <xsl:element xmlns:ns0="http://www.tibco.com/bw/xslt/custom-functions" namespace="" name="1stDayOfMonth" ns0:malformed="true">
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </xsl:element>
+                <DATE>
+                    <xsl:value-of select="$Start/root/DATE"/>
+                </DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>delExistsResult</pd:from>
+        <pd:to>insertResult</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>insertResult</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>calculateResult</pd:from>
+        <pd:to>checkExistsResult</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkExistsResult</pd:from>
+        <pd:to>delExistsResult</pd:to>
+        <pd:xpathDescription>exists</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$checkExistsResult/resultSet/Record/COUNT &gt; 0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>checkExistsResult</pd:from>
+        <pd:to>insertResult</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Daily_Consumption</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Daily_Consumption</pd:from>
+        <pd:to>Daily_CDU</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>MTD_Consumption</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>MTD_Planned</pd:from>
+        <pd:to>calculateResult</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>MTD_Consumption</pd:from>
+        <pd:to>MTD_Planned</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Daily_CDU</pd:from>
+        <pd:to>calculateResult</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
