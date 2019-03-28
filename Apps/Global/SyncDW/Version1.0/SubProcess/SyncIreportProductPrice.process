@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="bsr/common/apps/appdataenv/1.0" xmlns:ns1="sbv/common/exceptionhandling/exception/1.0" xmlns:ns4="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType">
+    <pd:name>Apps/Global/SyncDW/Version1.0/SubProcess/SyncIreportProductPrice.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="StartDate" type="xsd:date"/>
+    </pd:startType>
+    <pd:startX>33</pd:startX>
+    <pd:startY>241</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1788</pd:endX>
+    <pd:endY>245</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <isTargetViolated-0502>
+            <xsd:element name="isTargetViolated-0502" type="xsd:boolean"/>
+        </isTargetViolated-0502>
+        <isTargetViolated-0501>
+            <xsd:element name="isTargetViolated-0501" type="xsd:boolean"/>
+        </isTargetViolated-0501>
+        <isMissingData>
+            <xsd:element name="isMissingData" type="xsd:boolean"/>
+        </isMissingData>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1471415125027</pd:targetNamespace>
+    <pd:group name="forAllProducts">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>695</pd:x>
+        <pd:y>59</pd:y>
+        <pd:width>861</pd:width>
+        <pd:height>362</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$getListProduct/resultSet/Record</pd:over>
+            <pd:iterationElementSlot>oRecords</pd:iterationElementSlot>
+            <pd:indexSlot>o</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>getValueInIreportByDate</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getTargetViolation_0502</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getTargetViolation_0501</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>One Bend</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Null</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>One Bend</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getValueInIreportByDate</pd:from>
+            <pd:to>OPE_05_01</pd:to>
+            <pd:xpathDescription>Record Existed</pd:xpathDescription>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>exists($getValueInIreportByDate/resultSet/Record)</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>getValueInIreportByDate</pd:from>
+            <pd:to>TrueFlagMissingData</pd:to>
+            <pd:xpathDescription/>
+            <pd:lineType>Multiple Bends</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>otherwise</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>OPE_05_01</pd:from>
+            <pd:to>OPE_05_02</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>OPE_05_01</pd:from>
+            <pd:to>TrueFlagMissingData</pd:to>
+            <pd:xpathDescription>InvalidInput</pd:xpathDescription>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$OPE_05_01/EmailAlert/isInvalidData = 'true'</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>OPE_05_02</pd:from>
+            <pd:to>TrueFlagMissingData</pd:to>
+            <pd:xpathDescription>InvalidInput</pd:xpathDescription>
+            <pd:lineType>Curved</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$OPE_05_02/EmailAlert/isValidData = 'true'</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>OPE_05_02</pd:from>
+            <pd:to>CheckViolation</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckViolation</pd:from>
+            <pd:to>getTargetViolation_0501</pd:to>
+            <pd:xpathDescription>0501_Violated</pd:xpathDescription>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$OPE_05_01/EmailAlert/isTargetViolated = 'true'</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckViolation</pd:from>
+            <pd:to>getTargetViolation_0502</pd:to>
+            <pd:xpathDescription>0502_Violated</pd:xpathDescription>
+            <pd:lineType>Curved</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$OPE_05_02/EmailAlert/isTargetViolated = 'true'</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckViolation</pd:from>
+            <pd:to>Null</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>otherwise</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>TrueFlagMissingData</pd:from>
+            <pd:to>Null</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="getValueInIreportByDate">
+            <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+            <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+            <pd:description/>
+            <pd:x>789</pd:x>
+            <pd:y>251</pd:y>
+            <config>
+                <timeout>100</timeout>
+                <commit>false</commit>
+                <maxRows>100</maxRows>
+                <emptyStrAsNil>false</emptyStrAsNil>
+                <jdbcSharedConfig>/SharedResource/Connection/JDBC/DWHConnection.sharedjdbc</jdbcSharedConfig>
+                <statement>SELECT * FROM V_PRODUCT_PRICE_VARIANCE where PRODUCT_ID = ? and STARTDATETIME = ?</statement>
+                <Prepared_Param_DataType>
+                    <parameter>
+                        <parameterName>PRODUCT_ID</parameterName>
+                        <dataType>NUMERIC</dataType>
+                    </parameter>
+                    <parameter>
+                        <parameterName>UPDATE_DATE</parameterName>
+                        <dataType>DATE</dataType>
+                    </parameter>
+                </Prepared_Param_DataType>
+                <oraObjects/>
+                <oraTables/>
+                <QueryOutputCachedSchemaColumns>ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>PRODUCT_ID</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>PRODCODE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>PRODUCT</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>GRADE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>ACTUAL_PRICE</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>UOM</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+                <QueryOutputCachedSchemaColumns>STARTDATETIME</QueryOutputCachedSchemaColumns>
+                <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+                <QueryOutputCachedSchemaDataTypesName>DATE</QueryOutputCachedSchemaDataTypesName>
+                <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            </config>
+            <pd:inputBindings>
+                <jdbcQueryActivityInput>
+                    <PRODUCT_ID>
+                        <xsl:choose>
+                            <xsl:when test="exists($oRecords/Record/FINISHED_PRODUCT_ID)">
+                                <xsl:value-of select="$oRecords/Record/FINISHED_PRODUCT_ID"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </PRODUCT_ID>
+                    <UPDATE_DATE>
+                        <xsl:value-of select="$Start/StartDate"/>
+                    </UPDATE_DATE>
+                </jdbcQueryActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="TrueFlagMissingData">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:description/>
+            <pd:x>927</pd:x>
+            <pd:y>355</pd:y>
+            <config>
+                <variableName>isMissingData</variableName>
+            </config>
+            <pd:inputBindings>
+                <isMissingData>
+                    <xsl:value-of select="true()"/>
+                </isMissingData>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="getTargetViolation_0501">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:x>1411</pd:x>
+            <pd:y>146</pd:y>
+            <config>
+                <variableName>isTargetViolated-0501</variableName>
+            </config>
+            <pd:inputBindings>
+                <isTargetViolated-0501>
+                    <xsl:value-of select="true()"/>
+                </isTargetViolated-0501>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="OPE_05_01">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>927</pd:x>
+            <pd:y>147</pd:y>
+            <config>
+                <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/SyncIreportPrices/OPE_05_01.process</processName>
+            </config>
+            <pd:inputBindings>
+                <Record>
+                    <PRODUCT_ID>
+                        <xsl:value-of select="$oRecords/Record/FINISHED_PRODUCT_ID"/>
+                    </PRODUCT_ID>
+                    <ACTUAL_VALUE>
+                        <xsl:value-of select="$getValueInIreportByDate/resultSet/Record[1]/ACTUAL_PRICE"/>
+                    </ACTUAL_VALUE>
+                    <VALID_DATE>
+                        <xsl:value-of select="tib:format-date('MM/dd/yyyy', $Start/StartDate)"/>
+                    </VALID_DATE>
+                    <TYPE>
+                        <xsl:value-of select="0"/>
+                    </TYPE>
+                </Record>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="OPE_05_02">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>1100</pd:x>
+            <pd:y>149</pd:y>
+            <config>
+                <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/SyncIreportPrices/OPE_05_02.process</processName>
+            </config>
+            <pd:inputBindings>
+                <Record>
+                    <PRODUCT_ID>
+                        <xsl:value-of select="$oRecords/Record/FINISHED_PRODUCT_ID"/>
+                    </PRODUCT_ID>
+                    <ACTUAL_VALUE>
+                        <xsl:value-of select="$getValueInIreportByDate/resultSet/Record[1]/ACTUAL_PRICE"/>
+                    </ACTUAL_VALUE>
+                    <VALID_DATE>
+                        <xsl:value-of select="tib:format-date('MM/dd/yyyy', $Start/StartDate)"/>
+                    </VALID_DATE>
+                    <TYPE>
+                        <xsl:value-of select="0"/>
+                    </TYPE>
+                </Record>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="CheckViolation">
+            <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+            <pd:resourceType>ae.activities.null</pd:resourceType>
+            <pd:x>1216</pd:x>
+            <pd:y>149</pd:y>
+            <config/>
+            <pd:inputBindings/>
+        </pd:activity>
+        <pd:activity name="getTargetViolation_0502">
+            <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+            <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+            <pd:x>1407</pd:x>
+            <pd:y>250</pd:y>
+            <config>
+                <variableName>isTargetViolated-0502</variableName>
+            </config>
+            <pd:inputBindings>
+                <isTargetViolated-0502>
+                    <xsl:value-of select="true()"/>
+                </isTargetViolated-0502>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="Null">
+            <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+            <pd:resourceType>ae.activities.null</pd:resourceType>
+            <pd:x>1220</pd:x>
+            <pd:y>354</pd:y>
+            <config/>
+            <pd:inputBindings/>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1603</pd:x>
+        <pd:y>371</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="getListProduct">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>619</pd:x>
+        <pd:y>242</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>SELECT FINISHED_PRODUCT_ID FROM OPE_KPI_FINISHED_PRODUCT</statement>
+            <Prepared_Param_DataType/>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>FINISHED_PRODUCT_ID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1791</pd:x>
+        <pd:y>373</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns1:Exception>
+                <ns2:Metadata>
+                    <ns2:AppCode>
+                        <xsl:value-of select="&quot;SyncDW&quot;"/>
+                    </ns2:AppCode>
+                    <ns2:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </ns2:Version>
+                    <ns2:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns:ProcessContext), tib:timestamp())"/>
+                    </ns2:ID>
+                    <ns2:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </ns2:CreateTime>
+                </ns2:Metadata>
+                <ns1:ExceptionBody>
+                    <ns1:ErrorReport>
+                        <StackTrace>
+                            <xsl:value-of select="$_error/ns:ErrorReport/StackTrace"/>
+                        </StackTrace>
+                        <Msg>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Msg"/>
+                        </Msg>
+                        <FullClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/FullClass"/>
+                        </FullClass>
+                        <ObjectClass>
+                            <xsl:value-of select="$_error/ns:ErrorReport/Class"/>
+                        </ObjectClass>
+                        <ProcessStack>
+                            <xsl:value-of select="$_error/ns:ErrorReport/ProcessStack"/>
+                        </ProcessStack>
+                        <MsgCode>
+                            <xsl:value-of select="$_error/ns:ErrorReport/MsgCode"/>
+                        </MsgCode>
+                        <xsl:copy-of select="$_error/ns:ErrorReport/Data"/>
+                    </ns1:ErrorReport>
+                </ns1:ExceptionBody>
+            </ns1:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="deleteExistedRecords">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>494</pd:x>
+        <pd:y>242</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/SyncIreportPrices/DeleteExistedRecords.process</processName>
+        </config>
+        <pd:inputBindings>
+            <Date>
+                <xsl:value-of select="$Start/StartDate"/>
+            </Date>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="EmailAlert">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1683</pd:x>
+        <pd:y>245</pd:y>
+        <config>
+            <processName>/Apps/Global/SyncDW/Version1.0/SubProcess/SyncIreportPrices/EmailAlert.process</processName>
+        </config>
+        <pd:inputBindings>
+            <AlertStatus>
+                <isMissingData-0501>
+                    <xsl:value-of select="$isMissingData/isMissingData"/>
+                </isMissingData-0501>
+                <isTargetViolated-0501>
+                    <xsl:value-of select="$isTargetViolated-0501/isTargetViolated-0501"/>
+                </isTargetViolated-0501>
+                <isMissingData-0502>
+                    <xsl:value-of select="$isMissingData/isMissingData"/>
+                </isMissingData-0502>
+                <isTargetViolated-0502>
+                    <xsl:value-of select="$isTargetViolated-0502/isTargetViolated-0502"/>
+                </isTargetViolated-0502>
+            </AlertStatus>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="initFlagMissingData">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>148</pd:x>
+        <pd:y>241</pd:y>
+        <config>
+            <variableName>isMissingData</variableName>
+        </config>
+        <pd:inputBindings>
+            <isMissingData>
+                <xsl:value-of select="false()"/>
+            </isMissingData>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="initFlagTargetViolation_0501">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>270</pd:x>
+        <pd:y>241</pd:y>
+        <config>
+            <variableName>isTargetViolated-0501</variableName>
+        </config>
+        <pd:inputBindings>
+            <isTargetViolated-0501>
+                <xsl:value-of select="false()"/>
+            </isTargetViolated-0501>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="initFlagTargetViolation_0502">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>381</pd:x>
+        <pd:y>242</pd:y>
+        <config>
+            <variableName>isTargetViolated-0502</variableName>
+        </config>
+        <pd:inputBindings>
+            <isTargetViolated-0502>
+                <xsl:value-of select="false()"/>
+            </isTargetViolated-0502>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>getListProduct</pd:from>
+        <pd:to>forAllProducts</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>initFlagMissingData</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>deleteExistedRecords</pd:from>
+        <pd:to>getListProduct</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>forAllProducts</pd:from>
+        <pd:to>EmailAlert</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EmailAlert</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>initFlagMissingData</pd:from>
+        <pd:to>initFlagTargetViolation_0501</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>initFlagTargetViolation_0501</pd:from>
+        <pd:to>initFlagTargetViolation_0502</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>initFlagTargetViolation_0502</pd:from>
+        <pd:to>deleteExistedRecords</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

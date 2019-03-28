@@ -6,7 +6,7 @@
     <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
     <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
-    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_Spread.process</pd:name>
+    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_01_SPREAD.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="root">

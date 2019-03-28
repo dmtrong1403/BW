@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx6="sbv/common/exceptionhandling/exception/1.0" xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_PRODUCT_PRICE.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx4:AppDataEnvelope"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>50</pd:startX>
+    <pd:startY>285</pd:startY>
+    <pd:returnBindings>
+        <inputDate>
+            <xsl:value-of select="$Map-Data/inputDate"/>
+        </inputDate>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="inputDate" type="xsd:date"/>
+    </pd:endType>
+    <pd:endX>1171</pd:endX>
+    <pd:endY>289</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:group name="DaysofMonth">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>553</pd:x>
+        <pd:y>113</pd:y>
+        <pd:width>484</pd:width>
+        <pd:height>327</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>repeat</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:repeatCondition>$i &gt;= $GetLastDayOfMonth/LastDay</pd:repeatCondition>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>ForEachRow</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>ForEachRow</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:group name="ForEachRow">
+            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+            <pd:resourceType>ae.process.group</pd:resourceType>
+            <pd:x>589</pd:x>
+            <pd:y>161</pd:y>
+            <pd:width>411</pd:width>
+            <pd:height>229</pd:height>
+            <pd:collapsedWidth>57</pd:collapsedWidth>
+            <pd:collapsedHeight>70</pd:collapsedHeight>
+            <pd:groupVariables/>
+            <pd:joinToggle>inherit</pd:joinToggle>
+            <config>
+                <pd:groupType>inputLoop</pd:groupType>
+                <pd:serializable>false</pd:serializable>
+                <pd:over>$ReadExcelCommon/pfx5:sheet/pfx5:row</pd:over>
+                <pd:iterationElementSlot>xrecords</pd:iterationElementSlot>
+                <pd:indexSlot>n</pd:indexSlot>
+                <pd:activityOutputName/>
+                <pd:accumulateOutput>false</pd:accumulateOutput>
+            </config>
+            <pd:inputBindings/>
+            <pd:expanded>true</pd:expanded>
+            <pd:transition>
+                <pd:from>start</pd:from>
+                <pd:to>IsValid</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>IsValid</pd:from>
+                <pd:to>end</pd:to>
+                <pd:xpathDescription>Invalid</pd:xpathDescription>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>OPE_05_02</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>OPE_05_01</pd:from>
+                <pd:to>OPE_05_02</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>IsValid</pd:from>
+                <pd:to>OPE_05_01</pd:to>
+                <pd:xpathDescription>Valid</pd:xpathDescription>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>string(number($xrecords/pfx5:row/pfx5:cell[1]/pfx5:value)) !='NaN' 
+and
+string(number($xrecords/pfx5:row/pfx5:cell[3]/pfx5:value)) !='NaN'</pd:xpath>
+            </pd:transition>
+            <pd:activity name="OPE_05_01">
+                <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+                <pd:resourceType>ae.process.subprocess</pd:resourceType>
+                <pd:x>799</pd:x>
+                <pd:y>215</pd:y>
+                <config>
+                    <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_PRODUCT_PRICE/OPE_05_01_Price.process</processName>
+                </config>
+                <pd:inputBindings>
+                    <root>
+                        <Plan>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[3]/pfx5:value"/>
+                        </Plan>
+                        <CateID>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
+                        </CateID>
+                        <validDate>
+                            <xsl:value-of select="$ConvertData/ValidDateMonth"/>
+                        </validDate>
+                        <inputDate>
+                            <xsl:value-of select="$Map-Data/inputDate"/>
+                        </inputDate>
+                        <i>
+                            <xsl:value-of select="$i"/>
+                        </i>
+                    </root>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="OPE_05_02">
+                <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+                <pd:resourceType>ae.process.subprocess</pd:resourceType>
+                <pd:x>908</pd:x>
+                <pd:y>215</pd:y>
+                <config>
+                    <processName>/Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_PRODUCT_PRICE/OPE_05_02_PRICE.process</processName>
+                </config>
+                <pd:inputBindings>
+                    <root>
+                        <Plan>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[3]/pfx5:value"/>
+                        </Plan>
+                        <ProductID>
+                            <xsl:value-of select="$xrecords/pfx5:row/pfx5:cell[1]/pfx5:value"/>
+                        </ProductID>
+                        <validDate>
+                            <xsl:value-of select="$ConvertData/ValidDateMonth"/>
+                        </validDate>
+                        <inputDate>
+                            <xsl:value-of select="$Map-Data/inputDate"/>
+                        </inputDate>
+                        <i>
+                            <xsl:value-of select="$i"/>
+                        </i>
+                    </root>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="IsValid">
+                <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+                <pd:resourceType>ae.activities.null</pd:resourceType>
+                <pd:x>684</pd:x>
+                <pd:y>282</pd:y>
+                <config/>
+                <pd:inputBindings/>
+            </pd:activity>
+        </pd:group>
+    </pd:group>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1002</pd:x>
+        <pd:y>556</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="ConvertData">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>166</pd:x>
+        <pd:y>87</pd:y>
+        <config>
+            <element>
+                <xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="ValidDateMonth" type="xsd:date"/>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <ValidDateMonth>
+                <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="tib:parse-date('MM/dd/yyyy', $GetValidDate/root/ValidDate)"/>
+            </ValidDateMonth>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetLastDayOfMonth">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>447</pd:x>
+        <pd:y>288</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
+        </config>
+        <pd:inputBindings>
+            <InputDate>
+                <xsl:value-of select="$Map-Data/inputDate"/>
+            </InputDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetValidDate">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>52</pd:x>
+        <pd:y>87</pd:y>
+        <config>
+            <variableConfig>/SharedResource/SharedVariables/ExcelFiles/ValidDate.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="handleException">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1168</pd:x>
+        <pd:y>558</pd:y>
+        <config>
+            <processName>/Util/Exception/handleException.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx6:Exception>
+                <pfx4:Metadata>
+                    <pfx4:AppCode>
+                        <xsl:value-of select="&quot;OPE_05_02_PRICE&quot;"/>
+                    </pfx4:AppCode>
+                    <pfx4:Version>
+                        <xsl:value-of select="&quot;1.0&quot;"/>
+                    </pfx4:Version>
+                    <pfx4:ID>
+                        <xsl:value-of select="concat(generate-id($_processContext/ns4:ProcessContext), tib:timestamp())"/>
+                    </pfx4:ID>
+                    <pfx4:CreateTime>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx4:CreateTime>
+                </pfx4:Metadata>
+                <pfx6:ExceptionBody>
+                    <xsl:for-each select="$_error">
+                        <pfx6:ErrorReport>
+                            <StackTrace>
+                                <xsl:value-of select="ns4:ErrorReport/StackTrace"/>
+                            </StackTrace>
+                            <Msg>
+                                <xsl:value-of select="ns4:ErrorReport/Msg"/>
+                            </Msg>
+                            <FullClass>
+                                <xsl:value-of select="ns4:ErrorReport/FullClass"/>
+                            </FullClass>
+                            <ObjectClass>
+                                <xsl:value-of select="ns4:ErrorReport/Class"/>
+                            </ObjectClass>
+                            <ProcessStack>
+                                <xsl:value-of select="ns4:ErrorReport/ProcessStack"/>
+                            </ProcessStack>
+                            <xsl:if test="ns4:ErrorReport/MsgCode">
+                                <MsgCode>
+                                    <xsl:value-of select="ns4:ErrorReport/MsgCode"/>
+                                </MsgCode>
+                            </xsl:if>
+                            <xsl:copy-of select="ns4:ErrorReport/Data"/>
+                        </pfx6:ErrorReport>
+                    </xsl:for-each>
+                </pfx6:ExceptionBody>
+            </pfx6:Exception>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Data">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>298</pd:x>
+        <pd:y>285</pd:y>
+        <config>
+            <element>
+                <xsd:element name="inputDate" type="xsd:date"/>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <inputDate>
+                <xsl:value-of select="tib:create-date(tib:substring-after-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value,&quot;/&quot;), tib:substring-before-last($ReadExcelCommon/pfx5:sheet/pfx5:row[1]/pfx5:cell[5]/pfx5:value, &quot;/&quot;), 01)"/>
+            </inputDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ReadExcelCommon">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>166</pd:x>
+        <pd:y>284</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/ReadExcelCommon.process</processName>
+        </config>
+        <pd:coercions>
+            <pd:coercion xpath="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/*" element="ns1:InputExcel" cardinality=""/>
+        </pd:coercions>
+        <pd:inputBindings>
+            <root>
+                <ns1:AppExcel>
+                    <ns1:FileName>
+                        <xsl:value-of select="$Start/root/pfx4:AppDataEnvelope/pfx4:AppData/ns1:InputExcel/ns1:FileName"/>
+                    </ns1:FileName>
+                    <ns1:SheetName>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/Sheetname"/>
+                    </ns1:SheetName>
+                    <ns1:rowCount>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/KPI_PRODUCT_PRICE/rowCount"/>
+                    </ns1:rowCount>
+                    <ns1:colCount>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/KPI_PRODUCT_PRICE/colCount"/>
+                    </ns1:colCount>
+                    <ns1:rowOffset>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/KPI_PRODUCT_PRICE/rowOffset"/>
+                    </ns1:rowOffset>
+                    <ns1:colOffset>
+                        <xsl:value-of select="$_globalVariables/ns3:GlobalVariables/APPsInfo/Polling/OPMonthly/KPI_PRODUCT_PRICE/colOffset"/>
+                    </ns1:colOffset>
+                </ns1:AppExcel>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>GetValidDate</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ReadExcelCommon</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Data</pd:from>
+        <pd:to>GetLastDayOfMonth</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>handleException</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>handleException</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetValidDate</pd:from>
+        <pd:to>ConvertData</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ConvertData</pd:from>
+        <pd:to>ReadExcelCommon</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetLastDayOfMonth</pd:from>
+        <pd:to>DaysofMonth</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>DaysofMonth</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

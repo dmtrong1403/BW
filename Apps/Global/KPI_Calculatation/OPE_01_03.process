@@ -6,7 +6,7 @@
     <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
     <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
-    <pd:name>Apps/Global/KPI_Calculatation/OPE_01_02.process</pd:name>
+    <pd:name>Apps/Global/KPI_Calculatation/OPE_01_03.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="root">
@@ -19,19 +19,15 @@
             </xsd:complexType>
         </xsd:element>
     </pd:startType>
-    <pd:startX>47</pd:startX>
-    <pd:startY>206</pd:startY>
+    <pd:startX>42</pd:startX>
+    <pd:startY>288</pd:startY>
     <pd:returnBindings>
-        <xsl:choose>
-            <xsl:when test="$queryDesignCapacity/resultSet/Record[1]/DESIGN_CAPACITY > 0">
-                <KPI-Result>
+        <KPI-Result>
+            <xsl:choose>
+                <xsl:when test="$KPIs/KPIs/DailyResult/isValid = 'true'">
                     <xsl:copy-of select="$KPIs/KPIs/DailyResult"/>
-                    <xsl:copy-of select="$KPIs/KPIs/MtdResult"/>
-                    <xsl:copy-of select="$KPIs/KPIs/YtdResult"/>
-                </KPI-Result>
-            </xsl:when>
-            <xsl:otherwise>
-                <KPI-Result>
+                </xsl:when>
+                <xsl:otherwise>
                     <DailyResult>
                         <Value>
                             <xsl:value-of select="-1"/>
@@ -40,6 +36,13 @@
                             <xsl:value-of select="false()"/>
                         </isValid>
                     </DailyResult>
+                </xsl:otherwise>
+            </xsl:choose>
+            <xsl:choose>
+                <xsl:when test="$KPIs/KPIs/MtdResult/isValid = 'true'">
+                    <xsl:copy-of select="$KPIs/KPIs/MtdResult"/>
+                </xsl:when>
+                <xsl:otherwise>
                     <MtdResult>
                         <Value>
                             <xsl:value-of select="-1"/>
@@ -48,17 +51,9 @@
                             <xsl:value-of select="false()"/>
                         </isValid>
                     </MtdResult>
-                    <YtdResult>
-                        <Value>
-                            <xsl:value-of select="-1"/>
-                        </Value>
-                        <isValid>
-                            <xsl:value-of select="false()"/>
-                        </isValid>
-                    </YtdResult>
-                </KPI-Result>
-            </xsl:otherwise>
-        </xsl:choose>
+                </xsl:otherwise>
+            </xsl:choose>
+        </KPI-Result>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
     <pd:endType>
@@ -81,20 +76,12 @@
                             </xsd:sequence>
                         </xsd:complexType>
                     </xsd:element>
-                    <xsd:element name="YtdResult">
-                        <xsd:complexType>
-                            <xsd:sequence>
-                                <xsd:element name="Value" type="xsd:double"/>
-                                <xsd:element name="isValid" type="xsd:boolean"/>
-                            </xsd:sequence>
-                        </xsd:complexType>
-                    </xsd:element>
                 </xsd:sequence>
             </xsd:complexType>
         </xsd:element>
     </pd:endType>
-    <pd:endX>1109</pd:endX>
-    <pd:endY>208</pd:endY>
+    <pd:endX>915</pd:endX>
+    <pd:endY>291</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables>
         <KPIs>
@@ -117,33 +104,25 @@
                                 </xsd:sequence>
                             </xsd:complexType>
                         </xsd:element>
-                        <xsd:element name="YtdResult">
-                            <xsd:complexType>
-                                <xsd:sequence>
-                                    <xsd:element name="Value" type="xsd:double"/>
-                                    <xsd:element name="isValid" type="xsd:boolean"/>
-                                </xsd:sequence>
-                            </xsd:complexType>
-                        </xsd:element>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
         </KPIs>
     </pd:processVariables>
     <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
-    <pd:activity name="queryDesignCapacity">
+    <pd:activity name="queryWeeklyCapacity">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
         <pd:description>Query Actual &amp; Design Capacity of Process Units from OPE_KPI_01_03_DETAILS</pd:description>
-        <pd:x>157</pd:x>
-        <pd:y>206</pd:y>
+        <pd:x>152</pd:x>
+        <pd:y>288</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select DESIGN_CAPACITY from OPE_KPI_01_03_DATA where DATE_UPDATE = to_date(?,'MM/DD/YYYY')  and UNIT_ID = ?</statement>
+            <statement>select WEEKLY from OPE_KPI_01_03_DATA where DATE_UPDATE = to_date(?,'MM/DD/YYYY')  and UNIT_ID = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>DATE_UPDATE</parameterName>
@@ -156,7 +135,7 @@
             </Prepared_Param_DataType>
             <oraObjects/>
             <oraTables/>
-            <QueryOutputCachedSchemaColumns>DESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaColumns>WEEKLY</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
@@ -176,52 +155,72 @@
         <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
         <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
         <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
-        <pd:x>785</pd:x>
-        <pd:y>74</pd:y>
+        <pd:x>575</pd:x>
+        <pd:y>299</pd:y>
         <config>
             <variableName>KPIs</variableName>
         </config>
         <pd:inputBindings>
             <KPIs>
-                <DailyResult>
-                    <Value>
-                        <xsl:value-of select="100 * $Start/root/Actual div $queryDesignCapacity/resultSet/Record[1]/DESIGN_CAPACITY"/>
-                    </Value>
-                    <isValid>
-                        <xsl:value-of select="true()"/>
-                    </isValid>
-                </DailyResult>
-                <MtdResult>
-                    <Value>
-                        <xsl:value-of select="100 * $queryMtdCapacityByUnit/resultSet/Record[1]/SUMACTUAL div $queryMtdCapacityByUnit/resultSet/Record[1]/SUMDESIGN_CAPACITY"/>
-                    </Value>
-                    <isValid>
-                        <xsl:value-of select="true()"/>
-                    </isValid>
-                </MtdResult>
-                <YtdResult>
-                    <Value>
-                        <xsl:value-of select="100 * $queryYtdCapacity/resultSet/Record[1]/AVGACTUAL div $queryYtdCapacity/resultSet/Record[1]/AVGDESIGN_CAPACITY"/>
-                    </Value>
-                    <isValid>
-                        <xsl:value-of select="true()"/>
-                    </isValid>
-                </YtdResult>
+                <xsl:choose>
+                    <xsl:when test="$queryWeeklyCapacity/resultSet/Record[1]/WEEKLY > 0">
+                        <DailyResult>
+                            <Value>
+                                <xsl:value-of select="100 * ($Start/root/Actual - $queryWeeklyCapacity/resultSet/Record[1]/WEEKLY) div $queryWeeklyCapacity/resultSet/Record[1]/WEEKLY"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="true()"/>
+                            </isValid>
+                        </DailyResult>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <DailyResult>
+                            <Value>
+                                <xsl:value-of select="-1"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="false()"/>
+                            </isValid>
+                        </DailyResult>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="$queryMtdCapacityByUnit/resultSet/Record[1]/SUMM_PLAN > 0">
+                        <MtdResult>
+                            <Value>
+                                <xsl:value-of select="100 * ($queryMtdCapacityByUnit/resultSet/Record[1]/SUMACTUAL - $queryMtdCapacityByUnit/resultSet/Record[1]/SUMM_PLAN) div $queryMtdCapacityByUnit/resultSet/Record[1]/SUMM_PLAN"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="true()"/>
+                            </isValid>
+                        </MtdResult>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <MtdResult>
+                            <Value>
+                                <xsl:value-of select="-1"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="false()"/>
+                            </isValid>
+                        </MtdResult>
+                    </xsl:otherwise>
+                </xsl:choose>
             </KPIs>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="insertResultTable">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>924</pd:x>
-        <pd:y>209</pd:y>
+        <pd:x>730</pd:x>
+        <pd:y>292</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>insert into OPE_KPI_01_02_RESULT (UNIT_ID, KPI_DAILY_UNIT, KPI_MONTHLY_UNIT, KPI_MTD_UNIT, KPI_YTD_UNIT, DATE_UPDATE, PROCESS_MESSAGE)
- values (?, ?, ?, ?, ?, to_date(?,'MM/DD/YYYY'), ?)</statement>
+            <statement>insert into OPE_KPI_01_03_RESULT (UNIT_ID, KPI_DAILY_UNIT, KPI_MONTHLY_UNIT, KPI_MTD_UNIT, DATE_UPDATE, PROCESS_MESSAGE)
+ values (?, ?, ?, ?, to_date(?,'MM/DD/YYYY'), ?)</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>UNIT_ID</parameterName>
@@ -240,10 +239,6 @@
                     <dataType>NUMERIC</dataType>
                 </parameter>
                 <parameter>
-                    <parameterName>KPI_YTD_UNIT</parameterName>
-                    <dataType>NUMERIC</dataType>
-                </parameter>
-                <parameter>
                     <parameterName>DATE_UPDATE</parameterName>
                     <dataType>VARCHAR</dataType>
                 </parameter>
@@ -254,71 +249,70 @@
             </Prepared_Param_DataType>
         </config>
         <pd:inputBindings>
-            <xsl:choose>
-                <xsl:when test="$queryDesignCapacity/resultSet/Record[1]/DESIGN_CAPACITY > 0">
-                    <jdbcUpdateActivityInput>
-                        <UNIT_ID>
-                            <xsl:value-of select="$Start/root/UnitID"/>
-                        </UNIT_ID>
+            <jdbcUpdateActivityInput>
+                <UNIT_ID>
+                    <xsl:value-of select="$Start/root/UnitID"/>
+                </UNIT_ID>
+                <xsl:choose>
+                    <xsl:when test="$KPIs/KPIs/DailyResult/isValid = 'true'">
                         <KPI_DAILY_UNIT>
                             <xsl:value-of select="$KPIs/KPIs/DailyResult/Value"/>
                         </KPI_DAILY_UNIT>
-                        <xsl:choose>
-                            <xsl:when test="substring($Start/root/Date, 4, 2) = $GetLastDayOfMonth/LastDay">
-                                <KPI_MONTHLY_UNIT>
-                                    <xsl:value-of select="$KPIs/KPIs/MtdResult/Value"/>
-                                </KPI_MONTHLY_UNIT>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <KPI_MONTHLY_UNIT xsi:nil="true"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <KPI_DAILY_UNIT xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="substring($Start/root/Date, 4, 2) = $GetLastDayOfMonth/LastDay">
+                        <KPI_MONTHLY_UNIT>
+                            <xsl:value-of select="$KPIs/KPIs/MtdResult/Value"/>
+                        </KPI_MONTHLY_UNIT>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <KPI_MONTHLY_UNIT xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="$KPIs/KPIs/MtdResult/isValid = 'true'">
                         <KPI_MTD_UNIT>
                             <xsl:value-of select="$KPIs/KPIs/MtdResult/Value"/>
                         </KPI_MTD_UNIT>
-                        <KPI_YTD_UNIT>
-                            <xsl:value-of select="$KPIs/KPIs/YtdResult/Value"/>
-                        </KPI_YTD_UNIT>
-                        <DATE_UPDATE>
-                            <xsl:value-of select="$Start/root/Date"/>
-                        </DATE_UPDATE>
-                        <PROCESS_MESSAGE>
-                            <xsl:value-of select="&quot;VALID INPUTS&quot;"/>
-                        </PROCESS_MESSAGE>
-                    </jdbcUpdateActivityInput>
-                </xsl:when>
-                <xsl:otherwise>
-                    <jdbcUpdateActivityInput>
-                        <UNIT_ID>
-                            <xsl:value-of select="$Start/root/UnitID"/>
-                        </UNIT_ID>
-                        <KPI_DAILY_UNIT xsi:nil="true"/>
-                        <KPI_MONTHLY_UNIT xsi:nil="true"/>
+                    </xsl:when>
+                    <xsl:otherwise>
                         <KPI_MTD_UNIT xsi:nil="true"/>
-                        <KPI_YTD_UNIT xsi:nil="true"/>
-                        <DATE_UPDATE>
-                            <xsl:value-of select="$Start/root/Date"/>
-                        </DATE_UPDATE>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <DATE_UPDATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </DATE_UPDATE>
+                <xsl:choose>
+                    <xsl:when test="$KPIs/KPIs/DailyResult/isValid = 'true' and $KPIs/KPIs/MtdResult/isValid = 'true'">
                         <PROCESS_MESSAGE>
-                            <xsl:value-of select="&quot;INVALID INPUTS&quot;"/>
+                            <xsl:value-of select="'VALID INPUTS'"/>
                         </PROCESS_MESSAGE>
-                    </jdbcUpdateActivityInput>
-                </xsl:otherwise>
-            </xsl:choose>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <PROCESS_MESSAGE>
+                            <xsl:value-of select="'INVALID INPUTS'"/>
+                        </PROCESS_MESSAGE>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </jdbcUpdateActivityInput>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="queryMtdCapacityByUnit">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>305</pd:x>
-        <pd:y>63</pd:y>
+        <pd:x>291</pd:x>
+        <pd:y>289</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select SUM(ACTUAL), SUM(DESIGN_CAPACITY)
+            <statement>select SUM(ACTUAL), SUM(M_PLAN)
 from OPE_KPI_01_03_DATA 
 where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT_ID = ?</statement>
             <Prepared_Param_DataType>
@@ -341,7 +335,7 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT
             <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-            <QueryOutputCachedSchemaColumns>SUMDESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaColumns>SUMM_PLAN</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
@@ -363,8 +357,8 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT
     <pd:activity name="GetLastDayOfMonth">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>623</pd:x>
-        <pd:y>65</pd:y>
+        <pd:x>435</pd:x>
+        <pd:y>291</pd:y>
         <config>
             <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
         </config>
@@ -374,99 +368,31 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT
             </InputDate>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="queryYtdCapacity">
-        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
-        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>454</pd:x>
-        <pd:y>64</pd:y>
-        <config>
-            <timeout>10</timeout>
-            <commit>false</commit>
-            <maxRows>100</maxRows>
-            <emptyStrAsNil>false</emptyStrAsNil>
-            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
-            <statement>select AVG(ACTUAL), AVG(DESIGN_CAPACITY)
-from OPE_KPI_01_03_DATA 
-where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT_ID = ?</statement>
-            <Prepared_Param_DataType>
-                <parameter>
-                    <parameterName>startDate</parameterName>
-                    <dataType>DATE</dataType>
-                </parameter>
-                <parameter>
-                    <parameterName>endDate</parameterName>
-                    <dataType>VARCHAR</dataType>
-                </parameter>
-                <parameter>
-                    <parameterName>UNIT_ID</parameterName>
-                    <dataType>NUMERIC</dataType>
-                </parameter>
-            </Prepared_Param_DataType>
-            <oraObjects/>
-            <oraTables/>
-            <QueryOutputCachedSchemaColumns>AVGACTUAL</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-            <QueryOutputCachedSchemaColumns>AVGDESIGN_CAPACITY</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
-        </config>
-        <pd:inputBindings>
-            <jdbcQueryActivityInput>
-                <startDate>
-                    <xsl:value-of select="tib:create-date(tib:substring-after-last($Start/root/Date,&quot;/&quot;), 01, 01)"/>
-                </startDate>
-                <endDate>
-                    <xsl:value-of select="$Start/root/Date"/>
-                </endDate>
-                <UNIT_ID>
-                    <xsl:value-of select="$Start/root/UnitID"/>
-                </UNIT_ID>
-            </jdbcQueryActivityInput>
-        </pd:inputBindings>
-    </pd:activity>
     <pd:transition>
         <pd:from>Calculate KPI Result</pd:from>
         <pd:to>insertResultTable</pd:to>
-        <pd:lineType>One Bend</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>queryMtdCapacityByUnit</pd:from>
-        <pd:to>queryYtdCapacity</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>Start</pd:from>
-        <pd:to>queryDesignCapacity</pd:to>
+        <pd:to>queryWeeklyCapacity</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>queryDesignCapacity</pd:from>
+        <pd:from>queryWeeklyCapacity</pd:from>
         <pd:to>queryMtdCapacityByUnit</pd:to>
-        <pd:xpathDescription>ValidData</pd:xpathDescription>
-        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:xpathDescription/>
+        <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>$queryDesignCapacity/resultSet/Record[1]/DESIGN_CAPACITY &gt; 0</pd:xpath>
+        <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>insertResultTable</pd:from>
         <pd:to>End</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>queryYtdCapacity</pd:from>
-        <pd:to>GetLastDayOfMonth</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -479,10 +405,10 @@ where DATE_UPDATE &gt;= ? and DATE_UPDATE &lt;= to_date(?,'MM/DD/YYYY') and UNIT
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>queryDesignCapacity</pd:from>
-        <pd:to>insertResultTable</pd:to>
+        <pd:from>queryMtdCapacityByUnit</pd:from>
+        <pd:to>GetLastDayOfMonth</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>otherwise</pd:conditionType>
+        <pd:conditionType>always</pd:conditionType>
     </pd:transition>
 </pd:ProcessDefinition>

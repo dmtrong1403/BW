@@ -34,5 +34,21 @@
 			<type>String</type>
 			<modTime>1548232219441</modTime>
 		</globalVariable>
+		<globalVariable>
+			<name>OPE_05_01</name>
+			<value>1</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1552018409103</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>OPE_05_02</name>
+			<value>1</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1552025124578</modTime>
+		</globalVariable>
 	</globalVariables>
 </repository>

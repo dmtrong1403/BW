@@ -19,11 +19,11 @@
 		</globalVariable>
 		<globalVariable>
 			<name>Password</name>
-			<value>#!K5sp7WwTD8L0gQoLsNTPToKM47ocyslatugb/87Y/1gRYNuRQGkd4g==</value>
+			<value>#!XZ0F3ctYMtJjm7Vu/pgvgPrUhWEL5SoJ</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>Password</type>
-			<modTime>1475748547812</modTime>
+			<modTime>1551941888382</modTime>
 		</globalVariable>
 		<globalVariable>
 			<name>Timeout</name>
@@ -35,19 +35,19 @@
 		</globalVariable>
 		<globalVariable>
 			<name>Url</name>
-			<value>jdbc:oracle:thin:@192.168.1.24:1521:DW01</value>
+			<value>jdbc:oracle:thin:@14.232.160.127:1521:XE</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>String</type>
-			<modTime>1475748547921</modTime>
+			<modTime>1551941950927</modTime>
 		</globalVariable>
 		<globalVariable>
 			<name>Username</name>
-			<value>tibco_maximo</value>
+			<value>IREPORT</value>
 			<deploymentSettable>true</deploymentSettable>
 			<serviceSettable>false</serviceSettable>
 			<type>String</type>
-			<modTime>1475748547985</modTime>
+			<modTime>1551941888447</modTime>
 		</globalVariable>
 	</globalVariables>
 </repository>

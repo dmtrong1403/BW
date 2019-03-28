@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <pd:name>Apps/Global/KPI_Calculatation/OPE_05_01.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Actual" type="xsd:double"/>
+                    <xsd:element name="CateID" type="xsd:double"/>
+                    <xsd:element name="Date" type="xsd:string"/>
+                    <xsd:element name="CateType" type="xsd:double"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>42</pd:startX>
+    <pd:startY>201</pd:startY>
+    <pd:returnBindings>
+        <xsl:choose>
+            <xsl:when test="$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0">
+                <DailyKPI>
+                    <Value>
+                        <xsl:value-of select="$KPI-Results/DailyKPI"/>
+                    </Value>
+                    <IsValid>
+                        <xsl:value-of select="true()"/>
+                    </IsValid>
+                </DailyKPI>
+            </xsl:when>
+            <xsl:otherwise>
+                <DailyKPI>
+                    <Value>
+                        <xsl:value-of select="-1"/>
+                    </Value>
+                    <IsValid>
+                        <xsl:value-of select="false()"/>
+                    </IsValid>
+                </DailyKPI>
+            </xsl:otherwise>
+        </xsl:choose>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="DailyKPI">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Value" type="xsd:double"/>
+                    <xsd:element name="IsValid" type="xsd:boolean"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>627</pd:endX>
+    <pd:endY>202</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <KPI-Results>
+            <xsd:element name="DailyKPI" type="xsd:double"/>
+        </KPI-Results>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="Calculate KPI Result">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
+        <pd:x>316</pd:x>
+        <pd:y>97</pd:y>
+        <config>
+            <variableName>KPI-Results</variableName>
+        </config>
+        <pd:inputBindings>
+            <DailyKPI>
+                <xsl:value-of select="100 * ($queryPlanPrice/resultSet/Record[1]/PLAN_VALUE - $Start/root/Actual) div $queryPlanPrice/resultSet/Record[1]/PLAN_VALUE"/>
+            </DailyKPI>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="insertResultTable">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>470</pd:x>
+        <pd:y>202</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into OPE_KPI_05_01_RESULT (CATE_ID, DAILY_KPI_VALUE, VALID_DATE, PROCESS_MESSAGE, CATE_TYPE)
+ values (?, ?, to_date(?,'MM/DD/YYYY'), ?, ?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>CATE_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>DAILY_KPI_VALUE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>PROCESS_MASSAGE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CATE_TYPE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <CATE_ID>
+                    <xsl:value-of select="$Start/root/CateID"/>
+                </CATE_ID>
+                <xsl:choose>
+                    <xsl:when test="$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0">
+                        <DAILY_KPI_VALUE>
+                            <xsl:value-of select="$KPI-Results/DailyKPI"/>
+                        </DAILY_KPI_VALUE>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <DAILY_KPI_VALUE xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
+                <xsl:choose>
+                    <xsl:when test="$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0">
+                        <PROCESS_MASSAGE>
+                            <xsl:value-of select="&quot;VALID INPUTS&quot;"/>
+                        </PROCESS_MASSAGE>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <PROCESS_MASSAGE>
+                            <xsl:value-of select="&quot;INVALID INPUTS&quot;"/>
+                        </PROCESS_MASSAGE>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <CATE_TYPE>
+                    <xsl:value-of select="$Start/root/CateType"/>
+                </CATE_TYPE>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="queryPlanPrice">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:description/>
+        <pd:x>152</pd:x>
+        <pd:y>201</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select PLAN_VALUE from OPE_KPI_05_01_DETAILS where VALID_DATE = to_date(?,'MM/DD/YYYY')  and CATE_ID = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CATE_ID</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>PLAN_VALUE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
+                <CATE_ID>
+                    <xsl:value-of select="$Start/root/CateID"/>
+                </CATE_ID>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Calculate KPI Result</pd:from>
+        <pd:to>insertResultTable</pd:to>
+        <pd:xpathDescription/>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>queryPlanPrice</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>insertResultTable</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryPlanPrice</pd:from>
+        <pd:to>Calculate KPI Result</pd:to>
+        <pd:xpathDescription>ValidPlan</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$queryPlanPrice/resultSet/Record[1]/PLAN_VALUE !=0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryPlanPrice</pd:from>
+        <pd:to>insertResultTable</pd:to>
+        <pd:xpathDescription>InvalidPlan</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

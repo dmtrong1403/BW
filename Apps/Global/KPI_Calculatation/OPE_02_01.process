@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://xmlns.example.com/unique/default/namespace/1123495989986" xmlns:pfx2="bsr/excelfile/excelsheet/1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pfx3="bsr/excelfile/appexcel/1.0" xmlns:pfx4="bsr/common/apps/appdataenv/1.0" xmlns:pfx5="bsr/apps/excelfile/appexcel/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="bsr/common/logging/enginelog/1.0" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="bsr/apps/excelfile/excelsheet/1.0" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns5="sbv/common/exceptionhandling/exception/1.0" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://xmlns.example.com/unique/default/namespace/1123495989986" schemaLocation="/SharedResource/Schema/Global/Excel/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/common/apps/appdataenv/1.0" schemaLocation="/SharedResource/Schema/Common/AppDataEnvelope.xsd"/>
+    <xsd:import namespace="bsr/excelfile/appexcel/1.0"/>
+    <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
+    <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
+    <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
+    <pd:name>Apps/Global/KPI_Calculatation/OPE_02_01.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Actual" type="xsd:double"/>
+                    <xsd:element name="Date" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>47</pd:startX>
+    <pd:startY>223</pd:startY>
+    <pd:returnBindings>
+        <KPI-Result>
+            <Mtd>
+                <xsl:copy-of select="$KPI-Results/KPIs/MtdKPI/ancestor-or-self::*/namespace::node()"/>
+                <xsl:copy-of select="$KPI-Results/KPIs/MtdKPI/@*"/>
+                <xsl:copy-of select="$KPI-Results/KPIs/MtdKPI/node()"/>
+            </Mtd>
+            <Daily>
+                <xsl:copy-of select="$KPI-Results/KPIs/DailyKPI/ancestor-or-self::*/namespace::node()"/>
+                <xsl:copy-of select="$KPI-Results/KPIs/DailyKPI/@*"/>
+                <xsl:copy-of select="$KPI-Results/KPIs/DailyKPI/node()"/>
+            </Daily>
+            <Substitute>
+                <xsl:copy-of select="$KPI-Results/KPIs/SubstituteKPI/ancestor-or-self::*/namespace::node()"/>
+                <xsl:copy-of select="$KPI-Results/KPIs/SubstituteKPI/@*"/>
+                <xsl:copy-of select="$KPI-Results/KPIs/SubstituteKPI/node()"/>
+            </Substitute>
+        </KPI-Result>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="KPI-Result">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Mtd">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Value" type="xsd:double"/>
+                                <xsd:element name="isValid" type="xsd:boolean"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="Daily">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Value" type="xsd:double"/>
+                                <xsd:element name="isValid" type="xsd:boolean"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="Substitute">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Value" type="xsd:double"/>
+                                <xsd:element name="isValid" type="xsd:boolean"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>1139</pd:endX>
+    <pd:endY>223</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <KPI-Results>
+            <xsd:element name="KPIs">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="SubstituteKPI" minOccurs="0">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="Value" type="xsd:double"/>
+                                    <xsd:element name="isValid" type="xsd:boolean"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="MtdKPI" minOccurs="0">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="Value" type="xsd:double"/>
+                                    <xsd:element name="isValid" type="xsd:boolean"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="DailyKPI" minOccurs="0">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="Value" type="xsd:double"/>
+                                    <xsd:element name="isValid" type="xsd:boolean"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </KPI-Results>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1400810810798</pd:targetNamespace>
+    <pd:activity name="Calculate KPI Result">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:description>Calculate KPI Value: Daily / MTD / Monthly / YTD</pd:description>
+        <pd:x>812</pd:x>
+        <pd:y>230</pd:y>
+        <config>
+            <variableName>KPI-Results</variableName>
+        </config>
+        <pd:inputBindings>
+            <KPIs>
+                <xsl:choose>
+                    <xsl:when test="$Start/root/Actual > 0">
+                        <SubstituteKPI>
+                            <Value>
+                                <xsl:value-of select="100 * $querySubstituteCR/resultSet/Record[1]/SUMACTUAL_QTY_CRUDE div $Start/root/Actual"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="true()"/>
+                            </isValid>
+                        </SubstituteKPI>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <SubstituteKPI>
+                            <Value>
+                                <xsl:value-of select="-1"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="false()"/>
+                            </isValid>
+                        </SubstituteKPI>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="$queryMtdCR/resultSet/Record[1]/SUMPLAN_QTY_CRUDE > 0">
+                        <MtdKPI>
+                            <Value>
+                                <xsl:value-of select="100 * ($queryMtdCR/resultSet/Record[1]/SUMACTUAL_QTY_CRUDE - $queryMtdCR/resultSet/Record[1]/SUMPLAN_QTY_CRUDE) div $queryMtdCR/resultSet/Record[1]/SUMPLAN_QTY_CRUDE"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="true()"/>
+                            </isValid>
+                        </MtdKPI>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <MtdKPI>
+                            <Value>
+                                <xsl:value-of select="-1"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="false()"/>
+                            </isValid>
+                        </MtdKPI>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="$queryTargetCR/resultSet/Record[1]/SUMSCHEDULE_QTY_CRUDE > 0">
+                        <DailyKPI>
+                            <Value>
+                                <xsl:value-of select="100 * ($Start/root/Actual - $queryTargetCR/resultSet/Record[1]/SUMSCHEDULE_QTY_CRUDE) div $queryTargetCR/resultSet/Record[1]/SUMSCHEDULE_QTY_CRUDE"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="true()"/>
+                            </isValid>
+                        </DailyKPI>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <DailyKPI>
+                            <Value>
+                                <xsl:value-of select="-1"/>
+                            </Value>
+                            <isValid>
+                                <xsl:value-of select="false()"/>
+                            </isValid>
+                        </DailyKPI>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </KPIs>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetLastDayOfMonth">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>650</pd:x>
+        <pd:y>223</pd:y>
+        <config>
+            <processName>/Apps/Global/Common/GetLastDayOfMonth.process</processName>
+        </config>
+        <pd:inputBindings>
+            <InputDate>
+                <xsl:value-of select="tib:create-date(tib:substring-after-last($Start/root/Date,&quot;/&quot;), substring($Start/root/Date, 1, 2), 01)"/>
+            </InputDate>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="insertResultTable">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>954</pd:x>
+        <pd:y>223</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into OPE_KPI_02_01_RESULT (VALID_DATE, TOTAL_ACTUAL_VALUE, TOTAL_FOREIGN_VALUE, TOTAL_SCHEDULED_VALUE, TOTAL_PLANNED_VALUE, CR_DAILY, CR_MTD, CR_FOREIGN)
+ values (to_date(?,'MM/DD/YYYY'),?,?,?,?,?,?,?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TOTAL_ACTUAL_VALUE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TOTAL_FOREIGN_VALUE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TOTAL_SCHEDULED_VALUE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>TOTAL_PLANNED_VALUE</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CR_DAILY</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CR_MTD</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CR_FOREIGN</parameterName>
+                    <dataType>NUMERIC</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
+                <TOTAL_ACTUAL_VALUE>
+                    <xsl:value-of select="$Start/root/Actual"/>
+                </TOTAL_ACTUAL_VALUE>
+                <TOTAL_FOREIGN_VALUE>
+                    <xsl:choose>
+                        <xsl:when test="exists($querySubstituteCR/resultSet/Record[1]/SUMACTUAL_QTY_CRUDE)">
+                            <xsl:value-of select="$querySubstituteCR/resultSet/Record[1]/SUMACTUAL_QTY_CRUDE"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </TOTAL_FOREIGN_VALUE>
+                <TOTAL_SCHEDULED_VALUE>
+                    <xsl:choose>
+                        <xsl:when test="exists($queryTargetCR/resultSet/Record[1]/SUMSCHEDULE_QTY_CRUDE)">
+                            <xsl:value-of select="$queryTargetCR/resultSet/Record[1]/SUMSCHEDULE_QTY_CRUDE"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </TOTAL_SCHEDULED_VALUE>
+                <TOTAL_PLANNED_VALUE>
+                    <xsl:choose>
+                        <xsl:when test="exists($queryTargetCR/resultSet/Record[1]/SUMPLAN_QTY_CRUDE)">
+                            <xsl:value-of select="$queryTargetCR/resultSet/Record[1]/SUMPLAN_QTY_CRUDE"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </TOTAL_PLANNED_VALUE>
+                <xsl:choose>
+                    <xsl:when test="$KPI-Results/KPIs/DailyKPI/isValid = 'true'">
+                        <CR_DAILY>
+                            <xsl:choose>
+                                <xsl:when test="exists($KPI-Results/KPIs/DailyKPI/Value)">
+                                    <xsl:value-of select="$KPI-Results/KPIs/DailyKPI/Value"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </CR_DAILY>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <CR_DAILY xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="$KPI-Results/KPIs/MtdKPI/isValid = 'true'">
+                        <CR_MTD>
+                            <xsl:choose>
+                                <xsl:when test="exists($KPI-Results/KPIs/MtdKPI/Value)">
+                                    <xsl:value-of select="$KPI-Results/KPIs/MtdKPI/Value"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </CR_MTD>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <CR_MTD xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                    <xsl:when test="substring($Start/root/Date, 4, 2) = $GetLastDayOfMonth/LastDay and  $KPI-Results/KPIs/SubstituteKPI/isValid = 'true'">
+                        <CR_FOREIGN>
+                            <xsl:choose>
+                                <xsl:when test="exists($KPI-Results/KPIs/SubstituteKPI/Value)">
+                                    <xsl:value-of select="$KPI-Results/KPIs/SubstituteKPI/Value"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </CR_FOREIGN>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <CR_FOREIGN xsi:nil="true"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="queryMtdCR">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>471</pd:x>
+        <pd:y>223</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select SUM(ACTUAL_QTY_CRUDE), SUM(PLAN_QTY_CRUDE)
+from OPE_KPI_02_01_DETAILS 
+where VALID_DATE &gt;= ? and VALID_DATE &lt;= to_date(?,'MM/DD/YYYY')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>startDate</parameterName>
+                    <dataType>DATE</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>endDate</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>SUMACTUAL_QTY_CRUDE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>SUMPLAN_QTY_CRUDE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <startDate>
+                    <xsl:value-of select="tib:create-date(tib:substring-after-last($Start/root/Date,&quot;/&quot;), substring($Start/root/Date, 1, 2), 01)"/>
+                </startDate>
+                <endDate>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </endDate>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="querySubstituteCR">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>311</pd:x>
+        <pd:y>223</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select SUM(ACTUAL_QTY_CRUDE)  from OPE_KPI_02_01_DETAILS a
+join OPE_KPI_CRUDE b on a.CRUDE_ID = b.CRUDE_ID 
+where a.VALID_DATE = to_date(?,'MM/DD/YYYY') and b.CRUDE_TYPE = 1</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>SUMACTUAL_QTY_CRUDE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="queryTargetCR">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:description/>
+        <pd:x>157</pd:x>
+        <pd:y>223</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/SharedResource/Connection/JDBC/KPIsDBConnection.sharedjdbc</jdbcSharedConfig>
+            <statement>select SUM(SCHEDULE_QTY_CRUDE), SUM(PLAN_QTY_CRUDE) from OPE_KPI_02_01_DETAILS where VALID_DATE = to_date(?,'MM/DD/YYYY')</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>VALID_DATE</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>SUMSCHEDULE_QTY_CRUDE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>SUMPLAN_QTY_CRUDE</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <VALID_DATE>
+                    <xsl:value-of select="$Start/root/Date"/>
+                </VALID_DATE>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Calculate KPI Result</pd:from>
+        <pd:to>insertResultTable</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>queryTargetCR</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryTargetCR</pd:from>
+        <pd:to>querySubstituteCR</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>insertResultTable</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetLastDayOfMonth</pd:from>
+        <pd:to>Calculate KPI Result</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>queryMtdCR</pd:from>
+        <pd:to>GetLastDayOfMonth</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>querySubstituteCR</pd:from>
+        <pd:to>queryMtdCR</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

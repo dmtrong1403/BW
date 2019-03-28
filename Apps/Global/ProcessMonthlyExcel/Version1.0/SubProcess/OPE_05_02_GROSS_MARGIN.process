@@ -6,7 +6,7 @@
     <xsd:import namespace="bsr/excelfile/excelsheet/1.0"/>
     <xsd:import namespace="bsr/apps/excelfile/appexcel/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/ExcelSheet.xsd"/>
     <xsd:import namespace="bsr/apps/excelfile/excelsheet/1.0" schemaLocation="/SharedResource/Schema/Apps/ExcelFile/InputExcel.xsd"/>
-    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_MONTHLY_PLAN_GM.process</pd:name>
+    <pd:name>Apps/Global/ProcessMonthlyExcel/Version1.0/SubProcess/OPE_05_02_GROSS_MARGIN.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="root">
